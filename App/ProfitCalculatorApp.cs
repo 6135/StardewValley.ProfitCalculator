@@ -4,14 +4,14 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MobileProfitCalculator.helper;
+using ProfitCalculator.helper;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace MobileProfitCalculator.App
+namespace ProfitCalculator.App
 {
     public class ProfitCalculatorApp
     {

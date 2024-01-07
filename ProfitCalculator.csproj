@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-	  <AssemblyName>MobileProfitCalculator</AssemblyName>
-	  <RootNamespace>MobileProfitCalculator</RootNamespace>
+	  <AssemblyName>ProfitCalculator</AssemblyName>
+	  <RootNamespace>ProfitCalculator</RootNamespace>
 	  <Version>1.0.0</Version>
 	  <EnableHarmony>true</EnableHarmony>
 	  <GamePath>$(STARDEW_GAME_DIR)</GamePath>

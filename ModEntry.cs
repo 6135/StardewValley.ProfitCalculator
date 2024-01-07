@@ -1,16 +1,17 @@
 ﻿using System;
 using System.IO;
+using GenericModConfigMenu;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MobileProfitCalculator.App;
-using MobileProfitCalculator.helper;
-using MobileProfitCalculator.menus;
+using ProfitCalculator.App;
+using ProfitCalculator.helper;
+using ProfitCalculator.menus;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
-namespace MobileProfitCalculator
+namespace ProfitCalculator
 {
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
@@ -34,6 +35,7 @@ namespace MobileProfitCalculator
             //hook events
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.GameLoop.GameLaunched += onGameLaunched;
+            helper.Events.GameLoop.GameLaunched += onGameLaunchedAddGenericModConfigMenu;
         }
 
         /*********
@@ -57,6 +59,30 @@ namespace MobileProfitCalculator
             }
         }
 
+        private void onGameLaunchedAddGenericModConfigMenu(object sender, GameLaunchedEventArgs e)
+        {
+            //register config menu if generic mod config menu is installed
+            var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: this.ModManifest,
+                reset: () => this.Config = new ModConfig(),
+                save: () => this.Helper.WriteConfig(this.Config)
+            );
+
+            // add keybinding setting
+            configMenu.AddKeybind(
+                mod: this.ModManifest,
+                getValue: () => this.Config.HotKey,
+                setValue: value => this.Config.HotKey = value,
+                name: () => (this.Helper.Translation.Get("open") + " " + this.Helper.Translation.Get("app-name")).ToString(),
+                tooltip: () => this.Helper.Translation.Get("hot-key-tooltip")
+            );
+        }
+
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event data.</param>
@@ -76,7 +102,6 @@ namespace MobileProfitCalculator
                     mainMenu.updateMenu();
                     Game1.activeClickableMenu = mainMenu;
                     Game1.playSound("bigSelect");
-                   
                 }
                 else
                 {

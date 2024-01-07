@@ -1,1 +1,1 @@
-# MobileProfitCalculator
+# ProfitCalculator

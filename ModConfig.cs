@@ -10,7 +10,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace MobileProfitCalculator
+namespace ProfitCalculator
 {
     public class ModConfig
     {

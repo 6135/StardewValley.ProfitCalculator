@@ -5,15 +5,16 @@ using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MobileProfitCalculator.helper;
+using ProfitCalculator.helper;
+using ProfitCalculator.Options;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
-using static MobileProfitCalculator.helper.Helpers;
+using static ProfitCalculator.helper.Helpers;
 
-namespace MobileProfitCalculator.menus
+namespace ProfitCalculator.menus
 {
     public class ProfitCalculatorMainMenu : IClickableMenu
     {
@@ -42,7 +43,6 @@ namespace MobileProfitCalculator.menus
 
         public static int widthOnScreen = 632 + borderWidth * 2;
         public static int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
-        private int timer = 0;
 
         private enum Operation
         {
@@ -53,14 +53,14 @@ namespace MobileProfitCalculator.menus
             None
         }
 
-        private Operation op = Operation.None;
+        /*private Operation op = Operation.None;
         private double result = 0;
         private string inputA = "";
         private string inputB = "";
-        private bool currentInput = false;
+        private bool currentInput = false;*/
 
-        private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
-        private readonly List<ClickableComponent> Options = new List<ClickableComponent>();
+        private readonly List<ClickableComponent> Labels = new();
+        private readonly List<BaseOption> Options = new();
 
         private ClickableComponent calculateButton;
         private ClickableComponent resetButton;
@@ -94,7 +94,6 @@ namespace MobileProfitCalculator.menus
         {
             Labels.Clear();
             Options.Clear();
-            //this.resetMenu();
             this.setUpPositions();
         }
 
@@ -288,29 +287,29 @@ namespace MobileProfitCalculator.menus
         private void setUpSeedsOptionPositions()
         {
             Labels.Add(
-                               new ClickableComponent(
-                                                      new Rectangle(
-                                                                                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
-                                                                                                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4,
-                                                                                                                               Game1.tileSize * 2,
-                                                                                                                                                      Game1.tileSize
-                                                                                                                                                                         ),
-                                                                         "payForSeeds",
-                                                                                            helper.Translation.Get("pay-for-seeds") + ": "
-                                                                                                           )
-                                          );
+                new ClickableComponent(
+                    new Rectangle(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
+                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4,
+                        Game1.tileSize * 2,
+                        Game1.tileSize
+                    ),
+                    "payForSeeds",
+                    helper.Translation.Get("pay-for-seeds") + ": "
+                )
+            );
             Options.Add(
-                               new ClickableComponent(
-                                                      new Rectangle(
-                                                                                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                                                                                                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4,
-                                                                                                                               Game1.tileSize * 2,
-                                                                                                                                                      Game1.tileSize
-                                                                                                                                                                         ),
-                                                                         "payForSeeds",
-                                                                                            payForSeeds.ToString()
-                                                                                                           )
-                                          );
+                new ClickableComponent(
+                    new Rectangle(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
+                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4,
+                        Game1.tileSize * 2,
+                        Game1.tileSize
+                        ),
+                    "payForSeeds",
+                    payForSeeds.ToString()
+                    )
+            );
         }
 
         private void setUpFertilizerOptionPositions()

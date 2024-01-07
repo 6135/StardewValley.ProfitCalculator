@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace MobileProfitCalculator.helper
+namespace ProfitCalculator.helper
 {
     public class Helpers
     {
