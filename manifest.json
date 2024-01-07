@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "MobileProfitCalculator",
-  "Author": "ModAuthor",
+  "Name": "Mobile Profit Calculator",
+  "Author": "6135",
   "Version": "1.0.0",
-  "Description": "Mod Template",
-  "UniqueID": "ModAuthor.MobileProfitCalculator",
+  "Description": "Adds a Profit Calculator to your game!",
+  "UniqueID": "6135.MobileProfitCalculator",
   "EntryDll": "MobileProfitCalculator.dll",
-  "MinimumApiVersion": "2.11",
-  "UpdateKeys": [ "Nexus:" ]
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
 }
