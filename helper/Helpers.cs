@@ -120,5 +120,17 @@ namespace ProfitCalculator.helper
             return translatedNames;
         }
 
+        //get all fertilizer quality translated names
+        public static string[] GetAllTranslatedFertilizerQualities()
+        {
+            string[] names = Enum.GetNames(typeof(FertilizerQuality));
+            string[] translatedNames = new string[names.Length];
+            foreach (string name in names)
+            {
+                translatedNames[Array.IndexOf(names, name)] = GetTranslatedName(name);
+            }
+            return translatedNames;
+        }
+
     }
 }

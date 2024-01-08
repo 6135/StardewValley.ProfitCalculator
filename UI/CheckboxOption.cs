@@ -43,7 +43,6 @@ namespace ProfitCalculator.UI
 
         public override void Draw(SpriteBatch b)
         {
-            Helpers.Monitor.Log($"Drawing checkbox option {this.ValueGetter()}", LogLevel.Debug);
             b.Draw(
                 this.Texture,
                 this.Position,

@@ -16,7 +16,7 @@ namespace ProfitCalculator.UI
 {
     internal class TextOption : BaseOption, IKeyboardSubscriber
     {
-        private Texture2D Tex = Game1.content.Load<Texture2D>("LooseSprites\\textBox");
+        private Texture2D Tex;
         private SpriteFont Font = Game1.smallFont;
         protected bool SelectedImpl;
 
@@ -52,6 +52,7 @@ namespace ProfitCalculator.UI
             Action<string> valueSetter
          ) : base(x, y, 192, 48, name, label, label)
         {
+            this.setTexture(Game1.content.Load<Texture2D>("LooseSprites\\textBox"));
             this.ValueGetter = valueGetter;
             this.ValueSetter = valueSetter;
         }
@@ -77,6 +78,7 @@ namespace ProfitCalculator.UI
             float writeBarOffset = 26f;
             for (vector2 = this.Font.MeasureString(text); vector2.X > (float)this.Tex.Width - writeBarOffset; vector2 = this.Font.MeasureString(text))
                 text = text.Substring(1);
+
             if (DateTime.UtcNow.Millisecond % 1000 >= 500 && this.Selected)
                 b.Draw(
                     Game1.staminaRect,
@@ -89,7 +91,7 @@ namespace ProfitCalculator.UI
                     Game1.textColor
                 );
 
-            b.DrawString(this.Font, text, this.Position + new Vector2(16, 12), Game1.textColor);
+            b.DrawString(this.Font, text, this.Position + new Vector2(16, 12), Game1.textColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.5f);
         }
 
         /// <inheritdoc />

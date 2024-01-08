@@ -47,8 +47,9 @@ namespace ProfitCalculator.UI
         public Action<string> ValueSetter;
         public bool Dropped;
 
-        public static DropdownOption ActiveDropdown;
+        public static DropdownOption ActiveDropdown = null;
         public static int SinceDropdownWasActive = 0;
+        public static bool ClickMeantToCloseDropdown;
 
         public DropdownOption(
             int x,
@@ -69,7 +70,6 @@ namespace ProfitCalculator.UI
             ClickableComponent.bounds.Height = this.Height;
         }
 
-        /// <inheritdoc />
         public override string ClickedSound => "shwip";
 
         /*********
@@ -79,8 +79,11 @@ namespace ProfitCalculator.UI
         /// <inheritdoc />
         public override void Update()
         {
+            base.Update();
             bool justClicked = false;
-            if (this.Clicked && ActiveDropdown == null)
+            Helpers.Monitor.Log($"MeantToCloseDropdown: {DropdownOption.ClickMeantToCloseDropdown}", LogLevel.Debug);
+
+            if (this.Clicked && DropdownOption.ActiveDropdown == null)
             {
                 justClicked = true;
                 this.Dropped = true;
@@ -90,6 +93,19 @@ namespace ProfitCalculator.UI
             {
                 if (Constants.TargetPlatform != GamePlatform.Android)
                 {
+                    //print all checked values
+                    /*Helpers.Monitor.Log(
+                        $"LB: {Mouse.GetState().LeftButton} "
+                        + $"OLB: {Game1.oldMouseState.LeftButton} "
+                        + $"A: {Game1.input.GetGamePadState().Buttons.A} "
+                        + $"OldA: {Game1.oldPadState.Buttons.A} "
+                        + $"JC: {justClicked} "
+                        + $"D: {this.Dropped} "
+                        + $"AD: {DropdownOption.ActiveDropdown == null} "
+                        + $"SDWA: { DropdownOption.SinceDropdownWasActive} "
+                        + $"Res: {((Mouse.GetState().LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Released || Game1.input.GetGamePadState().Buttons.A == ButtonState.Pressed && Game1.oldPadState.Buttons.A == ButtonState.Released) && !justClicked)}",
+                        LogLevel.Debug);*/
+
                     if ((Mouse.GetState().LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Released ||
                          Game1.input.GetGamePadState().Buttons.A == ButtonState.Pressed && Game1.oldPadState.Buttons.A == ButtonState.Released)
                         && !justClicked)
@@ -108,7 +124,6 @@ namespace ProfitCalculator.UI
                         this.Dropped = false;
                     }
                 }
-
                 int tall = Math.Min(this.MaxValuesAtOnce, this.Choices.Length - this.ActivePosition) * this.Height;
                 int drawY = Math.Min((int)this.Position.Y, Game1.uiViewport.Height - tall);
                 var bounds2 = new Rectangle((int)this.Position.X, drawY, this.Width, this.Height * this.MaxValuesAtOnce);
@@ -123,7 +138,7 @@ namespace ProfitCalculator.UI
             if (this.Dropped)
             {
                 DropdownOption.ActiveDropdown = this;
-                DropdownOption.SinceDropdownWasActive = 3;
+                DropdownOption.SinceDropdownWasActive = 9;
             }
             else
             {
@@ -143,10 +158,40 @@ namespace ProfitCalculator.UI
 
         public override void Draw(SpriteBatch b)
         {
+            IClickableMenu.drawTextureBox(
+                b, this.Texture,
+                this.BackgroundTextureRect,
+                (int)this.Position.X,
+                (int)this.Position.Y,
+                this.Width - 48,
+                this.Height,
+                Color.White,
+                4,
+                false,
+                0.5f);//small clicable initial box
 
-            IClickableMenu.drawTextureBox(b, this.Texture, this.BackgroundTextureRect, (int)this.Position.X, (int)this.Position.Y, this.Width - 48, this.Height, Color.White, 4, false, 0.97f);
-            b.DrawString(Game1.smallFont, this.Label, new Vector2(this.Position.X + 4, this.Position.Y + 8), Game1.textColor);
-            b.Draw(this.Texture, new Vector2(this.Position.X + this.Width - 48, this.Position.Y), this.ButtonTextureRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, 0);
+            b.DrawString(
+                Game1.smallFont,
+                this.Label,
+                new Vector2(this.Position.X + 4, this.Position.Y + 8),
+                Game1.textColor,
+                0,
+                Vector2.Zero,
+                1,
+                SpriteEffects.None,
+                0.55f
+             ); //Selected text
+            b.Draw(
+                this.Texture,
+                new Vector2(this.Position.X + this.Width - 48, this.Position.Y),
+                this.ButtonTextureRect,
+                Color.White,
+                0,
+                Vector2.Zero,
+                4,
+                SpriteEffects.None,
+                0f
+            ); //Dropdown arrow
 
             if (this.Dropped)
             {
@@ -155,12 +200,43 @@ namespace ProfitCalculator.UI
                 int end = Math.Min(this.Choices.Length, start + maxValues);
                 int tall = Math.Min(maxValues, this.Choices.Length - this.ActivePosition) * this.Height;
                 int drawY = Math.Min((int)this.Position.Y, Game1.uiViewport.Height - tall);
-                IClickableMenu.drawTextureBox(b, this.Texture, this.BackgroundTextureRect, (int)this.Position.X, drawY, this.Width - 48, tall, Color.White, 4, false);
+                IClickableMenu.drawTextureBox(
+                    b,
+                    this.Texture,
+                    this.BackgroundTextureRect,
+                    (int)this.Position.X,
+                    drawY,
+                    this.Width - 48,
+                    tall,
+                    Color.White, 4,
+                    false,
+                    0.6f); // Dropdown box with options
                 for (int i = start; i < end; ++i)
                 {
                     if (i == this.ActiveChoice)
-                        b.Draw(Game1.staminaRect, new Rectangle((int)this.Position.X + 4, drawY + (i - this.ActivePosition) * this.Height, this.Width - 48 - 8, this.Height), null, Color.Wheat, 0, Vector2.Zero, SpriteEffects.None, 0.981f);
-                    b.DrawString(Game1.smallFont, this.Labels[i], new Vector2(this.Position.X + 4, drawY + (i - this.ActivePosition) * this.Height + 8), Game1.textColor, 0, Vector2.Zero, 1, SpriteEffects.None, 1);
+                        b.Draw(
+                            Game1.staminaRect,
+                            new Rectangle((int)this.Position.X + 4,
+                            drawY + (i - this.ActivePosition) * this.Height,
+                            this.Width - 48 - 8, this.Height),
+                            null,
+                            Color.Wheat,
+                            0,
+                            Vector2.Zero,
+                            SpriteEffects.None,
+                            0.65f
+                        ); // Selected option
+                    b.DrawString(
+                        Game1.smallFont,
+                        this.Labels[i],
+                        new Vector2(this.Position.X + 4, drawY + (i - this.ActivePosition) * this.Height + 8),
+                        Game1.textColor,
+                        0,
+                        Vector2.Zero,
+                        1,
+                        SpriteEffects.None,
+                        0.7f
+                    );
                 }
             }
         }
@@ -168,28 +244,44 @@ namespace ProfitCalculator.UI
         public override void beforeReceiveLeftClick(int x, int y)
         {
             base.beforeReceiveLeftClick(x, y);
-            //if outside the bounds of the dropdown, close it and set dropped to false, and active to null
-            if (this.Clicked && !this.ClickableComponent.containsPoint(x, y))
+            //decide if click was meant to close dropdown, and it's meant to close dropdown if three conditions are met
+            //1. the dropdown is open
+            //2. the active dropdown is not null
+            //3. The dropdown that calls this method is the active dropdown
+            Helpers.Monitor.Log(
+                $"beforeReceiveLeftClick " +
+                $"{this.Dropped} " +
+                $"{DropdownOption.ActiveDropdown != null} " +
+                $"{DropdownOption.ActiveDropdown == this} ", LogLevel.Debug);
+            if (DropdownOption.ActiveDropdown == this)
             {
-                this.Clicked = false;
-                this.Dropped = false;
-                DropdownOption.ActiveDropdown = null;
+                //set the click meant to close dropdown to true
+                DropdownOption.ClickMeantToCloseDropdown = true;
+            } else if (DropdownOption.ActiveDropdown == null) //then its not meant to close the dropdown
+            {
+                //set the click meant to close dropdown to false
+                DropdownOption.ClickMeantToCloseDropdown = false;
             }
         }
 
         public override void ReceiveLeftClick(int x, int y)
         {
             this.beforeReceiveLeftClick(x, y);
-            //if it is clicked. execute the click
-            if (this.ClickableComponent.containsPoint(x, y))
+            //if its not open or dropped, execute the click
+
+            if (this.ClickableComponent.containsPoint(x, y) 
+                && !this.Dropped
+                //&& DropdownOption.SinceDropdownWasActive <= 0
+                && !DropdownOption.ClickMeantToCloseDropdown)
             {
-                if (this.Dropped || this.Clicked)
-                {
-                    this.Dropped = false;
-                    this.Clicked = false;
-                }
-                else this.executeClick();
+                this.executeClick();
             }
+            else if(DropdownOption.ClickMeantToCloseDropdown)
+            {
+                this.Clicked = false;
+                this.Dropped = false;
+            }
+
         }
     }
 }

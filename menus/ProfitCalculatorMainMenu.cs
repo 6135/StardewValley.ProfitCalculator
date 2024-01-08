@@ -20,7 +20,7 @@ namespace ProfitCalculator.menus
 {
     public class ProfitCalculatorMainMenu : IClickableMenu
     {
-        StardewValley.Menus.OptionsDropDown asd;
+        private StardewValley.Menus.OptionsDropDown asd;
         private readonly IModHelper helper;
 
         private readonly IMonitor monitor;
@@ -137,7 +137,7 @@ namespace ProfitCalculator.menus
             //Produce Type dropdown
             this.setUpProduceTypeOptionPositions();
             //Fertilizer Quality dropdown
-            /*this.setUpFertilizerQualityPositions();
+            this.setUpFertilizerQualityPositions();
             //Pay for Seeds checkbox
             this.setUpSeedsOptionPositions();
             //Pay for Fertilizer checkbox
@@ -145,7 +145,7 @@ namespace ProfitCalculator.menus
             //Max Money int
             this.setUpMoneyOptionPositions();
             //Use Base Stats checkbox
-            this.setUpBaseStatsOptionPositions();*/
+            this.setUpBaseStatsOptionPositions();
         }
 
         private void setUpButtonPositions()
@@ -187,30 +187,8 @@ namespace ProfitCalculator.menus
                     helper.Translation.Get("day") + ": "
                 )
             );
-            /*Options.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                        this.yPositionOnScreen + spaceToClearTopBorder,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                    ),
-                    "day",
-                    day.ToString()
-                )
-            );*/
-            /*Options.Add(
-               new TextOption(
-                     this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                     this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
-                     () => "day",
-                     () => helper.Translation.Get("day"),
-                     valueGetter: () => this.exampleString,
-                     valueSetter: (string value) => exampleString = value
-                 )
-             );*/
             UIntOption dayOption =
-               new UIntOption(
+               new(
                    this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5 - Game1.tileSize / 8,
                    this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
                    () => "day",
@@ -223,17 +201,6 @@ namespace ProfitCalculator.menus
                );
             dayOption.setTexture(Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "text_box_small.png")));
             Options.Add(dayOption);
-            /*Options.Add(
-              new CheckboxOption(
-                    this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                    this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
-                    () => "day",
-                    () => helper.Translation.Get("day"),
-                    () => this.PayForFertilizer,
-                    (bool value) => this.PayForFertilizer = value
-
-                )
-            );*/
         }
 
         private void setUpSeasonOptionPositions()
@@ -261,8 +228,10 @@ namespace ProfitCalculator.menus
                 valueGetter: this.Season.ToString,
                 valueSetter:
                     (string value) => this.Season = (Season)Helpers.Season.Parse(typeof(Season), value, true)
-            );
-            seasonOption.MaxValuesAtOnce = Enum.GetValues(typeof(Season)).Length;//size of enum
+            )
+            {
+                MaxValuesAtOnce = Enum.GetValues(typeof(Season)).Length//size of enum
+            };
 
             Options.Add(seasonOption);
         }
@@ -291,12 +260,14 @@ namespace ProfitCalculator.menus
                 labels: () => Helpers.GetAllTranslatedProduceTypes(),
                 valueGetter: this.ProduceType.ToString,
                 valueSetter: (string value) => this.ProduceType = (ProduceType)Helpers.ProduceType.Parse(typeof(ProduceType), value, true)
-            );
-            produceTypeOption.MaxValuesAtOnce = Enum.GetValues(typeof(ProduceType)).Length;//size of enum
+            )
+            {
+                MaxValuesAtOnce = Enum.GetValues(typeof(ProduceType)).Length//size of enum
+            };
             Options.Add(produceTypeOption);
         }
 
-        /*private void setUpFertilizerQualityPositions()
+        private void setUpFertilizerQualityPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -310,18 +281,20 @@ namespace ProfitCalculator.menus
                     helper.Translation.Get("fertilizer-type") + ": "
                 )
             );
-            Options.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 3,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                    ),
-                    "fertilizerQuality",
-                    fertilizerQuality.ToString()
-                )
-            );
+            DropdownOption fertilizerQualityOption = new(
+                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 3 + Game1.tileSize / 4,
+                name: () => "fertilizerQuality",
+                label: () => helper.Translation.Get("fertilizer-quality"),
+                choices: () => Helpers.FertilizerQuality.GetNames(typeof(Helpers.FertilizerQuality)),
+                labels: () => Helpers.GetAllTranslatedFertilizerQualities(),
+                valueGetter: this.FertilizerQuality.ToString,
+                valueSetter: (string value) => this.FertilizerQuality = (FertilizerQuality)Helpers.FertilizerQuality.Parse(typeof(FertilizerQuality), value, true)
+            )
+            {
+                MaxValuesAtOnce = Enum.GetValues(typeof(FertilizerQuality)).Length//size of enum
+            };
+            Options.Add(fertilizerQualityOption);
         }
 
         private void setUpSeedsOptionPositions()
@@ -338,46 +311,42 @@ namespace ProfitCalculator.menus
                     helper.Translation.Get("pay-for-seeds") + ": "
                 )
             );
-            Options.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                        ),
-                    "payForSeeds",
-                    payForSeeds.ToString()
-                    )
-            );
-        }
+
+            CheckboxOption payForSeeds = new (
+                    this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                    this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4 + Game1.tileSize / 4,
+                    () => "payForSeeds",
+                    () => helper.Translation.Get("pay-for-seeds"),
+                    () => this.PayForSeeds,
+                    (bool value) => this.PayForSeeds = value
+
+                );
+            Options.Add(payForSeeds);
+    }
 
         private void setUpFertilizerOptionPositions()
         {
             Labels.Add(
-                                              new ClickableComponent(
-                                                                                                       new Rectangle(
-                                                                                                                                                                                           this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
-                                                                                                                                                                                                                                                                                                  this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 5,
-                                                                                                                                                                                                                                                                                                                                                                                                                                Game1.tileSize * 2,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Game1.tileSize
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ),
-                                                                                                                                                                               "payForFertilizer",
-                                                                                                                                                                                                                                                                          helper.Translation.Get("pay-for-fertilizer") + ": "
-                                                                                                                                                                                                                                                                                                                                                                                    )
-                                                                                       );
-            Options.Add(
-                                              new ClickableComponent(
-                                                                                                       new Rectangle(
-                                                                                                                                                                                           this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                                                                                                                                                                                                                                                                                                  this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 5,
-                                                                                                                                                                                                                                                                                                                                                                                                                                Game1.tileSize * 2,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Game1.tileSize
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ),
-                                                                                                                                                                               "payForFertilizer",
-                                                                                                                                                                                                                                                                          payForFertilizer.ToString()
-                                                                                                                                                                                                                                                                                                                                                                                    )
-                                                                                       );
+                new ClickableComponent(
+                    new Rectangle(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
+                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 5,
+                        Game1.tileSize * 2,
+                        Game1.tileSize
+                    ),
+                    "payForFertilizer",
+                    helper.Translation.Get("pay-for-fertilizer") + ": "
+                )
+            );
+            CheckboxOption payForFertilizer = new(
+                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 5 + Game1.tileSize / 4,
+                () => "payForFertilizer",
+                () => helper.Translation.Get("pay-for-fertilizer"),
+                () => this.PayForFertilizer,
+                (bool value) => this.PayForFertilizer = value
+            );
+            Options.Add(payForFertilizer);
         }
 
         private void setUpMoneyOptionPositions()
@@ -393,52 +362,52 @@ namespace ProfitCalculator.menus
                     "maxMoney",
                     helper.Translation.Get("max-money") + ": "
                 )
-            );
-            Options.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 6,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                        ),
-                        "maxMoney",
-                        maxMoney.ToString()
-                    )
+        );
+            UIntOption maxMoneyOption =
+                new(
+                   this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5 - Game1.tileSize / 8,
+                   this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 6 + Game1.tileSize / 4,
+                   () => "maxMoney",
+                   () => helper.Translation.Get("max-money"),
+                   valueGetter: () => this.MaxMoney,
+                   max: () => 99999999,
+                   min: () => 0,
+                   valueSetter: (string value) => this.MaxMoney = uint.Parse(value),
+                   enableClamping: true
                 );
+            Options.Add(maxMoneyOption);
         }
 
         private void setUpBaseStatsOptionPositions()
         {
             Labels.Add(
-                               new ClickableComponent(
-                                                      new Rectangle(
-                                                                                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
-                                                                                                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7,
-                                                                                                                               Game1.tileSize * 2,
-                                                                                                                                                      Game1.tileSize
-                                                                                                                                                                         ),
-                                                                         "useBaseStats",
-                                                                         helper.Translation.Get("base-stats") + ": "
-                                                                                                           )
-                                          );
-            Options.Add(
-                               new ClickableComponent(
-                                                      new Rectangle(
-                                                                                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                                                                                                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7,
-                                                                                                                               Game1.tileSize * 2,
-                                                                                                                                                      Game1.tileSize
-                                                                                                                                                                         ),
-                                                                         "useBaseStats",
-                                                                                            useBaseStats.ToString()
-                                                                                                           )
-                                          );
+                new ClickableComponent(
+                    new Rectangle(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
+                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7,
+                        Game1.tileSize * 2,
+                        Game1.tileSize
+                    ),
+                    "useBaseStats",
+                    helper.Translation.Get("base-stats") + ": "
+                )
+            );
+            CheckboxOption useBaseStatsOptions = new(
+                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7 + Game1.tileSize / 4,
+                () => "useBaseStats",
+                () => helper.Translation.Get("base-stats"),
+                () => this.UseBaseStats,
+                (bool value) => this.UseBaseStats = value
+            );
+            Options.Add(useBaseStatsOptions);
         }
-        */
+
 
         public override void draw(SpriteBatch b)
         {
+            //draw bottom up
+
             if (!Game1.options.showMenuBackground)
                 b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.4f);
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, widthOnScreen, heightOnScreen, speaker: false, drawOnlyBox: true);
@@ -446,7 +415,12 @@ namespace ProfitCalculator.menus
             // Draw Labels and Options and buttons
             this.drawActions(b);
             this.drawLabels(b);
+            //print active sort mode from b (private field called _sortMode)
+            b.End();
+            b.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
             this.drawOptions(b);
+            b.End();
+            b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             if (shouldDrawCloseButton()) base.draw(b);
             if (!Game1.options.hardwareCursor) b.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);

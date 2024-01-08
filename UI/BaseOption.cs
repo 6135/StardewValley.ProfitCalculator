@@ -82,34 +82,10 @@ namespace ProfitCalculator.UI
 
         public virtual void Update()
         {
-
-            int mouseX;
-            int mouseY;
-            if (Constants.TargetPlatform == GamePlatform.Android)
+            if (DropdownOption.SinceDropdownWasActive > 0)
             {
-                mouseX = Game1.getMouseX();
-                mouseY = Game1.getMouseY();
+                DropdownOption.SinceDropdownWasActive--;
             }
-            else
-            {
-                mouseX = Game1.getOldMouseX();
-                mouseY = Game1.getOldMouseY();
-            }
-
-            bool newHover = this.ClickableComponent.containsPoint(mouseX, mouseY);
-
-            if (newHover && !this.Hover && this.HoveredSound != null)
-                Game1.playSound(this.HoveredSound);
-            this.Hover = newHover;
-
-            this.ClickGestured = (Game1.input.GetMouseState().LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Released);
-            this.ClickGestured = this.ClickGestured || (Game1.options.gamepadControls && (Game1.input.GetGamePadState().IsButtonDown(Buttons.A) && !Game1.oldPadState.IsButtonDown(Buttons.A)));
-            if (this.ClickGestured && (DropdownOption.SinceDropdownWasActive > 0 || DropdownOption.ActiveDropdown != null))
-            {
-                this.ClickGestured = false;
-            }
-            if (this.Clicked && this.ClickedSound != null)
-                Game1.playSound(this.ClickedSound);
         }
 
         /*public abstract void beforeReceiveRightClick();
