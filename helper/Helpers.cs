@@ -6,20 +6,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
 
 namespace ProfitCalculator.helper
 {
     public class Helpers
     {
-        private static IModHelper helper;
-        private static Texture2D appIcon;
+        public static IModHelper Helper { get; set; }
+        public static IMonitor Monitor { get; set; }
 
-        public static Texture2D AppIcon { get => appIcon; set => appIcon = value; }
+        public static Texture2D AppIcon { get ; set; }
 
-        public static void Initialize(IModHelper _helper)
+        public static void Initialize(IModHelper _helper, IMonitor _monitor)
         {
-            helper = _helper;
-            AppIcon = helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+            Helper = _helper;
+            Monitor = _monitor;
+            AppIcon = _helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
         }
 
         public static int GetSeasonDays(Season season)
@@ -72,28 +74,51 @@ namespace ProfitCalculator.helper
         }
 
         //get season translated names
-        private string getTranslatedName(string str)
+        private static string GetTranslatedName(string str)
         {
             //convert string to lowercase
             str = str.ToLower();
-            return helper.Translation.Get(str);
+            return Helper.Translation.Get(str);
         }
 
-        public string getTranslatedSeason(Season season)
+        public static string GetTranslatedSeason(Season season)
         {
-            return getTranslatedName(season.ToString());
+            return GetTranslatedName(season.ToString());
         }
 
-        public string getTranslatedProduceType(ProduceType produceType)
+        public static string GetTranslatedProduceType(ProduceType produceType)
         {
-            return getTranslatedName(produceType.ToString());
+            return GetTranslatedName(produceType.ToString());
         }
 
-        public string getTranslatedFertilizerQuality(FertilizerQuality fertilizerQuality)
+        public static string GetTranslatedFertilizerQuality(FertilizerQuality fertilizerQuality)
         {
-            return getTranslatedName(fertilizerQuality.ToString());
+            return GetTranslatedName(fertilizerQuality.ToString());
         }
 
+        //get All translated names
+        public static string[] GetAllTranslatedSeasons()
+        {
+            string[] names = Enum.GetNames(typeof(Season));
+            string[] translatedNames = new string[names.Length];
+            foreach (string name in names)
+            {
+                translatedNames[Array.IndexOf(names, name)] = GetTranslatedName(name);
+            }
+            return translatedNames;
+        }
+
+        //get all produce types translated names
+        public static string[] GetAllTranslatedProduceTypes()
+        {
+            string[] names = Enum.GetNames(typeof(ProduceType));
+            string[] translatedNames = new string[names.Length];
+            foreach (string name in names)
+            {
+                translatedNames[Array.IndexOf(names, name)] = GetTranslatedName(name);
+            }
+            return translatedNames;
+        }
 
     }
 }

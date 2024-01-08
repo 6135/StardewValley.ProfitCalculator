@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ProfitCalculator.helper;
-using ProfitCalculator.Options;
+using ProfitCalculator.UI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -14,58 +14,48 @@ using StardewValley;
 using StardewValley.Menus;
 using static ProfitCalculator.helper.Helpers;
 
+using StardewValley.Menus;
+
 namespace ProfitCalculator.menus
 {
     public class ProfitCalculatorMainMenu : IClickableMenu
     {
+        StardewValley.Menus.OptionsDropDown asd;
         private readonly IModHelper helper;
+
         private readonly IMonitor monitor;
         private readonly ModConfig config;
 
-        //option variables
-        //Day int max 28 min 1
-        //Season dropdown
-        //Produce Type dropdown
-        //Fertilizer Quality dropdown
-        //Pay for Seeds checkbox
-        //Pay for Fertilizer checkbox
-        //Max Money int
-        //Use Base Stats checkbox
+        //aceessors
+        public uint Day { get; set; } = 1;
 
-        private int day = 1;
-        private Season season = Helpers.Season.Spring;
-        private ProduceType produceType = Helpers.ProduceType.Raw;
-        private FertilizerQuality fertilizerQuality = Helpers.FertilizerQuality.None;
-        private bool payForSeeds = true;
-        private bool payForFertilizer = false;
-        private int maxMoney = 0; //infinite
-        private bool useBaseStats = false;
+        public uint MaxDay { get; set; } = 28;
+        public uint MinDay { get; set; } = 1;
+        public Season Season { get; set; } = Helpers.Season.Spring;
 
-        public static int widthOnScreen = 632 + borderWidth * 2;
-        public static int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
-
-        private enum Operation
+        public void setSeason(string season)
         {
-            Add,
-            Subtract,
-            Multiply,
-            Divide,
-            None
+            Season = (Season)Season.Parse(typeof(Season), season, false);
         }
 
-        /*private Operation op = Operation.None;
-        private double result = 0;
-        private string inputA = "";
-        private string inputB = "";
-        private bool currentInput = false;*/
+        public ProduceType ProduceType { get; set; } = Helpers.ProduceType.Raw;
+        public FertilizerQuality FertilizerQuality { get; set; } = Helpers.FertilizerQuality.None;
+        public bool PayForSeeds { get; set; } = true;
+        public bool PayForFertilizer { get; set; } = false;
+        public uint MaxMoney { get; set; } = 0;
+        public bool UseBaseStats { get; set; } = false;
 
-        private readonly List<ClickableComponent> Labels = new();
-        private readonly List<BaseOption> Options = new();
+        public string exampleString { get; set; } = "example";
+        private static int widthOnScreen = 632 + borderWidth * 2;
+        private static int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
+
+        private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
+
+        private readonly List<BaseOption> Options = new List<BaseOption>();
 
         private ClickableComponent calculateButton;
         private ClickableComponent resetButton;
-        private Texture2D logo;
-        public bool isProfitCalculatorOpen = false;
+        public bool isProfitCalculatorOpen { get; set; } = false;
 
         public ProfitCalculatorMainMenu(IModHelper _helper, IMonitor _monitor, ModConfig _modConfig) :
             base(
@@ -85,9 +75,6 @@ namespace ProfitCalculator.menus
 
             this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
-            this.updateMenu();
-            this.resetMenu();
-            logo = Helpers.AppIcon;
         }
 
         public void updateMenu()
@@ -95,6 +82,18 @@ namespace ProfitCalculator.menus
             Labels.Clear();
             Options.Clear();
             this.setUpPositions();
+        }
+
+        public override void update(GameTime time)
+        {
+            base.update(time);
+            //Helpers.Monitor.Log("Updating Profit Calculator Menu", LogLevel.Debug);
+            //update all the options and labels and buttons
+            foreach (BaseOption option in Options)
+            {
+                // Helpers.Monitor.Log($"Updating {option.Name()}", LogLevel.Debug);
+                option.Update();
+            }
         }
 
         public static Vector2 getAppropriateMenuPosition()
@@ -122,6 +121,7 @@ namespace ProfitCalculator.menus
             base.gameWindowSizeChanged(oldBounds, newBounds);
             this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
+
             this.updateMenu();
         }
 
@@ -130,13 +130,14 @@ namespace ProfitCalculator.menus
             this.setUpButtonPositions();
             //option order:
             //Day int
+
             this.setUpDayOptionPositions();
             //Season dropdown
             this.setUpSeasonOptionPositions();
             //Produce Type dropdown
             this.setUpProduceTypeOptionPositions();
             //Fertilizer Quality dropdown
-            this.setUpFertilizerQualityPositions();
+            /*this.setUpFertilizerQualityPositions();
             //Pay for Seeds checkbox
             this.setUpSeedsOptionPositions();
             //Pay for Fertilizer checkbox
@@ -144,7 +145,7 @@ namespace ProfitCalculator.menus
             //Max Money int
             this.setUpMoneyOptionPositions();
             //Use Base Stats checkbox
-            this.setUpBaseStatsOptionPositions();
+            this.setUpBaseStatsOptionPositions();*/
         }
 
         private void setUpButtonPositions()
@@ -186,7 +187,7 @@ namespace ProfitCalculator.menus
                     helper.Translation.Get("day") + ": "
                 )
             );
-            Options.Add(
+            /*Options.Add(
                 new ClickableComponent(
                     new Rectangle(
                         this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
@@ -197,7 +198,42 @@ namespace ProfitCalculator.menus
                     "day",
                     day.ToString()
                 )
-            );
+            );*/
+            /*Options.Add(
+               new TextOption(
+                     this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
+                     this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
+                     () => "day",
+                     () => helper.Translation.Get("day"),
+                     valueGetter: () => this.exampleString,
+                     valueSetter: (string value) => exampleString = value
+                 )
+             );*/
+            UIntOption dayOption =
+               new UIntOption(
+                   this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5 - Game1.tileSize / 8,
+                   this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
+                   () => "day",
+                   () => helper.Translation.Get("day"),
+                   valueGetter: () => this.Day,
+                   max: () => this.MaxDay,
+                   min: () => this.MinDay,
+                   valueSetter: (string value) => this.Day = uint.Parse(value),
+                   enableClamping: true
+               );
+            dayOption.setTexture(Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "text_box_small.png")));
+            Options.Add(dayOption);
+            /*Options.Add(
+              new CheckboxOption(
+                    this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
+                    this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
+                    () => "day",
+                    () => helper.Translation.Get("day"),
+                    () => this.PayForFertilizer,
+                    (bool value) => this.PayForFertilizer = value
+
+                )
+            );*/
         }
 
         private void setUpSeasonOptionPositions()
@@ -214,18 +250,21 @@ namespace ProfitCalculator.menus
                     helper.Translation.Get("season") + ": "
                 )
             );
-            Options.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                    ),
-                    "season",
-                    season.ToString()
-                )
+
+            DropdownOption seasonOption = new(
+                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize + Game1.tileSize / 4,
+                name: () => "season",
+                label: () => helper.Translation.Get("season"),
+                choices: () => Helpers.Season.GetNames(typeof(Helpers.Season)),
+                labels: () => Helpers.GetAllTranslatedSeasons(),
+                valueGetter: this.Season.ToString,
+                valueSetter:
+                    (string value) => this.Season = (Season)Helpers.Season.Parse(typeof(Season), value, true)
             );
+            seasonOption.MaxValuesAtOnce = Enum.GetValues(typeof(Season)).Length;//size of enum
+
+            Options.Add(seasonOption);
         }
 
         private void setUpProduceTypeOptionPositions()
@@ -242,21 +281,22 @@ namespace ProfitCalculator.menus
                     helper.Translation.Get("produce-type") + ": "
                 )
             );
-            Options.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 7 + Game1.tileSize / 4,
-                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 2,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                    ),
-                    "produceType",
-                    produceType.ToString()
-                )
+
+            DropdownOption produceTypeOption = new(
+                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 2 + Game1.tileSize / 4,
+                name: () => "produceType",
+                label: () => helper.Translation.Get("produce-type"),
+                choices: () => Helpers.ProduceType.GetNames(typeof(Helpers.ProduceType)),
+                labels: () => Helpers.GetAllTranslatedProduceTypes(),
+                valueGetter: this.ProduceType.ToString,
+                valueSetter: (string value) => this.ProduceType = (ProduceType)Helpers.ProduceType.Parse(typeof(ProduceType), value, true)
             );
+            produceTypeOption.MaxValuesAtOnce = Enum.GetValues(typeof(ProduceType)).Length;//size of enum
+            Options.Add(produceTypeOption);
         }
 
-        private void setUpFertilizerQualityPositions()
+        /*private void setUpFertilizerQualityPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -395,6 +435,7 @@ namespace ProfitCalculator.menus
                                                                                                            )
                                           );
         }
+        */
 
         public override void draw(SpriteBatch b)
         {
@@ -402,141 +443,13 @@ namespace ProfitCalculator.menus
                 b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.4f);
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, widthOnScreen, heightOnScreen, speaker: false, drawOnlyBox: true);
 
-            /*// Draw the current input.
-            b.DrawString
-            (
-                Game1.smallFont,
-                String.Concat(((currentInput) ? inputB : inputA), ((timer >= 16) ? "|" : "")),
-                new Vector2(
-                    (float)xPositionOnScreen
-                        + widthOnScreen
-                        - 40
-                        - Game1.smallFont.MeasureString((currentInput) ? inputB + "|" : inputA + "|").X,
-                    (float)yPositionOnScreen
-                        + IClickableMenu.borderWidth
-                        + IClickableMenu.spaceToClearTopBorder
-                ),
-                Game1.textColor
-            );
-
-            // Draw the previous input, if currently entering the second number.
-            if (currentInput)
-            {
-                string prevInput = inputA
-                    + " "
-                    + (op switch
-                    {
-                        Operation.Add => "+",
-                        Operation.Subtract => "-",
-                        Operation.Multiply => "X",
-                        Operation.Divide => "/",
-                        Operation.None => "ERR",
-                        _ => "ERR",
-                    });
-                b.DrawString
-                (
-                    Game1.smallFont,
-                    prevInput,
-                    new Vector2
-                    (
-                        (float)xPositionOnScreen
-                            + widthOnScreen
-                            - 40
-                            - Game1.smallFont.MeasureString(prevInput).X,
-                        (float)yPositionOnScreen
-                            + IClickableMenu.borderWidth
-                            + IClickableMenu.spaceToClearSideBorder
-                            + Game1.smallFont.LineSpacing * 2
-                    ),
-                    Game1.textShadowColor
-                );
-            }*/
-
-            // Draw the number pad.
-            /*            foreach (ClickableComponent button in numpad)
-                        {
-                            IClickableMenu.drawTextureBox
-                            (
-                                b,
-                                Game1.mouseCursors,
-                                new Rectangle(432, 439, 9, 9),
-                                button.bounds.X,
-                                button.bounds.Y,
-                                button.bounds.Width,
-                                button.bounds.Height,
-                                (button.scale != 1.0001f) ? Color.Wheat : Color.White,
-                                4f,
-                                false
-                            );
-                            Utility.drawBoldText
-                            (
-                                b,
-                                button.name,
-                                Game1.smallFont,
-                                new Vector2
-                                (
-                                    (float)button.bounds.X
-                                        + (button.bounds.Width / 2)
-                                        - (Game1.smallFont.MeasureString(button.name).X / 2),
-                                    (float)button.bounds.Y
-                                        + (button.bounds.Height / 2)
-                                        - (Game1.smallFont.MeasureString(button.name).Y / 2)
-                                ),
-                                Game1.textColor,
-                                1f,
-                                -1f,
-                                2
-                            );
-                        }
-
-                        // Draw the operator buttons.
-                        foreach (ClickableComponent button in opButtons)
-                        {
-                            IClickableMenu.drawTextureBox
-                            (
-                                b,
-                                Game1.mouseCursors,
-                                new Rectangle(432, 439, 9, 9),
-                                button.bounds.X,
-                                button.bounds.Y,
-                                button.bounds.Width,
-                                button.bounds.Height,
-                                (button.scale != 1.0001f) ? Color.Wheat : Color.White,
-                                4f,
-                                false
-                            );
-                            Utility.drawBoldText
-                            (
-                                b,
-                                button.name,
-                                Game1.smallFont,
-                                new Vector2(
-                                    (float)button.bounds.X
-                                        + (button.bounds.Width / 2)
-                                        - (Game1.smallFont.MeasureString(button.name).X / 2),
-                                    (float)button.bounds.Y
-                                        + (button.bounds.Height / 2)
-                                        - (Game1.smallFont.MeasureString(button.name).Y / 2)
-                                        + 2
-                                ),
-                                Game1.textColor,
-                                1f,
-                                -1f,
-                                2
-                            );
-                        }
-            */
-
             // Draw Labels and Options and buttons
             this.drawActions(b);
             this.drawLabels(b);
             this.drawOptions(b);
 
-            //if (shouldDrawCloseButton()) base.draw(b);
+            if (shouldDrawCloseButton()) base.draw(b);
             if (!Game1.options.hardwareCursor) b.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
-
-            /*timer++;
-            if (timer >= 32) timer = 0;*/
         }
 
         private void drawActions(SpriteBatch b)
@@ -632,60 +545,14 @@ namespace ProfitCalculator.menus
 
         private void drawOptions(SpriteBatch b)
         {
-            foreach (ClickableComponent option in Options)
+            foreach (BaseOption option in Options)
             {
-                /*                IClickableMenu.drawTextureBox(
-                                    b,
-                                    Game1.mouseCursors,
-                                    new Rectangle(432, 439, 9, 9),
-                                    option.bounds.X,
-                                    option.bounds.Y,
-                                    option.bounds.Width,
-                                    option.bounds.Height,
-                                    (option.scale != 1.0001f) ? Color.Wheat : Color.White,
-                                    4f,
-                                    false
-                                );*/
-                b.DrawString(
-                    Game1.dialogueFont,
-                    option.label,
-                    new Vector2(
-                        (float)option.bounds.X,
-                        (float)option.bounds.Y + (option.bounds.Height / 2) - (Game1.smallFont.MeasureString(option.name).Y / 2)
-                    ),
-                    Game1.textColor
-                );
+                option.Draw(b);
             }
         }
 
         public override void receiveKeyPress(Keys key)
         {
-            /*char keyChar = key switch
-            {
-                Keys.NumPad0 => '0',
-                Keys.NumPad1 => '1',
-                Keys.NumPad2 => '2',
-                Keys.NumPad3 => '3',
-                Keys.NumPad4 => '4',
-                Keys.NumPad5 => '5',
-                Keys.NumPad6 => '6',
-                Keys.NumPad7 => '7',
-                Keys.NumPad8 => '8',
-                Keys.NumPad9 => '9',
-                Keys.D0 => '0',
-                Keys.D1 => '1',
-                Keys.D2 => '2',
-                Keys.D3 => '3',
-                Keys.D4 => '4',
-                Keys.D5 => '5',
-                Keys.D6 => '6',
-                Keys.D7 => '7',
-                Keys.D8 => '8',
-                Keys.D9 => '9',
-                Keys.OemPeriod => '.',
-                _ => '_',
-            };*/
-
             switch (key)
             {
                 case Keys.Enter:
@@ -701,6 +568,7 @@ namespace ProfitCalculator.menus
 
         public override void performHoverAction(int x, int y)
         {
+            //TODO: add hover actions for buttons
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
@@ -778,20 +646,26 @@ namespace ProfitCalculator.menus
                 this.resetMenu();
                 if (playSound) Game1.playSound("dialogueCharacterClose");
             }
+            //for each option, check if it was clicked
+            foreach (BaseOption option in Options)
+            {
+                option.ReceiveLeftClick(x, y);
+            }
         }
 
         private void resetMenu()
         {
             //set all the options to default values
             //get day from game
-            day = Game1.dayOfMonth;
-            season = (Season)Season.Parse(typeof(Season), Game1.currentSeason, true);
-            produceType = Helpers.ProduceType.Raw;
-            fertilizerQuality = Helpers.FertilizerQuality.None;
-            payForSeeds = true;
-            payForFertilizer = false;
-            maxMoney = Game1.player.team.money.Value;
-            useBaseStats = false;
+            Day = (uint)Game1.dayOfMonth;
+            Season = (Season)Season.Parse(typeof(Season), Game1.currentSeason, true);
+            ProduceType = Helpers.ProduceType.Raw;
+            FertilizerQuality = Helpers.FertilizerQuality.None;
+            PayForSeeds = true;
+            PayForFertilizer = false;
+            MaxMoney = (uint)Game1.player.team.money.Value;
+            UseBaseStats = false;
+            this.updateMenu();
         }
 
         private void DoCalculation()

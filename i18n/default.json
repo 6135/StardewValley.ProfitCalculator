@@ -38,6 +38,10 @@
   "spring": "Spring",
   "summer": "Summer",
   "fall": "Fall",
+  "autumn": "Autumn",
+  "winter": "Winter",
+  "spring-summer": "Spring/Summer",
+  "summer-fall": "Summer/Fall",
   "greenhouse": "Greenhouse",
   //produce types
   "raw": "Raw",
@@ -48,5 +52,5 @@
   "basic": "Basic",
   "quality": "Quality",
   "speedgro": "Speed-Gro",
-  "deluxespeedgro": "Deluxe Speed-Gro",
+  "deluxespeedgro": "Deluxe Speed-Gro"
 }

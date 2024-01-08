@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.App;
 using ProfitCalculator.helper;
 using ProfitCalculator.menus;
+using ProfitCalculator.UI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -27,15 +28,17 @@ namespace ProfitCalculator
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Helpers.Initialize(helper);
+            Helpers.Initialize(helper, Monitor);
             Monitor.Log($"Helpers initialized", LogLevel.Debug);
 
             //read config
             Config = Helper.ReadConfig<ModConfig>();
             //hook events
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
-            helper.Events.GameLoop.GameLaunched += onGameLaunched;
             helper.Events.GameLoop.GameLaunched += onGameLaunchedAddGenericModConfigMenu;
+            helper.Events.GameLoop.GameLaunched += onGameLaunched;
+            helper.Events.GameLoop.SaveLoaded += onSaveGameLoaded;
+            helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
         }
 
         /*********
@@ -44,7 +47,6 @@ namespace ProfitCalculator
 
         private void onGameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            mainMenu = new ProfitCalculatorMainMenu(Helper, Monitor, Config);
             //register app to mobile phone if mobile phone mod is installed
             if (Config.EnableMobileApp)
             {
@@ -81,6 +83,27 @@ namespace ProfitCalculator
                 name: () => (this.Helper.Translation.Get("open") + " " + this.Helper.Translation.Get("app-name")).ToString(),
                 tooltip: () => this.Helper.Translation.Get("hot-key-tooltip")
             );
+
+            configMenu.AddTextOption(
+                mod: this.ModManifest,
+                name: () => "Example dropdown",
+                getValue: () => "Test",
+                setValue: (value) => { },
+                allowedValues: new string[] { "choice A", "choice B", "choice C" }
+            );
+            configMenu.AddTextOption(
+                mod: this.ModManifest,
+                name: () => "Example dropdown",
+                getValue: () => "Test",
+                setValue: (value) => { },
+                allowedValues: new string[] { "choice A", "choice B", "choice C" }
+            );
+        }
+
+        private void onSaveGameLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            if (Context.IsWorldReady)
+                mainMenu = new ProfitCalculatorMainMenu(Helper, Monitor, Config);
         }
 
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
@@ -106,6 +129,8 @@ namespace ProfitCalculator
                 else
                 {
                     mainMenu.isProfitCalculatorOpen = false;
+                    mainMenu.updateMenu();
+                    DropdownOption.ActiveDropdown = null;
                     Game1.activeClickableMenu = null;
                     Game1.playSound("bigDeSelect");
                 }
@@ -116,6 +141,11 @@ namespace ProfitCalculator
         {
             Monitor.Log($"Opening App {Helper.ModRegistry.ModID}");
             ProfitCalculatorApp.Start();
+        }
+
+        private void OnMouseWheelScrolled(object sender, MouseWheelScrolledEventArgs e)
+        {
+            DropdownOption.ActiveDropdown?.ReceiveScrollWheelAction(e.Delta);
         }
     }
 }
