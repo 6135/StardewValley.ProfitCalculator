@@ -48,6 +48,7 @@ namespace ProfitCalculator.menus
         public string exampleString { get; set; } = "example";
         private static int widthOnScreen = 632 + borderWidth * 2;
         private static int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
+        private bool stopSpreadingClick = false;
 
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
@@ -312,7 +313,7 @@ namespace ProfitCalculator.menus
                 )
             );
 
-            CheckboxOption payForSeeds = new (
+            CheckboxOption payForSeeds = new(
                     this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                     this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4 + Game1.tileSize / 4,
                     () => "payForSeeds",
@@ -322,7 +323,7 @@ namespace ProfitCalculator.menus
 
                 );
             Options.Add(payForSeeds);
-    }
+        }
 
         private void setUpFertilizerOptionPositions()
         {
@@ -402,7 +403,6 @@ namespace ProfitCalculator.menus
             );
             Options.Add(useBaseStatsOptions);
         }
-
 
         public override void draw(SpriteBatch b)
         {
@@ -545,85 +545,36 @@ namespace ProfitCalculator.menus
             //TODO: add hover actions for buttons
         }
 
+        private bool switchStopSpreadingClick()
+        {
+            this.stopSpreadingClick = !this.stopSpreadingClick;
+            return this.stopSpreadingClick;
+        }
+
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            /*            foreach (ClickableComponent button in numpad)
-                        {
-                            if (button.containsPoint(x, y))
-                            {
-                                if (currentInput)
-                                    inputB += button.name;
-                                else
-                                    inputA += button.name;
-                                Game1.playSound("smallSelect");
-                            }
-                        }
-                        foreach (ClickableComponent button in opButtons)
-                        {
-                            if (button.containsPoint(x, y))
-                            {
-                                switch (button.name)
-                                {
-                                    case "+":
-                                        if (!currentInput)
-                                            currentInput = true;
-                                        op = Operation.Add;
-                                        break;
-
-                                    case "-":
-                                        if (!currentInput)
-                                            currentInput = true;
-                                        op = Operation.Subtract;
-                                        break;
-
-                                    case "X":
-                                        if (!currentInput)
-                                            currentInput = true;
-                                        op = Operation.Multiply;
-                                        break;
-
-                                    case "/":
-                                        if (!currentInput)
-                                            currentInput = true;
-                                        op = Operation.Divide;
-                                        break;
-
-                                    case "EQ":
-                                        DoCalculation();
-                                        break;
-
-                                    case ".":
-                                        if (!currentInput)
-                                            inputA += ".";
-                                        else
-                                            inputB += ".";
-                                        break;
-                                }
-                                Game1.playSound("smallSelect");
-                            }
-                        }
-                        if (zeroButton.containsPoint(x, y))
-                        {
-                            if (!currentInput)
-                                inputA += "0";
-                            else
-                                inputB += "0";
-                            Game1.playSound("smallSelect");
-                        }*/
             if (calculateButton.containsPoint(x, y))
             {
                 this.DoCalculation();
                 if (playSound) Game1.playSound("select");
+                return;
             }
             if (resetButton.containsPoint(x, y))
             {
                 this.resetMenu();
                 if (playSound) Game1.playSound("dialogueCharacterClose");
+                return;
             }
             //for each option, check if it was clicked
             foreach (BaseOption option in Options)
             {
-                option.ReceiveLeftClick(x, y);
+                if (!stopSpreadingClick)
+                    option.ReceiveLeftClick(x, y, switchStopSpreadingClick);
+                else
+                {
+                    switchStopSpreadingClick();
+                    return;
+                }
             }
         }
 

@@ -65,7 +65,7 @@ namespace ProfitCalculator.UI
         {
         }
 
-        public virtual void ReceiveLeftClick(int x, int y)
+        public virtual void ReceiveLeftClick(int x, int y, Func<bool> stopSpread)
         {
             this.beforeReceiveLeftClick(x, y);
             //check if x and y are within the bounds of the checkbox
@@ -82,10 +82,10 @@ namespace ProfitCalculator.UI
 
         public virtual void Update()
         {
-            if (DropdownOption.SinceDropdownWasActive > 0)
+            /*if (DropdownOption.SinceDropdownWasActive > 0)
             {
                 DropdownOption.SinceDropdownWasActive--;
-            }
+            }*/
         }
 
         /*public abstract void beforeReceiveRightClick();

@@ -77,11 +77,12 @@ namespace ProfitCalculator.UI
         *********/
 
         /// <inheritdoc />
+        private int timer = 0;
+
         public override void Update()
         {
             base.Update();
             bool justClicked = false;
-            Helpers.Monitor.Log($"MeantToCloseDropdown: {DropdownOption.ClickMeantToCloseDropdown}", LogLevel.Debug);
 
             if (this.Clicked && DropdownOption.ActiveDropdown == null)
             {
@@ -94,17 +95,6 @@ namespace ProfitCalculator.UI
                 if (Constants.TargetPlatform != GamePlatform.Android)
                 {
                     //print all checked values
-                    /*Helpers.Monitor.Log(
-                        $"LB: {Mouse.GetState().LeftButton} "
-                        + $"OLB: {Game1.oldMouseState.LeftButton} "
-                        + $"A: {Game1.input.GetGamePadState().Buttons.A} "
-                        + $"OldA: {Game1.oldPadState.Buttons.A} "
-                        + $"JC: {justClicked} "
-                        + $"D: {this.Dropped} "
-                        + $"AD: {DropdownOption.ActiveDropdown == null} "
-                        + $"SDWA: { DropdownOption.SinceDropdownWasActive} "
-                        + $"Res: {((Mouse.GetState().LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Released || Game1.input.GetGamePadState().Buttons.A == ButtonState.Pressed && Game1.oldPadState.Buttons.A == ButtonState.Released) && !justClicked)}",
-                        LogLevel.Debug);*/
 
                     if ((Mouse.GetState().LeftButton == ButtonState.Pressed && Game1.oldMouseState.LeftButton == ButtonState.Released ||
                          Game1.input.GetGamePadState().Buttons.A == ButtonState.Pressed && Game1.oldPadState.Buttons.A == ButtonState.Released)
@@ -133,12 +123,9 @@ namespace ProfitCalculator.UI
                     this.ActiveChoice = choice + this.ActivePosition;
                     this.ValueSetter(this.Choices[this.ActiveChoice]);
                 }
-            }
 
-            if (this.Dropped)
-            {
                 DropdownOption.ActiveDropdown = this;
-                DropdownOption.SinceDropdownWasActive = 9;
+                //DropdownOption.SinceDropdownWasActive = 9;
             }
             else
             {
@@ -241,47 +228,19 @@ namespace ProfitCalculator.UI
             }
         }
 
-        public override void beforeReceiveLeftClick(int x, int y)
+        public override void ReceiveLeftClick(int x, int y, Func<bool> stopSpread)
         {
-            base.beforeReceiveLeftClick(x, y);
-            //decide if click was meant to close dropdown, and it's meant to close dropdown if three conditions are met
-            //1. the dropdown is open
-            //2. the active dropdown is not null
-            //3. The dropdown that calls this method is the active dropdown
-            Helpers.Monitor.Log(
-                $"beforeReceiveLeftClick " +
-                $"{this.Dropped} " +
-                $"{DropdownOption.ActiveDropdown != null} " +
-                $"{DropdownOption.ActiveDropdown == this} ", LogLevel.Debug);
-            if (DropdownOption.ActiveDropdown == this)
-            {
-                //set the click meant to close dropdown to true
-                DropdownOption.ClickMeantToCloseDropdown = true;
-            } else if (DropdownOption.ActiveDropdown == null) //then its not meant to close the dropdown
-            {
-                //set the click meant to close dropdown to false
-                DropdownOption.ClickMeantToCloseDropdown = false;
-            }
-        }
-
-        public override void ReceiveLeftClick(int x, int y)
-        {
-            this.beforeReceiveLeftClick(x, y);
-            //if its not open or dropped, execute the click
-
-            if (this.ClickableComponent.containsPoint(x, y) 
-                && !this.Dropped
-                //&& DropdownOption.SinceDropdownWasActive <= 0
-                && !DropdownOption.ClickMeantToCloseDropdown)
+            //if ClickMeantToCloseDropdown is false then open dropdown
+            if (ClickableComponent.containsPoint(x, y) && !this.Dropped && !this.Clicked)
             {
                 this.executeClick();
             }
-            else if(DropdownOption.ClickMeantToCloseDropdown)
+            else if(this.Dropped || this.Clicked)
             {
-                this.Clicked = false;
                 this.Dropped = false;
+                this.Clicked = false;
+                stopSpread();
             }
-
         }
     }
 }

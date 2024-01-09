@@ -42,7 +42,6 @@ namespace ProfitCalculator.UI
             }
         }
 
-
         public TextOption(
             int x,
             int y,
@@ -68,9 +67,20 @@ namespace ProfitCalculator.UI
         {
             this.Font = font;
         }
+
         public override void Draw(SpriteBatch b)
         {
-            b.Draw(this.Tex, this.Position, Color.White);
+            b.Draw(
+                this.Tex,
+                this.Position,
+                null,
+                Color.White,
+                0f,
+                Vector2.Zero,
+                1,
+                SpriteEffects.None,
+                0.25f
+                );
 
             // Copied from game code - caret and https://github.com/spacechase0/StardewValleyMods/blob/develop/SpaceShared/UI/Element.cs#L91
             string text = this.ValueGetter();
@@ -88,16 +98,20 @@ namespace ProfitCalculator.UI
                         4,
                         32
                     ),
-                    Game1.textColor
+                    null,
+                    Game1.textColor,
+                    0f,
+                    Vector2.Zero,
+                    SpriteEffects.None,
+                    0.3f
                 );
 
-            b.DrawString(this.Font, text, this.Position + new Vector2(16, 12), Game1.textColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.5f);
+            b.DrawString(this.Font, text, this.Position + new Vector2(16, 12), Game1.textColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.35f);
         }
 
         /// <inheritdoc />
         public void RecieveTextInput(char inputChar)
         {
-
             this.ReceiveInput(inputChar.ToString());
 
             // Copied from game code
@@ -135,7 +149,6 @@ namespace ProfitCalculator.UI
         /// <inheritdoc />
         public void RecieveTextInput(string text)
         {
-
             this.ReceiveInput(text);
         }
 
