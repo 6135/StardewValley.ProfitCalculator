@@ -77,11 +77,13 @@ namespace ProfitCalculator
 
         public enum FertilizerQuality
         {
-            Basic,
-            Quality,
-            SpeedGro,
-            DeluxeSpeedGro,
-            None
+            None = 0,
+            Basic = 1,
+            Quality = 2,
+            Deluxe = 3,
+            SpeedGro = -1,
+            DeluxeSpeedGro = -2,
+            HyperSpeedGro = -3
         }
 
         //get season translated names

@@ -16,12 +16,15 @@ namespace ProfitCalculator.main
 {
     internal class VanillaCropParser : CropParser
     {
+        private bool usingBaseStats = false;
+
         public VanillaCropParser(string name = "VanillaCropParser") : base(name)
         {
         }
 
-        public override Dictionary<string, Crop> BuildCrops()
+        public override Dictionary<string, Crop> BuildCrops(bool usingBaseStats)
         {
+            this.usingBaseStats = usingBaseStats;
             //read crop data from game files
             //add crops to list
 
@@ -31,7 +34,6 @@ namespace ProfitCalculator.main
                 Crop? cropToAdd = BuildCrop(crop.Value.Split('/'), crop.Key);
                 if (cropToAdd != null && !Crops.ContainsKey(crop.Key.ToString()))
                     this.Crops.Add(crop.Key.ToString(), cropToAdd);
-                //this.BuildCrop(crop.Value.Split('/'), crop.Key);
             }
             return Crops;
         }
@@ -176,7 +178,6 @@ namespace ProfitCalculator.main
                 isPaddyCrop: paddyCrop,
                 startDate: startDate,
                 endDate: endDate
-
             );
             return crop;
         }

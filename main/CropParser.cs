@@ -25,6 +25,6 @@ namespace ProfitCalculator.main
             }
         }
 
-        public abstract Dictionary<string, Crop> BuildCrops();
+        public abstract Dictionary<string, Crop> BuildCrops(bool usingBaseStats);
     }
 }

@@ -51,6 +51,8 @@
   "none": "None",
   "basic": "Basic",
   "quality": "Quality",
+  "deluxe": "Deluxe",
   "speedgro": "Speed-Gro",
-  "deluxespeedgro": "Deluxe Speed-Gro"
+  "deluxespeedgro": "Deluxe Speed-Gro",
+  "hyperspeedgro": "Hyper Speed-Gro",
 }
