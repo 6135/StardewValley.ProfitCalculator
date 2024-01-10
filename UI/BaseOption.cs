@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ProfitCalculator.helper;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
@@ -17,7 +16,7 @@ namespace ProfitCalculator.UI
     {
         private ClickableComponent clickableComponent;
         public virtual string ClickedSound => null;
-        public bool Clicked;
+        protected bool Clicked;
         public virtual string HoveredSound => null;
         public bool Hover { get; private set; }
 
@@ -65,7 +64,7 @@ namespace ProfitCalculator.UI
         {
         }
 
-        public virtual void ReceiveLeftClick(int x, int y, Func<bool> stopSpread)
+        public virtual void ReceiveLeftClick(int x, int y, Action stopSpread)
         {
             this.beforeReceiveLeftClick(x, y);
             //check if x and y are within the bounds of the checkbox
@@ -82,22 +81,7 @@ namespace ProfitCalculator.UI
 
         public virtual void Update()
         {
-            /*if (DropdownOption.SinceDropdownWasActive > 0)
-            {
-                DropdownOption.SinceDropdownWasActive--;
-            }*/
+            //nothing here, optional override for subclasses
         }
-
-        /*public abstract void beforeReceiveRightClick();
-
-        public abstract void ReceiveRightClick(int x, int y);
-
-        public abstract void LeftClickHeld(int x, int y);
-
-        public abstract void LeftClickReleased(int x, int y);
-
-        public abstract void HoverOver(int x, int y);
-
-        public abstract void DrawMouse(SpriteBatch b);*/
     }
 }

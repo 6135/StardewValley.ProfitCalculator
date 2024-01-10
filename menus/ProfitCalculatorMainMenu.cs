@@ -2,25 +2,25 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ProfitCalculator.helper;
+using ProfitCalculator.main;
 using ProfitCalculator.UI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
-using static ProfitCalculator.helper.Helpers;
-
-using StardewValley.Menus;
+using static ProfitCalculator.Helpers;
+using static StardewValley.Minigames.CraneGame;
+using SObject = StardewValley.Object;
 
 namespace ProfitCalculator.menus
 {
     public class ProfitCalculatorMainMenu : IClickableMenu
     {
-        private StardewValley.Menus.OptionsDropDown asd;
         private readonly IModHelper helper;
 
         private readonly IMonitor monitor;
@@ -88,11 +88,9 @@ namespace ProfitCalculator.menus
         public override void update(GameTime time)
         {
             base.update(time);
-            //Helpers.Monitor.Log("Updating Profit Calculator Menu", LogLevel.Debug);
             //update all the options and labels and buttons
             foreach (BaseOption option in Options)
             {
-                // Helpers.Monitor.Log($"Updating {option.Name()}", LogLevel.Debug);
                 option.Update();
             }
         }
@@ -125,6 +123,8 @@ namespace ProfitCalculator.menus
 
             this.updateMenu();
         }
+
+        #region Menu Button Setups
 
         private void setUpPositions()
         {
@@ -404,7 +404,12 @@ namespace ProfitCalculator.menus
             Options.Add(useBaseStatsOptions);
         }
 
+        #endregion Menu Button Setups
+
+        #region Draw Methods
+
         public override void draw(SpriteBatch b)
+
         {
             //draw bottom up
 
@@ -493,18 +498,6 @@ namespace ProfitCalculator.menus
         {
             foreach (ClickableComponent label in Labels)
             {
-                /*               IClickableMenu.drawTextureBox(
-                                   b,
-                                   Game1.mouseCursors,
-                                   new Rectangle(432, 439, 9, 9),
-                                   label.bounds.X,
-                                   label.bounds.Y,
-                                   label.bounds.Width,
-                                   label.bounds.Height,
-                                   (label.scale != 1.0001f) ? Color.Wheat : Color.White,
-                                   4f,
-                                   false
-                               );*/
                 b.DrawString(
                     Game1.dialogueFont,
                     label.label,
@@ -524,6 +517,8 @@ namespace ProfitCalculator.menus
                 option.Draw(b);
             }
         }
+
+        #endregion Draw Methods
 
         public override void receiveKeyPress(Keys key)
         {
@@ -545,12 +540,6 @@ namespace ProfitCalculator.menus
             //TODO: add hover actions for buttons
         }
 
-        private bool switchStopSpreadingClick()
-        {
-            this.stopSpreadingClick = !this.stopSpreadingClick;
-            return this.stopSpreadingClick;
-        }
-
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             if (calculateButton.containsPoint(x, y))
@@ -569,10 +558,10 @@ namespace ProfitCalculator.menus
             foreach (BaseOption option in Options)
             {
                 if (!stopSpreadingClick)
-                    option.ReceiveLeftClick(x, y, switchStopSpreadingClick);
+                    option.ReceiveLeftClick(x, y, () => this.stopSpreadingClick = !this.stopSpreadingClick);
                 else
                 {
-                    switchStopSpreadingClick();
+                    this.stopSpreadingClick = !this.stopSpreadingClick;
                     return;
                 }
             }
@@ -595,7 +584,48 @@ namespace ProfitCalculator.menus
 
         private void DoCalculation()
         {
+            ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats);
+
+            Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
+            monitor.Log("----------------------------Data\\Crops----------------------------", LogLevel.Debug);
+            //order keyvaluepair by key
+            List<KeyValuePair<int, string>> cropsList = new List<KeyValuePair<int, string>>(crops);
+            cropsList.Sort(
+                delegate (KeyValuePair<int, string> pair1, KeyValuePair<int, string> pair2)
+                {
+                    Item item = new SObject(pair1.Key, 1).getOne();
+                    Item item2 = new SObject(pair2.Key, 1).getOne();
+                    return item.Name.CompareTo(item2.Name);
+                }
+            );
+            foreach (KeyValuePair<int, string> crop in cropsList)
+            {
+                Item item = new SObject(crop.Key, 1);
+                monitor.Log($"{item.Name} {item.salePrice()} {item}: {crop.Key}", LogLevel.Debug);
+            }
+
+            if (Helpers.JApi != null)
+            {
+                monitor.Log("----------------------------JApi----------------------------", LogLevel.Debug);
+                foreach (KeyValuePair<string, int> crop in Helpers.JApi.GetAllCropIds())
+                {
+                    //monitor.Log($"{crop.Key} : {crop.Value}", LogLevel.Debug);
+                }
+            }
+            if (Helpers.DApi != null)
+            {
+                monitor.Log("----------------------------DApi----------------------------", LogLevel.Debug);
+                foreach (string item in Helpers.DApi.GetAllItems())
+                {
+                    //spawn item as object and get name
+                    SObject obj = (SObject)Helpers.DApi.SpawnDGAItem(item);
+                    //monitor.Log($"{obj?.GetType()} {obj?.Category} {item}", LogLevel.Debug);
+                }
+            }
+            //monitor.Log($"{crops.ToString()}", LogLevel.Debug);
             monitor.Log("Doing Calculation", LogLevel.Debug);
+            //ModEntry.Calculator.Calculate();
+            ModEntry.Calculator.refreshCropList();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ProfitCalculator.helper;
 using StardewValley;
 using StardewValley.Menus;
 using System;

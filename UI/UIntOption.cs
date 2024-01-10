@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ProfitCalculator.helper;
 using StardewValley;
 using System;
 using System.Collections.Generic;

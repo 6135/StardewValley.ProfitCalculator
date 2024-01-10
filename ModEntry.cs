@@ -1,26 +1,35 @@
 ﻿using System;
 using System.IO;
 using GenericModConfigMenu;
+using JsonAssets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ProfitCalculator.App;
-using ProfitCalculator.helper;
 using ProfitCalculator.menus;
 using ProfitCalculator.UI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Monsters;
+using DynamicGameAssets;
+using ProfitCalculator.main;
+
+#nullable enable
 
 namespace ProfitCalculator
 {
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
-        public IMobilePhoneApi api;
         private ModConfig Config;
         private ProfitCalculatorMainMenu mainMenu;
+        public static Calculator? Calculator;
+        private IModHelper helper;
+        private IGenericModConfigMenuApi configMenu;
+        private IApi? JApi;
+        private IDynamicGameAssetsApi? DApi;
         /*********
+
         ** Public methods
         *********/
 
@@ -28,15 +37,15 @@ namespace ProfitCalculator
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Helpers.Initialize(helper, Monitor);
             Monitor.Log($"Helpers initialized", LogLevel.Debug);
+            this.helper = helper;
 
             //read config
             Config = Helper.ReadConfig<ModConfig>();
             //hook events
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.GameLoop.GameLaunched += onGameLaunchedAddGenericModConfigMenu;
-            helper.Events.GameLoop.GameLaunched += onGameLaunched;
+            helper.Events.GameLoop.GameLaunched += onGameLaunchedAPIs;
             helper.Events.GameLoop.SaveLoaded += onSaveGameLoaded;
             helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
         }
@@ -45,29 +54,38 @@ namespace ProfitCalculator
         ** Private methods
         *********/
 
-        private void onGameLaunched(object sender, GameLaunchedEventArgs e)
+        private void onGameLaunchedAPIs(object sender, GameLaunchedEventArgs e)
         {
-            //register app to mobile phone if mobile phone mod is installed
-            if (Config.EnableMobileApp)
+            JApi = Helper.ModRegistry.GetApi<IApi>("spacechase0.JsonAssets");
+            configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            DApi = this.Helper.ModRegistry.GetApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
+
+            //if not send message to use about it being not found
+            if (JApi is null)
             {
-                api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
-                if (api != null)
-                {
-                    bool success;
-                    success = api.AddApp(Helper.ModRegistry.ModID, Helper.Translation.Get("app-name"), OpenApp, Helpers.AppIcon);
-                    Monitor.Log($"loaded app successfully: {success}", LogLevel.Debug);
-                    ProfitCalculatorApp.Initialize(Helper, Monitor, Config, api);
-                }
+                Monitor.Log($"Json Assets not found", LogLevel.Debug);
             }
+            if (configMenu is null)
+            {
+                Monitor.Log($"Generic Mod Config Menu not found", LogLevel.Debug);
+            }
+            if (DApi is null)
+            {
+                Monitor.Log($"Dynamic Game Assets not found", LogLevel.Debug);
+            }
+
+            Helpers.Initialize(helper, Monitor, JApi, DApi);
+            Calculator = new();
+            //register app to mobile phone if mobile phone mod is installed
+            //TODO Maybe make mobile phone mod optional and add an app
         }
 
         private void onGameLaunchedAddGenericModConfigMenu(object sender, GameLaunchedEventArgs e)
         {
             //register config menu if generic mod config menu is installed
-            var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+
             if (configMenu is null)
                 return;
-
             // register mod
             configMenu.Register(
                 mod: this.ModManifest,
@@ -135,12 +153,6 @@ namespace ProfitCalculator
                     Game1.playSound("bigDeSelect");
                 }
             }
-        }
-
-        private void OpenApp()
-        {
-            Monitor.Log($"Opening App {Helper.ModRegistry.ModID}");
-            ProfitCalculatorApp.Start();
         }
 
         private void OnMouseWheelScrolled(object sender, MouseWheelScrolledEventArgs e)

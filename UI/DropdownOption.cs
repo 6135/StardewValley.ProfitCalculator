@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ProfitCalculator.helper;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
@@ -16,9 +15,6 @@ namespace ProfitCalculator.UI
 {
     internal class DropdownOption : BaseOption
     {
-        /*********
-        ** Accessors
-        *********/
         public int RequestWidth { get; set; }
         public int MaxValuesAtOnce { get; set; } = 5;
         public Texture2D Texture { get; set; } = Game1.mouseCursors;
@@ -31,25 +27,26 @@ namespace ProfitCalculator.UI
             set { if (this.Choices.Contains(value)) this.ActiveChoice = Array.IndexOf(this.Choices, value); }
         }
 
-        public int Width => Math.Max(300, Math.Min(300, this.RequestWidth));
+        public int DropDownBoxWidth => Math.Max(300, Math.Min(300, this.RequestWidth));
 
-        public int Height => 44;
+        public int DropDownBoxHeight => 44;
 
-        public string Label => this.Labels[this.ActiveChoice];
+        public new string Label => this.Labels[this.ActiveChoice];
 
         public int ActiveChoice { get; set; }
 
         public int ActivePosition { get; set; }
-        public string[] Choices { get; set; } = new[] { "null" };
+        public string[] Choices { get; set; }
 
-        public string[] Labels { get; set; } = new[] { "null" };
+        public string[] Labels { get; set; }
 
         public Action<string> ValueSetter;
         public bool Dropped;
 
+#pragma warning disable S2223 // Non-constant static fields should not be visible
         public static DropdownOption ActiveDropdown = null;
         public static int SinceDropdownWasActive = 0;
-        public static bool ClickMeantToCloseDropdown;
+#pragma warning restore S2223 // Non-constant static fields should not be visible
 
         public DropdownOption(
             int x,
@@ -66,18 +63,11 @@ namespace ProfitCalculator.UI
             this.Labels = labels();
             this.ActiveChoice = Array.IndexOf(this.Choices, valueGetter());
             ValueSetter = valueSetter;
-            ClickableComponent.bounds.Width = this.Width;
-            ClickableComponent.bounds.Height = this.Height;
+            ClickableComponent.bounds.Width = this.DropDownBoxWidth;
+            ClickableComponent.bounds.Height = this.DropDownBoxHeight;
         }
 
         public override string ClickedSound => "shwip";
-
-        /*********
-        ** Public methods
-        *********/
-
-        /// <inheritdoc />
-        private int timer = 0;
 
         public override void Update()
         {
@@ -114,18 +104,17 @@ namespace ProfitCalculator.UI
                         this.Dropped = false;
                     }
                 }
-                int tall = Math.Min(this.MaxValuesAtOnce, this.Choices.Length - this.ActivePosition) * this.Height;
+                int tall = Math.Min(this.MaxValuesAtOnce, this.Choices.Length - this.ActivePosition) * this.DropDownBoxHeight;
                 int drawY = Math.Min((int)this.Position.Y, Game1.uiViewport.Height - tall);
-                var bounds2 = new Rectangle((int)this.Position.X, drawY, this.Width, this.Height * this.MaxValuesAtOnce);
+                var bounds2 = new Rectangle((int)this.Position.X, drawY, this.DropDownBoxWidth, this.DropDownBoxHeight * this.MaxValuesAtOnce);
                 if (bounds2.Contains(Game1.getOldMouseX(), Game1.getOldMouseY()))
                 {
-                    int choice = (Game1.getOldMouseY() - drawY) / this.Height;
+                    int choice = (Game1.getOldMouseY() - drawY) / this.DropDownBoxHeight;
                     this.ActiveChoice = choice + this.ActivePosition;
                     this.ValueSetter(this.Choices[this.ActiveChoice]);
                 }
 
                 DropdownOption.ActiveDropdown = this;
-                //DropdownOption.SinceDropdownWasActive = 9;
             }
             else
             {
@@ -150,8 +139,8 @@ namespace ProfitCalculator.UI
                 this.BackgroundTextureRect,
                 (int)this.Position.X,
                 (int)this.Position.Y,
-                this.Width - 48,
-                this.Height,
+                this.DropDownBoxWidth - 48,
+                this.DropDownBoxHeight,
                 Color.White,
                 4,
                 false,
@@ -170,7 +159,7 @@ namespace ProfitCalculator.UI
              ); //Selected text
             b.Draw(
                 this.Texture,
-                new Vector2(this.Position.X + this.Width - 48, this.Position.Y),
+                new Vector2(this.Position.X + this.DropDownBoxWidth - 48, this.Position.Y),
                 this.ButtonTextureRect,
                 Color.White,
                 0,
@@ -185,7 +174,7 @@ namespace ProfitCalculator.UI
                 int maxValues = this.MaxValuesAtOnce;
                 int start = this.ActivePosition;
                 int end = Math.Min(this.Choices.Length, start + maxValues);
-                int tall = Math.Min(maxValues, this.Choices.Length - this.ActivePosition) * this.Height;
+                int tall = Math.Min(maxValues, this.Choices.Length - this.ActivePosition) * this.DropDownBoxHeight;
                 int drawY = Math.Min((int)this.Position.Y, Game1.uiViewport.Height - tall);
                 IClickableMenu.drawTextureBox(
                     b,
@@ -193,7 +182,7 @@ namespace ProfitCalculator.UI
                     this.BackgroundTextureRect,
                     (int)this.Position.X,
                     drawY,
-                    this.Width - 48,
+                    this.DropDownBoxWidth - 48,
                     tall,
                     Color.White, 4,
                     false,
@@ -204,8 +193,8 @@ namespace ProfitCalculator.UI
                         b.Draw(
                             Game1.staminaRect,
                             new Rectangle((int)this.Position.X + 4,
-                            drawY + (i - this.ActivePosition) * this.Height,
-                            this.Width - 48 - 8, this.Height),
+                            drawY + (i - this.ActivePosition) * this.DropDownBoxHeight,
+                            this.DropDownBoxWidth - 48 - 8, this.DropDownBoxHeight),
                             null,
                             Color.Wheat,
                             0,
@@ -216,7 +205,7 @@ namespace ProfitCalculator.UI
                     b.DrawString(
                         Game1.smallFont,
                         this.Labels[i],
-                        new Vector2(this.Position.X + 4, drawY + (i - this.ActivePosition) * this.Height + 8),
+                        new Vector2(this.Position.X + 4, drawY + (i - this.ActivePosition) * this.DropDownBoxHeight + 8),
                         Game1.textColor,
                         0,
                         Vector2.Zero,
@@ -228,14 +217,14 @@ namespace ProfitCalculator.UI
             }
         }
 
-        public override void ReceiveLeftClick(int x, int y, Func<bool> stopSpread)
+        public override void ReceiveLeftClick(int x, int y, Action stopSpread)
         {
             //if ClickMeantToCloseDropdown is false then open dropdown
             if (ClickableComponent.containsPoint(x, y) && !this.Dropped && !this.Clicked)
             {
                 this.executeClick();
             }
-            else if(this.Dropped || this.Clicked)
+            else if (this.Dropped || this.Clicked)
             {
                 this.Dropped = false;
                 this.Clicked = false;

@@ -7,21 +7,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
+using JsonAssets;
+using DynamicGameAssets;
+using ProfitCalculator.main;
 
-namespace ProfitCalculator.helper
+#nullable enable
+
+namespace ProfitCalculator
 {
     public class Helpers
     {
         public static IModHelper Helper { get; set; }
         public static IMonitor Monitor { get; set; }
 
-        public static Texture2D AppIcon { get ; set; }
+        public static IApi? JApi { get; set; }
 
-        public static void Initialize(IModHelper _helper, IMonitor _monitor)
+        public static IDynamicGameAssetsApi? DApi { get; set; }
+
+        public static Texture2D AppIcon { get; set; }
+
+        public static void Initialize(IModHelper _helper, IMonitor _monitor, IApi? jApi = null, IDynamicGameAssetsApi? dApi = null)
         {
             Helper = _helper;
             Monitor = _monitor;
             AppIcon = _helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+            JApi = jApi;
+            DApi = dApi;
         }
 
         public static int GetSeasonDays(Season season)
@@ -131,6 +142,5 @@ namespace ProfitCalculator.helper
             }
             return translatedNames;
         }
-
     }
 }
