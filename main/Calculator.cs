@@ -113,11 +113,11 @@ namespace ProfitCalculator.main
 
                 Monitor.Log(
                     $"|{farmingLevel}\t\t\t   "
-                    + $"{(int)(Math.Round(chanceForBaseQuality,2) * 100)}%\t\t"
-                    + $"{(int)(Math.Round(chanceForSilverQuality,2) * 100)}%\t\t"
-                    + $"{(int)(Math.Round(chanceForGoldQuality, 2) * 100)}%\t\t"
-                    + $"{(int)(Math.Round(chanceForIridiumQuality, 2) * 100)}%\t\t"
-                    + $"{averageValue}\t\t|"
+                    + $"{(Math.Round(chanceForBaseQuality,2) * 100).ToString("##.###")}\t\t"
+                    + $"{(Math.Round(chanceForSilverQuality, 2) * 100).ToString("##.###")}\t\t"
+                    + $"{(Math.Round(chanceForGoldQuality, 2) * 100).ToString("##.###")}\t\t"
+                    + $"{(Math.Round(chanceForIridiumQuality, 2) * 100).ToString("##.###")}\t\t"
+                    + $"{averageValue}|"
                     , LogLevel.Debug);
             }
             farmingLevel = backupFarmingLevel;
@@ -137,19 +137,13 @@ namespace ProfitCalculator.main
         public double getAverageValueMultiplierForCrop()
         {
             double[] priceMultipliers = PriceMultipliers;
-            //apply profession modifiers
-            /*for (int i = 0; i < prices.Length; i++)
-            {
-                prices[i] = getPriceAfterMultipliers(prices[i]);
-            }*/
-            //apply fertilizer quality modifiers
 
             //apply farm level quality modifiers
             double chanceForGoldQuality = getCropGoldQualityChance();
             double chanceForSilverQuality = getCropSilverQualityChance(chanceForGoldQuality);
             double chanceForIridiumQuality = getCropIridiumChance(chanceForGoldQuality);
             double chanceForBaseQuality = getCropBaseQualityChance(chanceForSilverQuality, chanceForGoldQuality, chanceForIridiumQuality);
-            //calculate average value
+            //calculate average value modifier for price
             double averageValue = 0f;
             averageValue += chanceForBaseQuality * priceMultipliers[0];
             averageValue += chanceForSilverQuality * priceMultipliers[1];
@@ -170,7 +164,7 @@ namespace ProfitCalculator.main
 
         private double getCropSilverQualityChance(double goldChance)
         {
-            return (1f - goldChance) * Math.Min(0.75f, goldChance * 2.0f); //garanteed if fertilizer is used and quality of said fertilizer is 3 or higher
+            return ((int)FertilizerQuality) >= 3 ? Math.Max(0f,1f - goldChance - this.getCropIridiumChance(goldChance)) : (1f - goldChance) * Math.Min(0.75f, goldChance * 2.0f); //garanteed if fertilizer is used and quality of said fertilizer is 3 or higher
         }
 
         private double getCropGoldQualityChance()
@@ -198,7 +192,7 @@ namespace ProfitCalculator.main
 
         private double getCropBaseQualityChance(double silverChance, double goldChance, double iridiumChance)
         {
-            return 1f - silverChance - goldChance - iridiumChance;
+            return ((int)FertilizerQuality)>=3 ? 0f : 1f  - silverChance - goldChance - iridiumChance;
         }
     }
 }
