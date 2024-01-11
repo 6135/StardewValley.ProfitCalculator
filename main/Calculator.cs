@@ -83,11 +83,11 @@ namespace ProfitCalculator.main
         {
             foreach (CropParser parser in cropParser)
             {
-                foreach (KeyValuePair<string, Crop> cr in parser.BuildCrops(UseBaseStats))
+                foreach (KeyValuePair<string, Crop> cr in parser.BuildCrops())
                 {
                     Crop crop = cr.Value;
-                    crop.setSettings(UseBaseStats, (int)FertilizerQuality);
                     crops.Add(cr.Key, crop);
+                    Monitor.Log($"Added crop: {cr.Key} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()}" , LogLevel.Debug);
                 }
             }
         }
@@ -98,6 +98,7 @@ namespace ProfitCalculator.main
             RetrieveCropList();
         }
 
+        #region Crop Modifer Value Calculations
         public void printCropChanceTablesForAllFarmingLevels()
         {
             int backupFarmingLevel = farmingLevel;
@@ -106,23 +107,22 @@ namespace ProfitCalculator.main
             {
                 farmingLevel = i;
                 double chanceForGoldQuality = getCropGoldQualityChance();
-                double chanceForSilverQuality = getCropSilverQualityChance(chanceForGoldQuality);
-                double chanceForIridiumQuality = getCropIridiumChance(chanceForGoldQuality);
-                double chanceForBaseQuality = getCropBaseQualityChance(chanceForSilverQuality, chanceForGoldQuality, chanceForIridiumQuality);
+                double chanceForSilverQuality = getCropSilverQualityChance();
+                double chanceForIridiumQuality = getCropIridiumQualityChance();
+                double chanceForBaseQuality = getCropBaseQualityChance();
                 double averageValue = getAverageValueForCropAfterModifiers();
 
                 Monitor.Log(
                     $"|{farmingLevel}\t\t\t   "
-                    + $"{(Math.Round(chanceForBaseQuality,2) * 100).ToString("##.###")}\t\t"
-                    + $"{(Math.Round(chanceForSilverQuality, 2) * 100).ToString("##.###")}\t\t"
-                    + $"{(Math.Round(chanceForGoldQuality, 2) * 100).ToString("##.###")}\t\t"
-                    + $"{(Math.Round(chanceForIridiumQuality, 2) * 100).ToString("##.###")}\t\t"
+                    + $"{(chanceForBaseQuality*100).ToString("##")}\t\t"
+                    + $"{(chanceForSilverQuality * 100).ToString("##")}\t\t"
+                    + $"{(chanceForGoldQuality * 100).ToString("##")}\t\t"
+                    + $"{(chanceForIridiumQuality * 100).ToString("##")}\t\t"
                     + $"{averageValue}|"
                     , LogLevel.Debug);
             }
             farmingLevel = backupFarmingLevel;
         }
-
         public void printCropChanceTablesForAllFarmingLevelsAndFertilizerType()
         {
             FertilizerQuality backupFertilizerQuality = FertilizerQuality;
@@ -140,9 +140,9 @@ namespace ProfitCalculator.main
 
             //apply farm level quality modifiers
             double chanceForGoldQuality = getCropGoldQualityChance();
-            double chanceForSilverQuality = getCropSilverQualityChance(chanceForGoldQuality);
-            double chanceForIridiumQuality = getCropIridiumChance(chanceForGoldQuality);
-            double chanceForBaseQuality = getCropBaseQualityChance(chanceForSilverQuality, chanceForGoldQuality, chanceForIridiumQuality);
+            double chanceForSilverQuality = getCropSilverQualityChance();
+            double chanceForIridiumQuality = getCropIridiumQualityChance();
+            double chanceForBaseQuality = getCropBaseQualityChance();
             //calculate average value modifier for price
             double averageValue = 0f;
             averageValue += chanceForBaseQuality * priceMultipliers[0];
@@ -151,7 +151,6 @@ namespace ProfitCalculator.main
             averageValue += chanceForIridiumQuality * priceMultipliers[3];
             return averageValue;
         }
-
         public double getAverageValueForCropAfterModifiers()
         {
             double averageValue = this.getAverageValueMultiplierForCrop();
@@ -161,38 +160,31 @@ namespace ProfitCalculator.main
             }
             return Math.Round(averageValue, 2);
         }
-
-        private double getCropSilverQualityChance(double goldChance)
+        private double getCropBaseGoldQualityChance(double limit = 9999999999)
         {
-            return ((int)FertilizerQuality) >= 3 ? Math.Max(0f,1f - goldChance - this.getCropIridiumChance(goldChance)) : (1f - goldChance) * Math.Min(0.75f, goldChance * 2.0f); //garanteed if fertilizer is used and quality of said fertilizer is 3 or higher
+            int fertilizerQualityLevel = (int)FertilizerQuality;
+            double part1 = (0.2 * (farmingLevel / 10.0)) + 0.01;
+            double part2 = 0.2 * (fertilizerQualityLevel * ((farmingLevel + 2) / 12.0));
+            return Math.Min(limit, part1 + part2);
         }
-
+        private double getCropBaseQualityChance()
+        {
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? 0f : Math.Max(0f,1f - (this.getCropIridiumQualityChance() + this.getCropGoldQualityChance() + this.getCropSilverQualityChance()));
+        }
+        private double getCropSilverQualityChance()
+        {
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? 1f-(this.getCropIridiumQualityChance() + this.getCropGoldQualityChance()) : (1f - this.getCropIridiumQualityChance()) * (1f - this.getCropBaseGoldQualityChance()) * Math.Min(0.75, 2 * this.getCropBaseGoldQualityChance() );
+        }
         private double getCropGoldQualityChance()
         {
-            int fertilizerQualityLevel = (int)FertilizerQuality;
-
-            if (fertilizerQualityLevel < 0)
-            {
-                fertilizerQualityLevel = 0;
-            }
-
-            return 0.2 * ((double)farmingLevel / 10.0) + 0.2 * (double)fertilizerQualityLevel * (((double)farmingLevel + 2.0) / 12.0) + 0.01;
+            return this.getCropBaseGoldQualityChance(1f) * (1f - this.getCropIridiumQualityChance());
         }
-
-        private double getCropIridiumChance(double goldChance)
+        private double getCropIridiumQualityChance()
         {
-            int fertilizerQualityLevel = (int)FertilizerQuality;
-
-            if (fertilizerQualityLevel < 0)
-            {
-                fertilizerQualityLevel = 0;
-            }
-            return fertilizerQualityLevel >= 3 ? (goldChance / 2.0f) : 0; //if fertilizer is used and quality of said fertilizer is 3 or higher
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? getCropBaseGoldQualityChance() / 2.0 : 0f;
         }
+        #endregion
 
-        private double getCropBaseQualityChance(double silverChance, double goldChance, double iridiumChance)
-        {
-            return ((int)FertilizerQuality)>=3 ? 0f : 1f  - silverChance - goldChance - iridiumChance;
-        }
+
     }
 }

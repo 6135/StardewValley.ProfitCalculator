@@ -622,11 +622,9 @@ namespace ProfitCalculator.menus
                     //monitor.Log($"{obj?.GetType()} {obj?.Category} {item}", LogLevel.Debug);
                 }
             }
-            //monitor.Log($"{crops.ToString()}", LogLevel.Debug);
             monitor.Log("Doing Calculation", LogLevel.Debug);
             //ModEntry.Calculator.Calculate();
-            //ModEntry.Calculator.refreshCropList();
-            ModEntry.Calculator.printCropChanceTablesForAllFarmingLevelsAndFertilizerType();
+            ModEntry.Calculator.refreshCropList();
         }
     }
 }

@@ -22,9 +22,8 @@ namespace ProfitCalculator.main
         {
         }
 
-        public override Dictionary<string, Crop> BuildCrops(bool usingBaseStats)
+        public override Dictionary<string, Crop> BuildCrops()
         {
-            this.usingBaseStats = usingBaseStats;
             //read crop data from game files
             //add crops to list
 

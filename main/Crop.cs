@@ -31,8 +31,6 @@ namespace ProfitCalculator.main
         public WorldDate? EndDate;
         public int Days;
         public int Price = -1;
-        public bool UsingBaseStats;
-        public int FertilizerQuality;
 
         //prices should be calculated from price, then price x1.25, then price x1.5, then price x2
         public float AveragePriceMultiplier;
@@ -55,12 +53,6 @@ namespace ProfitCalculator.main
             EndDate = endDate;
             Days = Phases.Sum();
             Price = ((SObject)Item).Price;
-        }
-
-        public void setSettings(bool usingBaseStats, int fertilizerQuality)
-        {
-            this.UsingBaseStats = usingBaseStats;
-            this.FertilizerQuality = fertilizerQuality;
         }
 
         public override bool Equals(object? obj)
