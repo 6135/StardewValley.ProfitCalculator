@@ -586,7 +586,7 @@ namespace ProfitCalculator.menus
         {
             ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats);
 
-            Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
+            /*Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
             monitor.Log("----------------------------Data\\Crops----------------------------", LogLevel.Debug);
             //order keyvaluepair by key
             List<KeyValuePair<int, string>> cropsList = new List<KeyValuePair<int, string>>(crops);
@@ -602,9 +602,9 @@ namespace ProfitCalculator.menus
             {
                 Item item = new SObject(crop.Key, 1);
                 monitor.Log($"{item.Name} {item.salePrice()} {item}: {crop.Key}", LogLevel.Debug);
-            }
+            }*/
 
-            if (Helpers.JApi != null)
+            /*if (Helpers.JApi != null)
             {
                 monitor.Log("----------------------------JApi----------------------------", LogLevel.Debug);
                 foreach (KeyValuePair<string, int> crop in Helpers.JApi.GetAllCropIds())
@@ -621,10 +621,11 @@ namespace ProfitCalculator.menus
                     SObject obj = (SObject)Helpers.DApi.SpawnDGAItem(item);
                     //monitor.Log($"{obj?.GetType()} {obj?.Category} {item}", LogLevel.Debug);
                 }
-            }
+            }*/
             monitor.Log("Doing Calculation", LogLevel.Debug);
             //ModEntry.Calculator.Calculate();
             ModEntry.Calculator.refreshCropList();
+            ModEntry.Calculator.RetrieveCropsAsOrderderList();
         }
     }
 }

@@ -10,19 +10,9 @@ namespace ProfitCalculator.main
     {
         public readonly string Name;
 
-        protected Dictionary<string, Crop> Crops;
-
-        protected CropParser(string name = "CroParser", Dictionary<string, Crop> crops = null)
+        protected CropParser(string name = "CroParser")
         {
             Name = name;
-            if (crops is null)
-            {
-                Crops = new();
-            }
-            else
-            {
-                Crops = crops;
-            }
         }
 
         public abstract Dictionary<string, Crop> BuildCrops();

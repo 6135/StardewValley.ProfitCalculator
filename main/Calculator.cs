@@ -87,7 +87,7 @@ namespace ProfitCalculator.main
                 {
                     Crop crop = cr.Value;
                     crops.Add(cr.Key, crop);
-                    Monitor.Log($"Added crop: {cr.Key} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()}" , LogLevel.Debug);
+                    Monitor.Log($"Added crop: {cr.Value.Name} Id: {cr.Key} Seed: {cr.Value.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {cr.Value.TotalHarvestTimesWithRemainingDays(Season,FertilizerQuality,(int)Day)}" , LogLevel.Debug);
                 }
             }
         }
@@ -96,6 +96,23 @@ namespace ProfitCalculator.main
         {
             crops = new();
             RetrieveCropList();
+        }
+
+        public List<Crop> RetrieveCropsAsOrderderList()
+        {
+            // sort crops by profit
+            // return list
+            List<Crop> cropList = new ();
+            foreach (KeyValuePair<string, Crop> crop in crops)
+            {
+                cropList.Add(crop.Value);
+            }
+            cropList.Sort((x, y) => y.Price.CompareTo(x.Price));
+            foreach (Crop crop in cropList)
+            {
+                Monitor.Log($"Ordered Crop: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestTimesWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);
+            }
+            return cropList;
         }
 
         #region Crop Modifer Value Calculations
@@ -162,7 +179,7 @@ namespace ProfitCalculator.main
         }
         private double getCropBaseGoldQualityChance(double limit = 9999999999)
         {
-            int fertilizerQualityLevel = (int)FertilizerQuality;
+            int fertilizerQualityLevel = ((int)FertilizerQuality) > 0 ? ((int)FertilizerQuality) : 0;
             double part1 = (0.2 * (farmingLevel / 10.0)) + 0.01;
             double part2 = 0.2 * (fertilizerQualityLevel * ((farmingLevel + 2) / 12.0));
             return Math.Min(limit, part1 + part2);

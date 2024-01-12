@@ -45,7 +45,7 @@ namespace ProfitCalculator
                 case Season.Summer:
                     return 28;
 
-                case Season.Autumn:
+                case Season.Fall:
                     return 28;
 
                 case Season.Winter:
@@ -61,11 +61,11 @@ namespace ProfitCalculator
 
         public enum Season
         {
-            Spring,
-            Summer,
-            Autumn,
-            Winter,
-            Greenhouse
+            Spring = 0,
+            Summer = 1,
+            Fall = 2,
+            Winter = 3,
+            Greenhouse = 4
         }
 
         public enum ProduceType

@@ -11,13 +11,12 @@ using SCrop = StardewValley.Crop;
 using StardewValley.TerrainFeatures;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using static ProfitCalculator.Helpers;
 
 namespace ProfitCalculator.main
 {
     internal class VanillaCropParser : CropParser
     {
-        private bool usingBaseStats = false;
-
         public VanillaCropParser(string name = "VanillaCropParser") : base(name)
         {
         }
@@ -26,13 +25,13 @@ namespace ProfitCalculator.main
         {
             //read crop data from game files
             //add crops to list
-
+            Dictionary<string, Crop> Crops = new();
             Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
             foreach (KeyValuePair<int, string> crop in crops)
             {
                 Crop? cropToAdd = BuildCrop(crop.Value.Split('/'), crop.Key);
                 if (cropToAdd != null && !Crops.ContainsKey(crop.Key.ToString()))
-                    this.Crops.Add(crop.Key.ToString(), cropToAdd);
+                    Crops.Add(cropToAdd.Id.ToString(), cropToAdd);
             }
             return Crops;
         }
@@ -66,6 +65,7 @@ namespace ProfitCalculator.main
             int maxHarvest = 1;
             int maxHarvestIncreasePerFarmingLevel = 0;
             double chanceForExtraCrops = 0.0f;
+
             if (cropYieldSplit.Length != 0 && cropYieldSplit[0].Equals("true"))
             {
                 minHarvest = Convert.ToInt32(cropYieldSplit[1]);
@@ -73,6 +73,14 @@ namespace ProfitCalculator.main
                 maxHarvestIncreasePerFarmingLevel = Convert.ToInt32(cropYieldSplit[3]);
                 chanceForExtraCrops = Convert.ToDouble(cropYieldSplit[4]);
             }
+            double[] harvestValues = new double[4]
+            {
+                minHarvest,
+                maxHarvest,
+                maxHarvestIncreasePerFarmingLevel,
+                chanceForExtraCrops
+            };
+
             // If the sprite is 23, it's a seasonal multi-seed
             // so we want to show that rather than the seed.
             Item item = new SObject(sprite == 23 ? id : harvest, 1);
@@ -163,7 +171,7 @@ namespace ProfitCalculator.main
             }
 
             Crop crop = new(
-                id: id,
+                id: harvest,
                 item: item,
                 name: item.DisplayName,
                 sprite: new(Game1.objectSpriteSheet, Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, item.ParentSheetIndex, tileSize, tileSize)),
@@ -176,7 +184,9 @@ namespace ProfitCalculator.main
                 regrow: regrow,
                 isPaddyCrop: paddyCrop,
                 startDate: startDate,
-                endDate: endDate
+                endDate: endDate,
+                seasons: seasons.Select(s => (Season)Enum.Parse(typeof(Season), s, true)).ToArray(),
+                harvestChanceValues: harvestValues
             );
             return crop;
         }
