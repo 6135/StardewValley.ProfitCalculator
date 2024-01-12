@@ -76,52 +76,7 @@ namespace ProfitCalculator.menus
 
             this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
-        }
-
-        public void updateMenu()
-        {
-            Labels.Clear();
-            Options.Clear();
-            this.setUpPositions();
-        }
-
-        public override void update(GameTime time)
-        {
-            base.update(time);
-            //update all the options and labels and buttons
-            foreach (BaseOption option in Options)
-            {
-                option.Update();
-            }
-        }
-
-        public static Vector2 getAppropriateMenuPosition()
-        {
-            Vector2 defaultPosition = new Vector2(Game1.viewport.Width / 2 - widthOnScreen / 2, (Game1.viewport.Height / 2 - heightOnScreen / 2));
-
-            //Force the viewport into a position that it should fit into on the screen???
-            if (defaultPosition.X + widthOnScreen > Game1.viewport.Width)
-            {
-                defaultPosition.X = 0;
-            }
-
-            if (defaultPosition.Y + heightOnScreen > Game1.viewport.Height)
-            {
-                defaultPosition.Y = 0;
-            }
-            return defaultPosition;
-        }
-
-        /// <summary>The method called when the game window changes size.</summary>
-        /// <param name="oldBounds">The former viewport.</param>
-        /// <param name="newBounds">The new viewport.</param>
-        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
-        {
-            base.gameWindowSizeChanged(oldBounds, newBounds);
-            this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
-            this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
-
-            this.updateMenu();
+            this.resetMenu();
         }
 
         #region Menu Button Setups
@@ -520,6 +475,8 @@ namespace ProfitCalculator.menus
 
         #endregion Draw Methods
 
+        #region Event Handling
+
         public override void receiveKeyPress(Keys key)
         {
             switch (key)
@@ -581,6 +538,54 @@ namespace ProfitCalculator.menus
             UseBaseStats = false;
             this.updateMenu();
         }
+
+        public void updateMenu()
+        {
+            Labels.Clear();
+            Options.Clear();
+            this.setUpPositions();
+        }
+
+        public override void update(GameTime time)
+        {
+            base.update(time);
+            //update all the options and labels and buttons
+            foreach (BaseOption option in Options)
+            {
+                option.Update();
+            }
+        }
+
+        public static Vector2 getAppropriateMenuPosition()
+        {
+            Vector2 defaultPosition = new Vector2(Game1.viewport.Width / 2 - widthOnScreen / 2, (Game1.viewport.Height / 2 - heightOnScreen / 2));
+
+            //Force the viewport into a position that it should fit into on the screen???
+            if (defaultPosition.X + widthOnScreen > Game1.viewport.Width)
+            {
+                defaultPosition.X = 0;
+            }
+
+            if (defaultPosition.Y + heightOnScreen > Game1.viewport.Height)
+            {
+                defaultPosition.Y = 0;
+            }
+            return defaultPosition;
+        }
+
+        /// <summary>The method called when the game window changes size.</summary>
+        /// <param name="oldBounds">The former viewport.</param>
+        /// <param name="newBounds">The new viewport.</param>
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            base.gameWindowSizeChanged(oldBounds, newBounds);
+            this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
+            this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
+
+            this.updateMenu();
+        }
+
+        #endregion Event Handling
 
         private void DoCalculation()
         {
