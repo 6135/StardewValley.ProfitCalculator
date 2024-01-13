@@ -115,7 +115,7 @@ namespace ProfitCalculator.main
             }
         }
 
-        #region Growth Time Calculations
+        #region Growth Values Calculations
 
         private float GetAverageGrowthSpeedValueForCrop(FertilizerQuality fertilizerQuality)
         {
@@ -173,7 +173,7 @@ namespace ProfitCalculator.main
             return 28 - day;
         }
 
-        public int TotalHarvestTimesWithRemainingDays(Season currentSeason, FertilizerQuality fertilizerQuality, int day)
+        public int TotalHarvestsWithRemainingDays(Season currentSeason, FertilizerQuality fertilizerQuality, int day)
         {
             int totalHarvestTimes = 0;
             int totalAvailableDays = TotalAvailableDays(currentSeason, day);
@@ -198,17 +198,60 @@ namespace ProfitCalculator.main
             return totalHarvestTimes;
         }
 
-        #endregion Growth Time Calculations
+        public double TotalChanceForExtraCrop()
+        {
+            //TODO: Implement
+            return 0f;
+        }
+        #endregion Growth Values Calculations
+
+        #region Profit Calculations
+
+        public double TotalProfitOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
+        {
+            double totalProfitOverRemainingDays = 0.0;
+            return totalProfitOverRemainingDays;
+            //TODO: Implement
+        }
+
+        public double TotalProfitPerDayOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
+        {
+            double totalProfitPerDayOverRemainingDays = 0.0;
+            return totalProfitPerDayOverRemainingDays;
+            //TODO: Implement
+        }
+
+        public double TotalSeedCostOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
+        {
+            double totalSeedCostOverRemainingDays = 0.0;
+            return totalSeedCostOverRemainingDays;
+            //TODO: Implement
+        }
+
+        public double TotalSeedCostPerDayOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
+        {
+            double totalSeedCostPerDayOverRemainingDays = 0.0;
+            return totalSeedCostPerDayOverRemainingDays;
+            //TODO: Implement
+        }
+
+        public double TotalFertilizerCostOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
+        {
+            double totalFertilizerCostOverRemainingDays = 0.0;
+            return totalFertilizerCostOverRemainingDays;
+            //TODO: Implement
+        }
+
+        public double TotalFertilizerCostPerDayOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
+        {
+            double totalFertilizerCostPerDayOverRemainingDays = 0.0;
+            return totalFertilizerCostPerDayOverRemainingDays;
+            //TODO: Implement
+        }
+
+
+        #endregion Profit Calculations
 
         //Profit Per day, Profit per day must take into consideration regrowth time, average price, and the number of days it takes to grow. Also if the time to grow or regrow is greater than the number of days in a season or seasons if multi season crop, then the profit per day should be 0. In case of multiple output multiply this value by the chance to get more than one item. Also it needs to recieve the fertilizer quality.
-        public double PricePerDay(Season currentSeason, int day, FertilizerQuality fertilizerQuality)
-        {
-            double pricePerDay = 0.0;
-            int totalAvailableDays = TotalAvailableDays(currentSeason, day);
-            if (IsAvailableForCurrentSeason(currentSeason))
-            {
-            }
-            return pricePerDay;
-        }
     }
 }

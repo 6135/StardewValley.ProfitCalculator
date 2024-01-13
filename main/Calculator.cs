@@ -87,7 +87,7 @@ namespace ProfitCalculator.main
                 {
                     Crop crop = cr.Value;
                     crops.Add(cr.Key, crop);
-                    Monitor.Log($"Added crop: {cr.Value.Name} Id: {cr.Key} Seed: {cr.Value.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {cr.Value.TotalHarvestTimesWithRemainingDays(Season,FertilizerQuality,(int)Day)}" , LogLevel.Debug);
+                    Monitor.Log($"Added crop: {cr.Value.Name} Id: {cr.Key} Seed: {cr.Value.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {cr.Value.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace ProfitCalculator.main
         {
             // sort crops by profit
             // return list
-            List<Crop> cropList = new ();
+            List<Crop> cropList = new();
             foreach (KeyValuePair<string, Crop> crop in crops)
             {
                 cropList.Add(crop.Value);
@@ -110,12 +110,13 @@ namespace ProfitCalculator.main
             cropList.Sort((x, y) => y.Price.CompareTo(x.Price));
             foreach (Crop crop in cropList)
             {
-                Monitor.Log($"Ordered Crop: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestTimesWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);
+                Monitor.Log($"Ordered Crop: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {crop.Price * this.getAverageValueForCropAfterModifiers() * crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);
             }
             return cropList;
         }
 
         #region Crop Modifer Value Calculations
+
         public void printCropChanceTablesForAllFarmingLevels()
         {
             int backupFarmingLevel = farmingLevel;
@@ -131,7 +132,7 @@ namespace ProfitCalculator.main
 
                 Monitor.Log(
                     $"|{farmingLevel}\t\t\t   "
-                    + $"{(chanceForBaseQuality*100).ToString("##")}\t\t"
+                    + $"{(chanceForBaseQuality * 100).ToString("##")}\t\t"
                     + $"{(chanceForSilverQuality * 100).ToString("##")}\t\t"
                     + $"{(chanceForGoldQuality * 100).ToString("##")}\t\t"
                     + $"{(chanceForIridiumQuality * 100).ToString("##")}\t\t"
@@ -140,6 +141,7 @@ namespace ProfitCalculator.main
             }
             farmingLevel = backupFarmingLevel;
         }
+
         public void printCropChanceTablesForAllFarmingLevelsAndFertilizerType()
         {
             FertilizerQuality backupFertilizerQuality = FertilizerQuality;
@@ -151,6 +153,7 @@ namespace ProfitCalculator.main
             }
             FertilizerQuality = backupFertilizerQuality;
         }
+
         public double getAverageValueMultiplierForCrop()
         {
             double[] priceMultipliers = PriceMultipliers;
@@ -168,6 +171,7 @@ namespace ProfitCalculator.main
             averageValue += chanceForIridiumQuality * priceMultipliers[3];
             return averageValue;
         }
+
         public double getAverageValueForCropAfterModifiers()
         {
             double averageValue = this.getAverageValueMultiplierForCrop();
@@ -177,6 +181,7 @@ namespace ProfitCalculator.main
             }
             return Math.Round(averageValue, 2);
         }
+
         private double getCropBaseGoldQualityChance(double limit = 9999999999)
         {
             int fertilizerQualityLevel = ((int)FertilizerQuality) > 0 ? ((int)FertilizerQuality) : 0;
@@ -184,24 +189,27 @@ namespace ProfitCalculator.main
             double part2 = 0.2 * (fertilizerQualityLevel * ((farmingLevel + 2) / 12.0));
             return Math.Min(limit, part1 + part2);
         }
+
         private double getCropBaseQualityChance()
         {
-            return FertilizerQuality >= FertilizerQuality.Deluxe ? 0f : Math.Max(0f,1f - (this.getCropIridiumQualityChance() + this.getCropGoldQualityChance() + this.getCropSilverQualityChance()));
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? 0f : Math.Max(0f, 1f - (this.getCropIridiumQualityChance() + this.getCropGoldQualityChance() + this.getCropSilverQualityChance()));
         }
+
         private double getCropSilverQualityChance()
         {
-            return FertilizerQuality >= FertilizerQuality.Deluxe ? 1f-(this.getCropIridiumQualityChance() + this.getCropGoldQualityChance()) : (1f - this.getCropIridiumQualityChance()) * (1f - this.getCropBaseGoldQualityChance()) * Math.Min(0.75, 2 * this.getCropBaseGoldQualityChance() );
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? 1f - (this.getCropIridiumQualityChance() + this.getCropGoldQualityChance()) : (1f - this.getCropIridiumQualityChance()) * (1f - this.getCropBaseGoldQualityChance()) * Math.Min(0.75, 2 * this.getCropBaseGoldQualityChance());
         }
+
         private double getCropGoldQualityChance()
         {
             return this.getCropBaseGoldQualityChance(1f) * (1f - this.getCropIridiumQualityChance());
         }
+
         private double getCropIridiumQualityChance()
         {
             return FertilizerQuality >= FertilizerQuality.Deluxe ? getCropBaseGoldQualityChance() / 2.0 : 0f;
         }
-        #endregion
 
-
+        #endregion Crop Modifer Value Calculations
     }
 }
