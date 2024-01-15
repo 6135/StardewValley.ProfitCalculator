@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.main;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +36,50 @@ namespace ProfitCalculator.UI
                 this.ClickableComponent.bounds.Width,
                 this.ClickableComponent.bounds.Height
                 );
+            //draw crop sprite in the middle of the box aligned to the left
+            int spriteSize = 16;
+            int spriteDisplaySize = (int)(spriteSize * 3.25);
 
-            b.DrawString(this.Font, mainText, this.Position + new Vector2(16, 12), Game1.textColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.35f);
+            b.Draw(
+                Game1.objectSpriteSheet,
+                new Rectangle(
+                    (int)this.Position.X + 8,
+                    (int)this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Game1.tileSize / 2) + 6,
+                    spriteDisplaySize,
+                    spriteDisplaySize
+                ),
+                Game1.getSourceRectForStandardTileSheet(
+                    Game1.objectSpriteSheet,
+                    cropInfo.Crop.Id,
+                    spriteSize,
+                    spriteSize
+                ),
+                Color.White
+            );
+
+            //draw vertical stamina bar separating the text from the left side of the box
+            /*b.Draw(
+                Game1.staminaRect,
+                new Rectangle(
+                    (int)this.Position.X + Game1.tileSize,
+                    (int)this.Position.Y,
+                    2,
+                    this.ClickableComponent.bounds.Height
+                ),
+                Color.Wheat
+            );*/
+            //draw string in middle of box, aligned to the left with a spacing of 2xtilesize from the left
+            b.DrawString(
+                Font,
+                this.mainText,
+                new Vector2(
+                    this.Position.X + 10 + Game1.tileSize,
+                    this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Font.MeasureString(this.mainText).Y / 2)
+                ),
+                Color.Black
+           );
+
+
         }
     }
 }
