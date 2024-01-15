@@ -21,7 +21,19 @@ namespace ProfitCalculator.UI
         public bool Hover { get; private set; }
 
         public bool ClickGestured { get; private set; }
-
+        public void setClickableComponent(Vector2 position, Vector2 Size)
+        {
+            ClickableComponent = new(
+                new Rectangle(
+                    (int)position.X,
+                    (int)position.Y,
+                    (int)Size.X,
+                    (int)Size.Y
+                ),
+                Name(),
+                Name()
+            );
+        }
         public ClickableComponent ClickableComponent
         {
             get => clickableComponent;

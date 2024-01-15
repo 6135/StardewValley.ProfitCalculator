@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ProfitCalculator.Helpers;
+using static ProfitCalculator.Utils;
 
 namespace ProfitCalculator.main
 {
@@ -103,6 +103,10 @@ namespace ProfitCalculator.main
             // sort crops by profit
             // return list
             List<Crop> cropList = new();
+            if (crops.Count == 0)
+            {
+                RetrieveCropList();
+            }
             foreach (KeyValuePair<string, Crop> crop in crops)
             {
                 cropList.Add(crop.Value);
@@ -121,19 +125,55 @@ namespace ProfitCalculator.main
             return cropList;
         }
 
+        public List<CropInfo> RetrieveCropInfos()
+        {
+            if (crops.Count == 0)
+            {
+                RetrieveCropList();
+            }
+            List<CropInfo> cropInfos = new();
+            foreach (Crop crop in crops.Values)
+            {
+                cropInfos.Add(RetrieveCropInfo(crop));
+            }
+            return cropInfos;
+        }
+
+        private CropInfo RetrieveCropInfo(Crop crop)
+        {
+            double totalProfit = totalCropProfit(crop);
+            double profitPerDay = totalCropProfitPerDay(crop);
+            double totalSeedLoss = totalSeedsCost(crop);
+            double seedLossPerDay = totalSeedsCostPerDay(crop);
+            double totalFertilizerLoss = totalFertilizerCost(crop);
+            double fertilizerLossPerDay = totalFertilzerCostPerDay(crop);
+            ProduceType produceType = ProduceType;
+            int duration = crop.TotalAvailableDays(Season, (int)Day);
+            int totalHarvests = crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
+            int growthTime = crop.Days;
+            int regrowthTime = crop.Regrow;
+            int productCount = crop.MinHarvests;
+            double chanceOfExtraProduct = crop.AverageExtraCropsFromRandomness();
+            double chanceOfNormalQuality = getCropBaseQualityChance();
+            double chanceOfSilverQuality = getCropSilverQualityChance();
+            double chanceOfGoldQuality = getCropGoldQualityChance();
+            double chanceOfIridiumQuality = getCropIridiumQualityChance();
+            return new CropInfo(crop, totalProfit, profitPerDay, totalSeedLoss, seedLossPerDay, totalFertilizerLoss, fertilizerLossPerDay, produceType, duration, totalHarvests, growthTime, regrowthTime, productCount, chanceOfExtraProduct, chanceOfNormalQuality, chanceOfSilverQuality, chanceOfGoldQuality, chanceOfIridiumQuality);
+        }
+
         #region Crop Profit Calculations
+
         private double totalCropProfit(Crop crop)
         {
-    
             double averageValue = crop.Price * this.getAverageValueForCropAfterModifiers();//only applies to first produce
             double totalProfitFromFirstProduce = averageValue;
             double averageExtraCrops = crop.AverageExtraCropsFromRandomness();
-            double totalProfitFromAllProduce =  (crop.MinHarvests - 1 >= 0 ? crop.MinHarvests - 1 : 0) * crop.Price;
+            double totalProfitFromAllProduce = (crop.MinHarvests - 1 >= 0 ? crop.MinHarvests - 1 : 0) * crop.Price;
             totalProfitFromAllProduce += crop.Price * averageExtraCrops;
 
             if (!UseBaseStats && Game1.player.professions.Contains(Farmer.tiller))
             {
-                totalProfitFromAllProduce *= 1f; //TODO: Re-add 1.1f; 
+                totalProfitFromAllProduce *= 1f; //TODO: Re-add 1.1f;
             }
             return (totalProfitFromFirstProduce + totalProfitFromAllProduce) * crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
         }
@@ -141,11 +181,11 @@ namespace ProfitCalculator.main
         private double totalCropProfitPerDay(Crop crop)
         {
             double totalProfit = totalCropProfit(crop);
-            if(totalProfit == 0)
+            if (totalProfit == 0)
             {
                 return 0;
             }
-            double totalCropProfitPerDay = totalProfit / crop.TotalAvailableDays(Season,(int)Day);
+            double totalCropProfitPerDay = totalProfit / crop.TotalAvailableDays(Season, (int)Day);
             return totalCropProfitPerDay;
         }
 
@@ -155,7 +195,6 @@ namespace ProfitCalculator.main
                 return 1;
             else
             {
-
                 return (int)Math.Ceiling(crop.TotalAvailableDays(Season, (int)Day) / 28.0);
             }
         }
@@ -163,9 +202,8 @@ namespace ProfitCalculator.main
         private int totalFertilizerCost(Crop crop)
         {
             int fertNeeded = totalFertilizerNeeded(crop);
-            int fertCost = Helpers.FertilizerPrices(FertilizerQuality);
+            int fertCost = Utils.FertilizerPrices(FertilizerQuality);
             return fertNeeded * fertCost;
-
         }
 
         private double totalFertilzerCostPerDay(Crop crop)
@@ -175,9 +213,10 @@ namespace ProfitCalculator.main
             {
                 return 0;
             }
-            double totalFertilizerCostPerDay = (double)fertCost / (double) crop.TotalAvailableDays(Season, (int)Day);
+            double totalFertilizerCostPerDay = (double)fertCost / (double)crop.TotalAvailableDays(Season, (int)Day);
             return totalFertilizerCostPerDay;
         }
+
         private int totalSeedsNeeded(Crop crop)
         {
             if (crop.Regrow > 0 && crop.TotalAvailableDays(Season, (int)Day) > 0)
@@ -190,7 +229,6 @@ namespace ProfitCalculator.main
             int seedsNeeded = totalSeedsNeeded(crop);
             int seedCost = crop.Seeds[0].salePrice();
             return seedsNeeded * seedCost;
-
         }
 
         private double totalSeedsCostPerDay(Crop crop)
@@ -202,10 +240,10 @@ namespace ProfitCalculator.main
             }
             double totalSeedsCostPerDay = (double)seedCost / (double)crop.TotalAvailableDays(Season, (int)Day);
             return totalSeedsCostPerDay;
-
         }
 
         #endregion Crop Profit Calculations
+
         #region Crop Modifer Value Calculations
 
         public void printCropChanceTablesForAllFarmingLevels()

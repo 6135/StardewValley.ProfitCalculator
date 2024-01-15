@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ProfitCalculator.Helpers;
+using static ProfitCalculator.Utils;
 using ProfitCalculator.main;
 
 namespace ProfitCalculator.menus
@@ -29,7 +29,14 @@ namespace ProfitCalculator.menus
 
         private readonly List<CropInfo> cropInfos;
         private readonly List<BaseOption> Options = new();
-
+        private readonly List<Vector4> OptionSlots = new();
+        private ClickableTextureComponent upArrow;
+        private ClickableTextureComponent downArrow;
+        private Rectangle scrollBarBounds;
+        private ClickableTextureComponent scrollBar;
+        private int currentItemIndex = 0;
+        private int maxOptions = 6;
+        private bool scrolling = false;
         public bool IsResultsListOpen { get; set; } = false;
 
         public ProfitCalculatorResultsList(IModHelper _helper, IMonitor _monitor, ModConfig _modConfig, List<CropInfo> _cropInfos) :
@@ -44,6 +51,29 @@ namespace ProfitCalculator.menus
             monitor = _monitor;
             config = _modConfig;
             cropInfos = _cropInfos;
+            for (int i = 0; i < maxOptions; i++)
+            {
+                OptionSlots.Add(
+                    new(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + 10,
+                        this.yPositionOnScreen + (spaceToClearTopBorder + 5) + (Game1.tileSize / 2) + ((Game1.tileSize + Game1.tileSize / 2) * i),
+                        widthOnScreen - ((spaceToClearSideBorder + borderWidth + 10) * 2),
+                        Game1.tileSize
+                   )
+                );
+            }
+            foreach (CropInfo cropInfo in cropInfos)
+            {
+                Options.Add(
+                    new CropBox(
+                        0,
+                        0,
+                        0,
+                        0,
+                        cropInfo
+                    )
+                );
+            }
 
             behaviorBeforeCleanup = delegate
             {
@@ -52,6 +82,24 @@ namespace ProfitCalculator.menus
 
             this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
+            int scrollbar_x = xPositionOnScreen + width + 16;
+            this.upArrow = new ClickableTextureComponent(
+                new Rectangle(scrollbar_x, yPositionOnScreen + Game1.tileSize + Game1.tileSize / 3, 44, 48),
+                Game1.mouseCursors,
+                new Rectangle(421, 459, 11, 12),
+                4f);
+            this.downArrow = new ClickableTextureComponent(
+                new Rectangle(scrollbar_x, yPositionOnScreen + height - 64, 44, 48),
+                Game1.mouseCursors,
+                new Rectangle(421, 472, 11, 12),
+                4f);
+            this.scrollBarBounds = default;
+            this.scrollBarBounds.X = this.upArrow.bounds.X + 12;
+            this.scrollBarBounds.Width = 24;
+            this.scrollBarBounds.Y = this.upArrow.bounds.Y + this.upArrow.bounds.Height + 4;
+            this.scrollBarBounds.Height = this.downArrow.bounds.Y - 4 - this.scrollBarBounds.Y;
+            this.scrollBar = new ClickableTextureComponent(new Rectangle(this.scrollBarBounds.X, this.scrollBarBounds.Y, 24, 40), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), 4f);
+            //max options is a division of the height of the menu by the height of each option
         }
 
         #region Menu Button Setups
@@ -119,8 +167,26 @@ namespace ProfitCalculator.menus
 
             if (!Game1.options.showMenuBackground)
                 b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.4f);
+
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, widthOnScreen, heightOnScreen, speaker: false, drawOnlyBox: true);
 
+            for (int i = 0; i < maxOptions; i++)
+            {
+                if (currentItemIndex + i >= Options.Count)
+                    break;
+                Options[currentItemIndex + i].ClickableComponent = new(new(
+                    (int)OptionSlots[i].X,
+                    (int)OptionSlots[i].Y,
+                    (int)OptionSlots[i].Z,
+                    (int)OptionSlots[i].W
+                ), Options[currentItemIndex + i].Name());
+                Options[currentItemIndex + i].Draw(b);
+            }
+
+            this.upArrow.draw(b);
+            this.downArrow.draw(b);
+            IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarBounds.X, this.scrollBarBounds.Y, this.scrollBarBounds.Width, this.scrollBarBounds.Height, Color.White, 4f, drawShadow: false);
+            this.scrollBar.draw(b);
             // Draw Labels and Options and buttons
             /*this.drawActions(b);
             this.drawLabels(b);
@@ -131,100 +197,50 @@ namespace ProfitCalculator.menus
             b.End();
             b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);*/
 
-            if (shouldDrawCloseButton()) base.draw(b);
-            if (!Game1.options.hardwareCursor) b.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
+            if (shouldDrawCloseButton())
+                base.draw(b);
+            if (!Game1.options.hardwareCursor)
+                b.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
         }
-
-        /*private void drawActions(SpriteBatch b)
-        {
-            // Draw the calculate button.
-            IClickableMenu.drawTextureBox
-            (
-                b,
-                Game1.mouseCursors,
-                new Rectangle(432, 439, 9, 9),
-                calculateButton.bounds.X,
-                calculateButton.bounds.Y,
-                calculateButton.bounds.Width,
-                calculateButton.bounds.Height,
-                (calculateButton.scale != 1.0001f) ? Color.Wheat : Color.White,
-                4f,
-                false
-            );
-            b.DrawString
-            (
-                Game1.smallFont,
-                calculateButton.label,
-                new Vector2
-                (
-                    (float)calculateButton.bounds.X
-                        + (calculateButton.bounds.Width / 2)
-                        - (Game1.smallFont.MeasureString(calculateButton.label).X / 2),
-                    (float)calculateButton.bounds.Y
-                        + (calculateButton.bounds.Height / 2)
-                        - (Game1.smallFont.MeasureString(calculateButton.name).Y / 2)
-                ),
-                Game1.textColor
-            );
-
-            // Draw the reset button.
-            IClickableMenu.drawTextureBox
-            (
-                b,
-                Game1.mouseCursors,
-                new Rectangle(432, 439, 9, 9),
-                resetButton.bounds.X,
-                resetButton.bounds.Y,
-                resetButton.bounds.Width,
-                resetButton.bounds.Height,
-                (resetButton.scale != 1.0001f) ? Color.Wheat : Color.White,
-                4f,
-                false
-            );
-            b.DrawString
-            (
-                Game1.smallFont,
-                resetButton.label,
-                new Vector2
-                (
-                    (float)resetButton.bounds.X
-                        + (resetButton.bounds.Width / 2)
-                        - (Game1.smallFont.MeasureString(resetButton.label).X / 2),
-                    (float)resetButton.bounds.Y
-                        + (resetButton.bounds.Height / 2)
-                        - (Game1.smallFont.MeasureString(resetButton.name).Y / 2)
-                ),
-                Game1.textColor
-            );
-        }
-
-        private void drawLabels(SpriteBatch b)
-        {
-            foreach (ClickableComponent label in Labels)
-            {
-                b.DrawString(
-                    Game1.dialogueFont,
-                    label.label,
-                    new Vector2(
-                        (float)label.bounds.X,
-                        (float)label.bounds.Y + (label.bounds.Height / 2) - (Game1.smallFont.MeasureString(label.name).Y / 2)
-                    ),
-                    Game1.textColor
-                );
-            }
-        }
-
-        private void drawOptions(SpriteBatch b)
-        {
-            foreach (BaseOption option in Options)
-            {
-                option.Draw(b);
-            }
-        }*/
 
         #endregion Draw Methods
 
         #region Event Handling
+
+        private void setScrollBarToCurrentIndex()
+        {
+            if (this.Options.Count > 0)
+            {
+                this.scrollBar.bounds.Y = this.scrollBarBounds.Y + this.currentItemIndex * this.scrollBarBounds.Height / Math.Max(1, this.Options.Count - maxOptions / 2);
+                /*                if (this.currentItemIndex == this.Options.Count - maxOptions)
+                                {
+                                    this.scrollBar.bounds.Y = this.downArrow.bounds.Y - this.scrollBar.bounds.Height;
+                                }*/
+            }
+            else
+            {
+                this.scrollBar.bounds.Y = this.scrollBarBounds.Y;
+            }
+        }
+
+        public override void receiveScrollWheelAction(int direction)
+        {
+            base.receiveScrollWheelAction(direction);
+            if (direction > 0 && this.currentItemIndex > 0)
+            {
+                this.arrowPressed(-1);
+                Game1.playSound("shiny4");
+            }
+            else if (direction < 0 && this.currentItemIndex < Math.Max(0, this.Options.Count - maxOptions))
+            {
+                arrowPressed();
+                Game1.playSound("shiny4");
+            }
+            if (Game1.options.SnappyMenus)
+            {
+                this.snapCursorToCurrentSnappedComponent();
+            }
+        }
 
         public override void receiveKeyPress(Keys key)
         {
@@ -233,16 +249,123 @@ namespace ProfitCalculator.menus
                 case Keys.Escape:
                     exitThisMenu();
                     break;
+
+                case Keys.Down:
+                    if (currentItemIndex + maxOptions < Options.Count)
+                    {
+                        arrowPressed();
+                        Game1.playSound("shwip");
+                    }
+                    break;
+
+                case Keys.Up:
+                    if (currentItemIndex - maxOptions >= 0)
+                    {
+                        arrowPressed(-1);
+                        Game1.playSound("shwip");
+                    }
+                    break;
             }
         }
 
         public override void performHoverAction(int x, int y)
         {
-            //TODO: add hover actions for buttons
+            for (int i = 0; i < this.OptionSlots.Count; i++)
+            {
+                if (this.currentItemIndex >= 0 && this.currentItemIndex + i < this.Options.Count && this.Options[this.currentItemIndex + i].ClickableComponent.bounds.Contains(x - this.OptionSlots[i].X, y - this.OptionSlots[i].Y))
+                {
+                    Game1.SetFreeCursorDrag();
+                    break;
+                }
+            }
+            if (this.scrollBarBounds.Contains(x, y))
+            {
+                Game1.SetFreeCursorDrag();
+            }
+            if (GameMenu.forcePreventClose)
+            {
+                return;
+            }
+
+            this.upArrow.tryHover(x, y);
+            this.downArrow.tryHover(x, y);
+            this.scrollBar.tryHover(x, y);
+            _ = this.scrolling;
+        }
+
+        public virtual void SetScrollFromY(int y)
+        {
+            int y2 = this.scrollBar.bounds.Y;
+            float percentage = (float)(y - this.scrollBarBounds.Y) / (float)this.scrollBarBounds.Height;
+            this.currentItemIndex = (int)Utility.Lerp(t: Utility.Clamp(percentage, 0f, 1f), a: 0f, b: this.Options.Count - maxOptions);
+            this.setScrollBarToCurrentIndex();
+            if (y2 != this.scrollBar.bounds.Y)
+            {
+                Game1.playSound("shiny4");
+            }
+        }
+
+        public override void leftClickHeld(int x, int y)
+        {
+            if (!GameMenu.forcePreventClose)
+            {
+                base.leftClickHeld(x, y);
+                if (this.scrolling)
+                {
+                    this.SetScrollFromY(y);
+                }
+            }
+        }
+
+        public override void releaseLeftClick(int x, int y)
+        {
+            if (!GameMenu.forcePreventClose)
+            {
+                base.releaseLeftClick(x, y);
+                this.scrolling = false;
+            }
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
+            if (GameMenu.forcePreventClose)
+            {
+                return;
+            }
+            if (this.downArrow.containsPoint(x, y) && this.currentItemIndex < Math.Max(0, this.Options.Count - maxOptions))
+            {
+                this.arrowPressed(1);
+                Game1.playSound("shwip");
+            }
+            else if (this.upArrow.containsPoint(x, y) && this.currentItemIndex > 0)
+            {
+                this.arrowPressed(-1);
+                Game1.playSound("shwip");
+            }
+            else if (this.scrollBar.containsPoint(x, y))
+            {
+                this.scrolling = true;
+            }
+            else if (!this.downArrow.containsPoint(x, y) && x > base.xPositionOnScreen + base.width && x < base.xPositionOnScreen + base.width + 128 && y > base.yPositionOnScreen && y < base.yPositionOnScreen + base.height)
+            {
+                this.scrolling = true;
+                this.leftClickHeld(x, y);
+                this.releaseLeftClick(x, y);
+            }
+        }
+
+        private void arrowPressed(int direction = 1)
+        {
+            if (direction == 1)
+            {
+                this.downArrow.scale = this.downArrow.baseScale;
+            }
+            else
+            {
+                this.upArrow.scale = this.upArrow.baseScale;
+            }
+            this.currentItemIndex += direction;
+            this.setScrollBarToCurrentIndex();
         }
 
         public void updateMenu()

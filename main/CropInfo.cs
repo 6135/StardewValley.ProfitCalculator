@@ -19,7 +19,7 @@ namespace ProfitCalculator.main
         public readonly double TotalFertilizerLoss;
         public readonly double FertilizerLossPerDay;
 
-        public readonly double ProduceType;
+        public readonly Utils.ProduceType ProduceType;
         public readonly int Duration;
         public readonly int TotalHarvests;
         public readonly int GrowthTime;
@@ -32,7 +32,7 @@ namespace ProfitCalculator.main
         public readonly double ChanceOfGoldQuality;
         public readonly double ChanceOfIridiumQuality;
 
-        public CropInfo(Crop crop, double totalProfit, double profitPerDay, double totalSeedLoss, double seedLossPerDay, double totalFertilizerLoss, double fertilizerLossPerDay, double produceType, int duration, int totalHarvests, int growthTime, int regrowthTime, int productCount, double chanceOfExtraProduct, double chanceOfNormalQuality, double chanceOfSilverQuality, double chanceOfGoldQuality, double chanceOfIridiumQuality)
+        public CropInfo(Crop crop, double totalProfit, double profitPerDay, double totalSeedLoss, double seedLossPerDay, double totalFertilizerLoss, double fertilizerLossPerDay, Utils.ProduceType produceType, int duration, int totalHarvests, int growthTime, int regrowthTime, int productCount, double chanceOfExtraProduct, double chanceOfNormalQuality, double chanceOfSilverQuality, double chanceOfGoldQuality, double chanceOfIridiumQuality)
         {
             Crop = crop;
             TotalProfit = totalProfit - totalSeedLoss - totalFertilizerLoss;

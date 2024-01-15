@@ -11,7 +11,7 @@ using SCrop = StardewValley.Crop;
 using StardewValley.TerrainFeatures;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
-using static ProfitCalculator.Helpers;
+using static ProfitCalculator.Utils;
 
 namespace ProfitCalculator.main
 {
@@ -126,11 +126,11 @@ namespace ProfitCalculator.main
             }
 
             // JsonAssets Giant Crops
-            if (!isGiantCrop && Helpers.JApi != null)
+            if (!isGiantCrop && Utils.JApi != null)
             {
                 Texture2D? tex = null;
 
-                if (Helpers.JApi.TryGetGiantCropSprite(harvest, out var text))
+                if (Utils.JApi.TryGetGiantCropSprite(harvest, out var text))
                     tex = text.Value;
 
                 if (tex != null)
@@ -161,7 +161,7 @@ namespace ProfitCalculator.main
                 }
                 catch (Exception)
                 {
-                    Helpers.Monitor.Log($"Invalid season for crop {id} (harvest:{harvest}): {season}", LogLevel.Warn);
+                    Utils.Monitor.Log($"Invalid season for crop {id} (harvest:{harvest}): {season}", LogLevel.Warn);
                 }
 
                 if (startDate == null || startDate > start)

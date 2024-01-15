@@ -13,7 +13,7 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
-using static ProfitCalculator.Helpers;
+using static ProfitCalculator.Utils;
 using static StardewValley.Minigames.CraneGame;
 using SObject = StardewValley.Object;
 
@@ -31,15 +31,15 @@ namespace ProfitCalculator.menus
 
         public uint MaxDay { get; set; } = 28;
         public uint MinDay { get; set; } = 1;
-        public Season Season { get; set; } = Helpers.Season.Spring;
+        public Season Season { get; set; } = Utils.Season.Spring;
 
         public void setSeason(string season)
         {
             Season = (Season)Season.Parse(typeof(Season), season, false);
         }
 
-        public ProduceType ProduceType { get; set; } = Helpers.ProduceType.Raw;
-        public FertilizerQuality FertilizerQuality { get; set; } = Helpers.FertilizerQuality.None;
+        public ProduceType ProduceType { get; set; } = Utils.ProduceType.Raw;
+        public FertilizerQuality FertilizerQuality { get; set; } = Utils.FertilizerQuality.None;
         public bool PayForSeeds { get; set; } = true;
         public bool PayForFertilizer { get; set; } = false;
         public uint MaxMoney { get; set; } = 0;
@@ -179,11 +179,11 @@ namespace ProfitCalculator.menus
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize + Game1.tileSize / 4,
                 name: () => "season",
                 label: () => helper.Translation.Get("season"),
-                choices: () => Helpers.Season.GetNames(typeof(Helpers.Season)),
-                labels: () => Helpers.GetAllTranslatedSeasons(),
+                choices: () => Utils.Season.GetNames(typeof(Utils.Season)),
+                labels: () => Utils.GetAllTranslatedSeasons(),
                 valueGetter: this.Season.ToString,
                 valueSetter:
-                    (string value) => this.Season = (Season)Helpers.Season.Parse(typeof(Season), value, true)
+                    (string value) => this.Season = (Season)Utils.Season.Parse(typeof(Season), value, true)
             )
             {
                 MaxValuesAtOnce = Enum.GetValues(typeof(Season)).Length//size of enum
@@ -212,10 +212,10 @@ namespace ProfitCalculator.menus
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 2 + Game1.tileSize / 4,
                 name: () => "produceType",
                 label: () => helper.Translation.Get("produce-type"),
-                choices: () => Helpers.ProduceType.GetNames(typeof(Helpers.ProduceType)),
-                labels: () => Helpers.GetAllTranslatedProduceTypes(),
+                choices: () => Utils.ProduceType.GetNames(typeof(Utils.ProduceType)),
+                labels: () => Utils.GetAllTranslatedProduceTypes(),
                 valueGetter: this.ProduceType.ToString,
-                valueSetter: (string value) => this.ProduceType = (ProduceType)Helpers.ProduceType.Parse(typeof(ProduceType), value, true)
+                valueSetter: (string value) => this.ProduceType = (ProduceType)Utils.ProduceType.Parse(typeof(ProduceType), value, true)
             )
             {
                 MaxValuesAtOnce = Enum.GetValues(typeof(ProduceType)).Length//size of enum
@@ -242,10 +242,10 @@ namespace ProfitCalculator.menus
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 3 + Game1.tileSize / 4,
                 name: () => "fertilizerQuality",
                 label: () => helper.Translation.Get("fertilizer-quality"),
-                choices: () => Helpers.FertilizerQuality.GetNames(typeof(Helpers.FertilizerQuality)),
-                labels: () => Helpers.GetAllTranslatedFertilizerQualities(),
+                choices: () => Utils.FertilizerQuality.GetNames(typeof(Utils.FertilizerQuality)),
+                labels: () => Utils.GetAllTranslatedFertilizerQualities(),
                 valueGetter: this.FertilizerQuality.ToString,
-                valueSetter: (string value) => this.FertilizerQuality = (FertilizerQuality)Helpers.FertilizerQuality.Parse(typeof(FertilizerQuality), value, true)
+                valueSetter: (string value) => this.FertilizerQuality = (FertilizerQuality)Utils.FertilizerQuality.Parse(typeof(FertilizerQuality), value, true)
             )
             {
                 MaxValuesAtOnce = Enum.GetValues(typeof(FertilizerQuality)).Length//size of enum
@@ -530,8 +530,8 @@ namespace ProfitCalculator.menus
             //get day from game
             Day = (uint)Game1.dayOfMonth;
             Season = (Season)Season.Parse(typeof(Season), Game1.currentSeason, true);
-            ProduceType = Helpers.ProduceType.Raw;
-            FertilizerQuality = Helpers.FertilizerQuality.None;
+            ProduceType = Utils.ProduceType.Raw;
+            FertilizerQuality = Utils.FertilizerQuality.None;
             PayForSeeds = true;
             PayForFertilizer = false;
             MaxMoney = (uint)Game1.player.team.money.Value;
@@ -629,9 +629,10 @@ namespace ProfitCalculator.menus
             }*/
             monitor.Log("Doing Calculation", LogLevel.Debug);
             //ModEntry.Calculator.Calculate();
-            ModEntry.Calculator.refreshCropList();
             ModEntry.Calculator.RetrieveCropsAsOrderderList();
-            ProfitCalculatorResultsList profitCalculatorResultsList = new ProfitCalculatorResultsList(helper, monitor, config, new());
+            List<CropInfo> cropList = ModEntry.Calculator.RetrieveCropInfos();
+
+            ProfitCalculatorResultsList profitCalculatorResultsList = new ProfitCalculatorResultsList(helper, monitor, config, cropList);
             //Game1.activeClickableMenu = profitCalculatorResultsList;
             this.SetChildMenu(profitCalculatorResultsList);
         }

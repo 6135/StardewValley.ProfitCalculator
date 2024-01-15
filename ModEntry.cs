@@ -74,7 +74,7 @@ namespace ProfitCalculator
                 Monitor.Log($"Dynamic Game Assets not found", LogLevel.Debug);
             }
 
-            Helpers.Initialize(helper, Monitor, JApi, DApi);
+            Utils.Initialize(helper, Monitor, JApi, DApi);
             Calculator = new();
             //register app to mobile phone if mobile phone mod is installed
             //TODO Maybe make mobile phone mod optional and add an app

@@ -17,7 +17,7 @@ using StardewValley.Locations;
 
 namespace ProfitCalculator
 {
-    public class Helpers
+    public class Utils
     {
         public static IModHelper Helper { get; set; }
         public static IMonitor Monitor { get; set; }

@@ -5,7 +5,7 @@ using StardewValley.Tools;
 using System;
 using System.Linq;
 using System.Xml.Linq;
-using static ProfitCalculator.Helpers;
+using static ProfitCalculator.Utils;
 using SObject = StardewValley.Object;
 
 #nullable enable
