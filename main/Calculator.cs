@@ -87,7 +87,7 @@ namespace ProfitCalculator.main
                 {
                     Crop crop = cr.Value;
                     crops.Add(cr.Key, crop);
-                    Monitor.Log($"Added crop: {cr.Value.Name} Id: {cr.Key} Seed: {cr.Value.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {cr.Value.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);
+                    /*Monitor.Log($"Added crop: {cr.Value.Name} Id: {cr.Key} Seed: {cr.Value.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {cr.Value.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);*/
                 }
             }
         }
@@ -110,11 +110,102 @@ namespace ProfitCalculator.main
             cropList.Sort((x, y) => y.Price.CompareTo(x.Price));
             foreach (Crop crop in cropList)
             {
-                Monitor.Log($"Ordered Crop: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {crop.Price * this.getAverageValueForCropAfterModifiers() * crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);
+                Monitor.Log($"OC: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {totalCropProfit(crop)} " +
+                    $"ppd: {totalCropProfitPerDay(crop)} " +
+                    $"tfn: {totalFertilizerNeeded(crop)} " +
+                    $"tfnpd: {totalFertilzerCostPerDay(crop)} " +
+                    $"tsn: {totalSeedsNeeded(crop)} " +
+                    $"tsc: {totalSeedsCost(crop)} " +
+                    $"tscpd: {totalSeedsCostPerDay(crop)}", LogLevel.Debug);
             }
             return cropList;
         }
 
+        #region Crop Profit Calculations
+        private double totalCropProfit(Crop crop)
+        {
+    
+            double averageValue = crop.Price * this.getAverageValueForCropAfterModifiers();//only applies to first produce
+            double totalProfitFromFirstProduce = averageValue;
+            double averageExtraCrops = crop.AverageExtraCropsFromRandomness();
+            double totalProfitFromAllProduce =  (crop.MinHarvests - 1 >= 0 ? crop.MinHarvests - 1 : 0) * crop.Price;
+            totalProfitFromAllProduce += crop.Price * averageExtraCrops;
+
+            if (!UseBaseStats && Game1.player.professions.Contains(Farmer.tiller))
+            {
+                totalProfitFromAllProduce *= 1f; //TODO: Re-add 1.1f; 
+            }
+            return (totalProfitFromFirstProduce + totalProfitFromAllProduce) * crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
+        }
+
+        private double totalCropProfitPerDay(Crop crop)
+        {
+            double totalProfit = totalCropProfit(crop);
+            if(totalProfit == 0)
+            {
+                return 0;
+            }
+            double totalCropProfitPerDay = totalProfit / crop.TotalAvailableDays(Season,(int)Day);
+            return totalCropProfitPerDay;
+        }
+
+        private int totalFertilizerNeeded(Crop crop)
+        {
+            if (Season == Season.Greenhouse || crop.Seasons.Length > 1)
+                return 1;
+            else
+            {
+
+                return (int)Math.Ceiling(crop.TotalAvailableDays(Season, (int)Day) / 28.0);
+            }
+        }
+
+        private int totalFertilizerCost(Crop crop)
+        {
+            int fertNeeded = totalFertilizerNeeded(crop);
+            int fertCost = Helpers.FertilizerPrices(FertilizerQuality);
+            return fertNeeded * fertCost;
+
+        }
+
+        private double totalFertilzerCostPerDay(Crop crop)
+        {
+            int fertCost = totalFertilizerCost(crop);
+            if (fertCost == 0)
+            {
+                return 0;
+            }
+            double totalFertilizerCostPerDay = (double)fertCost / (double) crop.TotalAvailableDays(Season, (int)Day);
+            return totalFertilizerCostPerDay;
+        }
+        private int totalSeedsNeeded(Crop crop)
+        {
+            if (crop.Regrow > 0 && crop.TotalAvailableDays(Season, (int)Day) > 0)
+                return 1;
+            else return crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
+        }
+
+        private int totalSeedsCost(Crop crop)
+        {
+            int seedsNeeded = totalSeedsNeeded(crop);
+            int seedCost = crop.Seeds[0].salePrice();
+            return seedsNeeded * seedCost;
+
+        }
+
+        private double totalSeedsCostPerDay(Crop crop)
+        {
+            int seedCost = totalSeedsCost(crop);
+            if (seedCost == 0)
+            {
+                return 0;
+            }
+            double totalSeedsCostPerDay = (double)seedCost / (double)crop.TotalAvailableDays(Season, (int)Day);
+            return totalSeedsCostPerDay;
+
+        }
+
+        #endregion Crop Profit Calculations
         #region Crop Modifer Value Calculations
 
         public void printCropChanceTablesForAllFarmingLevels()

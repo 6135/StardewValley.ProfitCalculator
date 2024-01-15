@@ -631,6 +631,9 @@ namespace ProfitCalculator.menus
             //ModEntry.Calculator.Calculate();
             ModEntry.Calculator.refreshCropList();
             ModEntry.Calculator.RetrieveCropsAsOrderderList();
+            ProfitCalculatorResultsList profitCalculatorResultsList = new ProfitCalculatorResultsList(helper, monitor, config, new());
+            //Game1.activeClickableMenu = profitCalculatorResultsList;
+            this.SetChildMenu(profitCalculatorResultsList);
         }
     }
 }

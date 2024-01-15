@@ -190,67 +190,51 @@ namespace ProfitCalculator.main
                 //if the crop regrows, then the total harvest times are 1 for the first harvest and then the number of times it can regrow in the remaining days. We always need to subtract one to account for the day lost in the planting day.
                 if (Regrow > 0)
                 {
-                    totalHarvestTimes = (1 + (totalAvailableDays - 1 - growingDays) / Regrow);
+                    totalHarvestTimes = 1;
+                    totalAvailableDays -= Days - 1;
+                    if (totalAvailableDays > 0)
+                        totalHarvestTimes += totalAvailableDays / Regrow;
+
                 }
                 else
-                    totalHarvestTimes = (totalAvailableDays - 1) / growingDays;
+                    totalHarvestTimes = totalAvailableDays/ growingDays;
             }
             return totalHarvestTimes;
         }
 
-        public double TotalChanceForExtraCrop()
+        public int ExtraCropsFromFarmingLevel()
         {
-            //TODO: Implement
-            return 0f;
+            //TODO: Actually use this
+            double totalCrops = MinHarvests;
+            if (MinHarvests > 1 || MaxHarvests > 1)
+            {
+                int max_harvest_increase = 0;
+                if (MaxHarvestIncreasePerFarmingLevel > 0)
+                {
+                    max_harvest_increase = Game1.player.FarmingLevel / MaxHarvestIncreasePerFarmingLevel;
+                }
+                totalCrops = (double)(MinHarvests + MaxHarvests + max_harvest_increase) / 2.0;
+            }
+            return (int)totalCrops;
         }
+        public double AverageExtraCropsFromRandomness()
+        {
+            //TODO: Verify this is correct
+            double AverageExtraCrop = ChanceForExtraCrops;
+
+            /*if (ChanceForExtraCrops <= 0.0)
+                return AverageExtraCrop;
+
+            var items = Enumerable.Range(1, 2);
+            AverageExtraCrop += items.Select(i => Math.Pow(ChanceForExtraCrops, i)).Sum();*/
+
+            //average extra crops, should be 0.111 for 0.1 chance and 
+            return AverageExtraCrop;
+        }
+
+        
         #endregion Growth Values Calculations
 
-        #region Profit Calculations
-
-        public double TotalProfitOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
-        {
-            double totalProfitOverRemainingDays = 0.0;
-            return totalProfitOverRemainingDays;
-            //TODO: Implement
-        }
-
-        public double TotalProfitPerDayOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
-        {
-            double totalProfitPerDayOverRemainingDays = 0.0;
-            return totalProfitPerDayOverRemainingDays;
-            //TODO: Implement
-        }
-
-        public double TotalSeedCostOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
-        {
-            double totalSeedCostOverRemainingDays = 0.0;
-            return totalSeedCostOverRemainingDays;
-            //TODO: Implement
-        }
-
-        public double TotalSeedCostPerDayOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
-        {
-            double totalSeedCostPerDayOverRemainingDays = 0.0;
-            return totalSeedCostPerDayOverRemainingDays;
-            //TODO: Implement
-        }
-
-        public double TotalFertilizerCostOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
-        {
-            double totalFertilizerCostOverRemainingDays = 0.0;
-            return totalFertilizerCostOverRemainingDays;
-            //TODO: Implement
-        }
-
-        public double TotalFertilizerCostPerDayOverRemainingDays(bool payForSeeds, bool payFertelizer, Season currentSeason, FertilizerQuality fertilizerQuality, int day, int money, double valueModifier)
-        {
-            double totalFertilizerCostPerDayOverRemainingDays = 0.0;
-            return totalFertilizerCostPerDayOverRemainingDays;
-            //TODO: Implement
-        }
-
-
-        #endregion Profit Calculations
 
         //Profit Per day, Profit per day must take into consideration regrowth time, average price, and the number of days it takes to grow. Also if the time to grow or regrow is greater than the number of days in a season or seasons if multi season crop, then the profit per day should be 0. In case of multiple output multiply this value by the chance to get more than one item. Also it needs to recieve the fertilizer quality.
     }

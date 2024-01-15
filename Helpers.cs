@@ -10,7 +10,9 @@ using System.Threading;
 using JsonAssets;
 using DynamicGameAssets;
 using ProfitCalculator.main;
-
+using StardewValley;
+using SObject = StardewValley.Object;
+using StardewValley.Locations;
 #nullable enable
 
 namespace ProfitCalculator
@@ -86,6 +88,8 @@ namespace ProfitCalculator
             HyperSpeedGro = -3
         }
 
+
+
         //get season translated names
         private static string GetTranslatedName(string str)
         {
@@ -143,6 +147,56 @@ namespace ProfitCalculator
                 translatedNames[Array.IndexOf(names, name)] = GetTranslatedName(name);
             }
             return translatedNames;
+        }
+
+        public static int FertilizerPrices(FertilizerQuality fq)
+        {
+            return fq switch
+            {
+                FertilizerQuality.None => 0,
+                FertilizerQuality.Basic => 100,
+                FertilizerQuality.Quality => 150,
+                FertilizerQuality.Deluxe => 200,
+                FertilizerQuality.SpeedGro => 100,
+                FertilizerQuality.DeluxeSpeedGro => 150,
+                FertilizerQuality.HyperSpeedGro => 200,
+                _ => 0,
+            };
+        }
+        public static List<SeedShop> GetSeedShopList()
+        {
+            //TODO: Implement ability to select shop price
+            /*   List<SeedShop> seedShops = new List<SeedShop>();
+            foreach (GameLocation location in Game1.locations)
+            {
+                if (location is SeedShop shop)
+                {
+                    seedShops.Add(shop);
+                }
+            }
+            return seedShops;*/
+            return null;
+        }
+
+        //get cheapest price from all seed shops
+        public static int GetCheapestPriceFromAllSeedShops(int parentSheetIndex /*aka ID*/)
+        {
+            //TODO: Implement ability to select shop price
+            /*List<SeedShop> seedShops = GetSeedShopList();
+            int cheapestPrice = 0;
+            foreach (SeedShop shop in seedShops)
+            {
+                if (shop.stock.ContainsKey(parentSheetIndex))
+                {
+                    int price = shop.stock[parentSheetIndex][0];
+                    if (cheapestPrice == 0 || price < cheapestPrice)
+                    {
+                        cheapestPrice = price;
+                    }
+                }
+            }
+            return cheapestPrice;*/
+            return 0;
         }
     }
 }
