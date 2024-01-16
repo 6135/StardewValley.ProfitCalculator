@@ -4,16 +4,10 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace ProfitCalculator.UI
+namespace ProfitCalculator.ui
 {
-    internal class TextOption : BaseOption, IKeyboardSubscriber
+    public class TextOption : BaseOption, IKeyboardSubscriber
     {
         private Texture2D Tex;
         private SpriteFont Font = Game1.smallFont;
@@ -81,7 +75,7 @@ namespace ProfitCalculator.UI
                 0.25f
                 );
 
-            // Copied from game code - caret and https://github.com/spacechase0/StardewValleyMods/blob/develop/SpaceShared/UI/Element.cs#L91
+            // Copied from game code - caret and https://github.com/spacechase0/StardewValleyMods/blob/develop/SpaceShared/ui/Element.cs#L91
             string text = this.ValueGetter();
             Vector2 vector2;
             float writeBarOffset = 26f;

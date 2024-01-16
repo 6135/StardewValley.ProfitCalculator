@@ -1,19 +1,13 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
-using ProfitCalculator.UI;
+using ProfitCalculator.main;
+using ProfitCalculator.ui;
 using StardewModdingAPI;
-using StardewValley.Menus;
-using StardewValley.Monsters;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ProfitCalculator.Utils;
-using ProfitCalculator.main;
 
 namespace ProfitCalculator.menus
 {
@@ -211,11 +205,16 @@ namespace ProfitCalculator.menus
         {
             if (this.Options.Count > 0)
             {
-                this.scrollBar.bounds.Y = this.scrollBarBounds.Y + this.currentItemIndex * this.scrollBarBounds.Height / Math.Max(1, this.Options.Count - maxOptions / 2);
-                /*                if (this.currentItemIndex == this.Options.Count - maxOptions)
-                                {
-                                    this.scrollBar.bounds.Y = this.downArrow.bounds.Y - this.scrollBar.bounds.Height;
-                                }*/
+                //devide the height of the scroll bar by the number of options minus the displayed options, then multiply by the current index to get the position of the scroll bar without going out of bounds. //804 is max y for bar
+                int numberOfSteps = Math.Max(1, this.Options.Count - maxOptions);
+                double sizeOfStep = Math.Floor((this.scrollBarBounds.Height - (scrollBar.bounds.Height / 2.0)) / numberOfSteps);
+                double barPosition = this.scrollBarBounds.Y + (sizeOfStep * this.currentItemIndex);
+                this.scrollBar.bounds.Y =
+                    (int)Math.Floor(barPosition);
+                if (this.currentItemIndex == this.Options.Count - maxOptions)
+                {
+                    this.scrollBar.bounds.Y = this.downArrow.bounds.Y - this.scrollBar.bounds.Height - 7;
+                }
             }
             else
             {
@@ -297,7 +296,12 @@ namespace ProfitCalculator.menus
         {
             int y2 = this.scrollBar.bounds.Y;
             float percentage = (float)(y - this.scrollBarBounds.Y) / (float)this.scrollBarBounds.Height;
-            this.currentItemIndex = (int)Utility.Lerp(t: Utility.Clamp(percentage, 0f, 1f), a: 0f, b: this.Options.Count - maxOptions);
+            float currentItemIndexFloat =
+                Utility.Lerp(
+                    t: Utility.Clamp(percentage, 0f, 1f),
+                    a: 0f,
+                    b: this.Options.Count - maxOptions);
+            this.currentItemIndex = (int)Math.Round(currentItemIndexFloat);
             this.setScrollBarToCurrentIndex();
             if (y2 != this.scrollBar.bounds.Y)
             {

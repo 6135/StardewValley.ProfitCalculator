@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Tools;
 using System;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Xml.Linq;
 using static ProfitCalculator.Utils;
 using SObject = StardewValley.Object;
 
@@ -12,33 +11,94 @@ using SObject = StardewValley.Object;
 
 namespace ProfitCalculator.main
 {
-    // retrives and stores crop data from game files
+    /// <summary>
+    /// Class <c>Crop</c> models a crop from the game storing all relevant information about it.
+    /// </summary>
     public class Crop
     {
+        /// <value>Property <c>seedPrice</c> represents the seed buying price, used to calculate the seed purchasing loss and it's per day value.</value>
+        private readonly int seedPrice;
+
+        /// <value>Property <c>Id</c> represents the crop id AKA the slot in the sprite sheet.</value>
         public readonly int Id;
+
+        /// <value>Property <c>Item</c> represents the item object of the crop's produce.</value>
         public readonly Item Item;
+
+        /// <value>Property <c>Name</c> represents the crop's name.</value>
         public readonly string Name;
-        public Tuple<Texture2D, Rectangle>? Sprite;
+
+        /// <value>Property <c>Sprite</c> represents the crop's sprite. It's unused as of now.</value>
+        public readonly Tuple<Texture2D, Rectangle>? Sprite;
+
+        /// <value>Property <c>IsTrellisCrop</c> represents whether the crop is a trellis crop or not.</value>
         public readonly bool IsTrellisCrop;
+
+        /// <value>Property <c>IsGiantCrop</c> represents whether the crop is a giant crop or not.</value>
         public readonly bool IsGiantCrop;
-        public Tuple<Texture2D, Rectangle>? GiantSprite;
-        public Item[]? Seeds;
-        public int[] Phases;
-        public Texture2D?[]? PhaseSprites;
+
+        /// <value>Property <c>GiantSprite</c> represents the giant crop's sprite. It's unused as of now.</value>
+        public readonly Tuple<Texture2D, Rectangle>? GiantSprite;
+
+        /// <value>Property <c>Seeds</c> represents the crop's seeds.</value>
+        public readonly ImmutableArray<Item> Seeds;
+
+        /// <value>Property <c>Phases</c> represents the crop's phases. It's unused as of now.</value>
+        public readonly ImmutableArray<int> Phases;
+
+        /// <value>Property <c>Regrow</c> represents the crop's regrow time.</value>
         public readonly int Regrow;
+
+        /// <value>Property <c>IsPaddyCrop</c> represents whether the crop is a paddy crop or not.</value>
         public readonly bool IsPaddyCrop;
 
-        public WorldDate? StartDate;
-        public WorldDate? EndDate;
-        public readonly Season[] Seasons;
+        /// <value>Property <c>Seasons</c> represents the crop's seasons.</value>
+        public readonly ImmutableArray<Season> Seasons;
+
+        /// <value>Property <c>Days</c> represents the crop's total days to grow excluding <see cref="Regrow"/>.</value>
         public readonly int Days;
+
+        /// <value>Property <c>Price</c> represents the crop's selling price, not the same as <see cref="seedPrice"/></value>
         public readonly int Price;
+
+        /// <value>Property <c>ChanceForExtraCrops</c> represents the crop's chance for extra crops.</value>
         public readonly double ChanceForExtraCrops;
+
+        /// <value>Property <c>MaxHarvests</c> represents the crop's maximum drops.</value>
         public readonly int MaxHarvests;
+
+        /// <value>Property <c>MinHarvests</c> represents the crop's minimum drops.</value>
         public readonly int MinHarvests;
+
+        /// <value>Property <c>MaxHarvestIncreasePerFarmingLevel</c> represents the crop's maximum drops increase per farming level.</value>
         public readonly int MaxHarvestIncreasePerFarmingLevel;
 
-        public Crop(int id, Item item, string name, Tuple<Texture2D, Rectangle>? sprite, bool isTrellisCrop, bool isGiantCrop, Tuple<Texture2D, Rectangle>? giantSprite, Item[]? seeds, int[] phases, Texture2D?[]? phaseSprites, int regrow, bool isPaddyCrop, WorldDate? startDate, WorldDate? endDate, Season[] seasons, double[] harvestChanceValues)
+        /// <value>Property <c>affectByQuality</c> represents whether the crop is affected by fertilizer quality or not. Some crops like Tea aren't affected by this. </value>
+        public readonly bool affectByQuality;
+
+        /// <value>Property <c>affectByFertilizer</c> represents whether the crop is affected by fertilizer or not.</value>
+        public readonly bool affectByFertilizer;
+
+        /// <summary>
+        /// Constructor for <c>Crop</c> class. It's used to create a new instance of the class.
+        /// </summary>
+        /// <param name="id">ID of the crop's drop. AKA the slot in the sprite sheet.</param>
+        /// <param name="item"> Item object of the crop's produce.</param>
+        /// <param name="name"> Name of the crop.</param>
+        /// <param name="sprite"> Sprite of the crop. Unused as of now.</param>
+        /// <param name="isTrellisCrop"> Whether the crop is a trellis crop or not.</param>
+        /// <param name="isGiantCrop"> Whether the crop is a giant crop or not.</param>
+        /// <param name="giantSprite"> Giant crop's sprite. Unused as of now.</param>
+        /// <param name="seeds"> Crop's seeds. Passed as array but converted to Immutable Array</param>
+        /// <param name="phases"> Crop's phases. Passed as array but converted to Immutable Array</param>
+        /// <param name="regrow"> Crop's regrow time.</param>
+        /// <param name="isPaddyCrop"> Whether the crop is a paddy crop or not.</param>
+        /// <param name="seasons"> Crop's seasons. Passed as array but converted to Immutable Array</param>
+        /// <param name="harvestChanceValues"> Crop's harvest chance values. Passed as array of length 4 and converted to individual variables for ease of access.</param>
+        /// <param name="affectByQuality"> Whether the crop is affected by fertilizer quality or not.</param>
+        /// <param name="affectByFertilizer"> Whether the crop is affected by fertilizer or not.</param>
+        /// <param name="seedPrice"> Crop's seed buying price. If null, then it's calculated from the first seed in the seeds array. This is made for the override.</param>
+        public Crop(int id, Item item, string name, Tuple<Texture2D, Rectangle>? sprite, bool isTrellisCrop, bool isGiantCrop, Tuple<Texture2D, Rectangle>? giantSprite, Item[] seeds, int[] phases, int regrow, bool isPaddyCrop, Season[] seasons, double[] harvestChanceValues, bool affectByQuality = true, bool affectByFertilizer = true, int? seedPrice = null)
         {
             Id = id;
             Item = item;
@@ -47,22 +107,43 @@ namespace ProfitCalculator.main
             IsTrellisCrop = isTrellisCrop;
             IsGiantCrop = isGiantCrop;
             GiantSprite = giantSprite;
-            Seeds = seeds;
-            Phases = phases;
-            PhaseSprites = phaseSprites;
+            Seeds = Seeds.AddRange(seeds);
+            Phases = Phases.AddRange(phases);
             Regrow = regrow;
             IsPaddyCrop = isPaddyCrop;
-            StartDate = startDate;
-            EndDate = endDate;
             Days = Phases.Sum();
             Price = ((SObject)Item).Price;
-            Seasons = seasons;
+            Seasons = Seasons.AddRange(seasons);
             MaxHarvests = (int)harvestChanceValues[0];
             MinHarvests = (int)harvestChanceValues[1];
             MaxHarvestIncreasePerFarmingLevel = (int)harvestChanceValues[2];
             ChanceForExtraCrops = harvestChanceValues[3];
+            this.affectByQuality = affectByQuality;
+            this.affectByFertilizer = affectByFertilizer;
+            if (seedPrice != null)
+            {
+                this.seedPrice = (int)seedPrice;
+            }
+            else if (seeds != null)
+            {
+                this.seedPrice = seeds[0].salePrice();
+            }
+            else this.seedPrice = 0;
         }
 
+        /// <summary>
+        /// Retrieves the seed buying price of the crop. Used to calculate the seed purchasing loss and it's per day value. If the seed price is not set, then it's calculated from the first seed in the seeds array. This is made for the override.
+        /// </summary>
+        /// <returns> Seed buying price of the crop. <c>int</c></returns>
+        public int getSeedPrice()
+        {
+            return seedPrice;
+        }
+
+        /// <summary>
+        /// Returns whether two crops are equal or not. Two crops are equal if they have the same ID.
+        /// </summary>
+        /// <returns> Whether two crops are equal or not.</returns>
         public override bool Equals(object? obj)
         {
             if (obj is Crop crop)
@@ -72,6 +153,10 @@ namespace ProfitCalculator.main
             else return false;
         }
 
+        /// <summary>
+        /// Returns a string representation of the crop.
+        /// </summary>
+        /// <returns> String representation of the crop.</returns>
         public override string? ToString()
         {
             return $"{Name} ({Id})"
@@ -81,15 +166,16 @@ namespace ProfitCalculator.main
                 + $"\tGiantSprite: {GiantSprite}"
                 + $"\n\tSeeds: {Seeds} "
                 + $"\tPhases: {Phases}"
-                + $"\n\tPhaseSprites: {PhaseSprites} "
                 + $"\tRegrow: {Regrow}"
                 + $"\n\tIsPaddyCrop: {IsPaddyCrop} "
-                + $"\tStartDate: {StartDate}"
-                + $"\n\tEndDate: {EndDate} "
                 + $"\tDays: {Days} "
                 + $"\n\tPrice: {Price}";
         }
 
+        /// <summary>
+        /// Returns the hash code of the crop.
+        /// </summary>
+        /// <returns> Hash code of the crop. <c>int</c></returns>
         public override int GetHashCode()
         {
             //using FNV-1a hash
@@ -117,10 +203,20 @@ namespace ProfitCalculator.main
 
         #region Growth Values Calculations
 
+        /// <summary>
+        /// Calculates the average growth speed value for the crop.
+        /// It's calculated by adding fertilizer modifiers to 1.0f and finally adding 0.25f if the crop is a paddy crop and 0.1f if the player has the agriculturist profession.
+        /// </summary>
+        /// <param name="fertilizerQuality"> Quality of the used Fertilizer</param>
+        /// <returns> Average growth speed value for the crop. <c>float</c></returns>
         private float GetAverageGrowthSpeedValueForCrop(FertilizerQuality fertilizerQuality)
         {
             float speedIncreaseModifier = 1.0f;
-            if ((int)fertilizerQuality == -1)
+            if (!affectByFertilizer)
+            {
+                speedIncreaseModifier = 1.0f;
+            }
+            else if ((int)fertilizerQuality == -1)
             {
                 speedIncreaseModifier += 0.1f;
             }
@@ -144,11 +240,22 @@ namespace ProfitCalculator.main
             return speedIncreaseModifier;
         }
 
+        /// <summary>
+        /// Checks whether the crop is available for the current season.
+        /// </summary>
+        /// <param name="currentSeason"></param>
+        /// <returns> Whether the crop is available for the current season or not.</returns>
         public bool IsAvailableForCurrentSeason(Season currentSeason)
         {
             return Seasons.Contains(currentSeason);
         }
 
+        /// <summary>
+        /// Returns the total available days for planting and harvesting the crop. Depends on which seasons the crop can grow.
+        /// </summary>
+        /// <param name="currentSeason">Current season of type Season <see cref="Season"/></param>
+        /// <param name="day">Current day as int, can be from 0 to 1</param>
+        /// <returns> Total available days for planting and harvesting the crop. <c>int</c></returns>
         public int TotalAvailableDays(Season currentSeason, int day)
         {
             int totalAvailableDays = 0;
@@ -156,7 +263,7 @@ namespace ProfitCalculator.main
             {
                 //Each season has 28 days,
                 //get index of current season
-                int seasonIndex = Array.IndexOf(Seasons, currentSeason);
+                int seasonIndex = Array.IndexOf(Seasons.ToArray(), currentSeason);
                 //iterate over the array and add the number of days for each season that is later than the current season
                 for (int i = seasonIndex + 1; i < Seasons.Length; i++)
                 {
@@ -165,23 +272,36 @@ namespace ProfitCalculator.main
                 //add the number of days in the current season
                 totalAvailableDays += TotalAvailableDaysInCurrentSeason(day);
             }
+            if (currentSeason == Season.Greenhouse)
+            {
+                totalAvailableDays = (28 * 4);
+            }
             return totalAvailableDays;
         }
 
+        /// <summary>
+        /// Returns the total available days for planting and harvesting the crop for the current season. Depends on which seasons the crop can grow.
+        /// </summary>
+        /// <param name="day">Current day as int, can be from 0 to 1</param>
+        /// <returns>Total available days for planting and harvesting the crop in current season. <c>int</c></returns>
         public int TotalAvailableDaysInCurrentSeason(int day)
         {
             return 28 - day;
         }
 
+        /// <summary>
+        /// Returns the total harvests for the crop for the available time. Depends on which seasons the crop can grow, the current day , and the fertilizer quality.
+        /// </summary>
+        /// <param name="currentSeason"> Current season of type Season <see cref="Season"/></param>
+        /// <param name="fertilizerQuality"> Quality of the used Fertilizer of type FertilizerQuality <see cref="FertilizerQuality"/></param>
+        /// <param name="day"> Current day as int, can be from 0 to 1</param>
+        /// <returns> Total number of harvests for the crop for the available time. <c>int</c></returns>
         public int TotalHarvestsWithRemainingDays(Season currentSeason, FertilizerQuality fertilizerQuality, int day)
         {
             int totalHarvestTimes = 0;
             int totalAvailableDays = TotalAvailableDays(currentSeason, day);
+
             //season is Greenhouse
-            if (currentSeason == Season.Greenhouse)
-            {
-                totalAvailableDays = (28 * 4);
-            }
             int growingDays = Days * (int)GetAverageGrowthSpeedValueForCrop(fertilizerQuality);
             if (IsAvailableForCurrentSeason(currentSeason) || currentSeason == Season.Greenhouse)
             {
@@ -190,18 +310,18 @@ namespace ProfitCalculator.main
                 //if the crop regrows, then the total harvest times are 1 for the first harvest and then the number of times it can regrow in the remaining days. We always need to subtract one to account for the day lost in the planting day.
                 if (Regrow > 0)
                 {
-                    totalHarvestTimes = 1;
-                    totalAvailableDays -= Days - 1;
-                    if (totalAvailableDays > 0)
-                        totalHarvestTimes += totalAvailableDays / Regrow;
-
+                    totalHarvestTimes = ((int)(1 + ((totalAvailableDays - Days) / (double)Regrow)));
                 }
                 else
-                    totalHarvestTimes = totalAvailableDays/ growingDays;
+                    totalHarvestTimes = totalAvailableDays / growingDays;
             }
             return totalHarvestTimes;
         }
 
+        /// <summary>
+        /// How many extra crops can be harvested from the crop. Depends on farming level and extra per level defined. Currently Unused
+        /// </summary>
+        /// <returns> Number of extra crops that can be harvested from the crop. <c>int</c></returns>
         public int ExtraCropsFromFarmingLevel()
         {
             //TODO: Actually use this
@@ -217,25 +337,28 @@ namespace ProfitCalculator.main
             }
             return (int)totalCrops;
         }
+
+        /// <summary>
+        /// Meant to calculate the average extra crops from luck if any. Currently Unused
+        /// </summary>
+        /// <returns> Average extra crops from luck. <c>double</c></returns>
         public double AverageExtraCropsFromRandomness()
         {
             //TODO: Verify this is correct
             double AverageExtraCrop = ChanceForExtraCrops;
 
-            /*if (ChanceForExtraCrops <= 0.0)
+            /*
+            if (ChanceForExtraCrops <= 0.0)
                 return AverageExtraCrop;
 
             var items = Enumerable.Range(1, 2);
-            AverageExtraCrop += items.Select(i => Math.Pow(ChanceForExtraCrops, i)).Sum();*/
+            AverageExtraCrop += items.Select(i => Math.Pow(ChanceForExtraCrops, i)).Sum();
+            */
 
-            //average extra crops, should be 0.111 for 0.1 chance and 
+            //average extra crops, should be 0.111 for 0.1 chance and
             return AverageExtraCrop;
         }
 
-        
         #endregion Growth Values Calculations
-
-
-        //Profit Per day, Profit per day must take into consideration regrowth time, average price, and the number of days it takes to grow. Also if the time to grow or regrow is greater than the number of days in a season or seasons if multi season crop, then the profit per day should be 0. In case of multiple output multiply this value by the chance to get more than one item. Also it needs to recieve the fertilizer quality.
     }
 }

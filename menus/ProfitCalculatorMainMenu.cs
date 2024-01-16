@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Xml.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ProfitCalculator.main;
-using ProfitCalculator.UI;
+using ProfitCalculator.ui;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using static ProfitCalculator.Utils;
-using static StardewValley.Minigames.CraneGame;
-using SObject = StardewValley.Object;
 
 namespace ProfitCalculator.menus
 {
@@ -26,7 +20,6 @@ namespace ProfitCalculator.menus
         private readonly IMonitor monitor;
         private readonly ModConfig config;
 
-        //aceessors
         public uint Day { get; set; } = 1;
 
         public uint MaxDay { get; set; } = 28;
@@ -45,6 +38,8 @@ namespace ProfitCalculator.menus
         public uint MaxMoney { get; set; } = 0;
         public bool UseBaseStats { get; set; } = false;
 
+        public bool CrossSeason { get; set; } = true;
+
         public string exampleString { get; set; } = "example";
         private static int widthOnScreen = 632 + borderWidth * 2;
         private static int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
@@ -60,8 +55,8 @@ namespace ProfitCalculator.menus
 
         public ProfitCalculatorMainMenu(IModHelper _helper, IMonitor _monitor, ModConfig _modConfig) :
             base(
-                (int)getAppropriateMenuPosition().X,
-                (int)getAppropriateMenuPosition().Y,
+                (int)GetAppropriateMenuPosition().X,
+                (int)GetAppropriateMenuPosition().Y,
                 widthOnScreen,
                 heightOnScreen)
         {
@@ -74,37 +69,37 @@ namespace ProfitCalculator.menus
                 isProfitCalculatorOpen = false;
             };
 
-            this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
-            this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
-            this.resetMenu();
+            this.xPositionOnScreen = (int)GetAppropriateMenuPosition().X;
+            this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
+            this.ResetMenu();
         }
 
         #region Menu Button Setups
 
-        private void setUpPositions()
+        private void SetUpPositions()
         {
-            this.setUpButtonPositions();
+            this.SetUpButtonPositions();
             //option order:
             //Day int
 
-            this.setUpDayOptionPositions();
+            this.SetUpDayOptionPositions();
             //Season dropdown
-            this.setUpSeasonOptionPositions();
+            this.SetUpSeasonOptionPositions();
             //Produce Type dropdown
-            this.setUpProduceTypeOptionPositions();
+            this.SetUpProduceTypeOptionPositions();
             //Fertilizer Quality dropdown
-            this.setUpFertilizerQualityPositions();
+            this.SetUpFertilizerQualityPositions();
             //Pay for Seeds checkbox
-            this.setUpSeedsOptionPositions();
+            this.SetUpSeedsOptionPositions();
             //Pay for Fertilizer checkbox
-            this.setUpFertilizerOptionPositions();
+            this.SetUpFertilizerOptionPositions();
             //Max Money int
-            this.setUpMoneyOptionPositions();
+            this.SetUpMoneyOptionPositions();
             //Use Base Stats checkbox
-            this.setUpBaseStatsOptionPositions();
+            this.SetUpBaseStatsOptionPositions();
         }
 
-        private void setUpButtonPositions()
+        private void SetUpButtonPositions()
         {
             calculateButton = new ClickableComponent(
                 new Rectangle(
@@ -129,7 +124,7 @@ namespace ProfitCalculator.menus
                 );
         }
 
-        private void setUpDayOptionPositions()
+        private void SetUpDayOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -159,7 +154,7 @@ namespace ProfitCalculator.menus
             Options.Add(dayOption);
         }
 
-        private void setUpSeasonOptionPositions()
+        private void SetUpSeasonOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -192,7 +187,7 @@ namespace ProfitCalculator.menus
             Options.Add(seasonOption);
         }
 
-        private void setUpProduceTypeOptionPositions()
+        private void SetUpProduceTypeOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -223,7 +218,7 @@ namespace ProfitCalculator.menus
             Options.Add(produceTypeOption);
         }
 
-        private void setUpFertilizerQualityPositions()
+        private void SetUpFertilizerQualityPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -253,7 +248,7 @@ namespace ProfitCalculator.menus
             Options.Add(fertilizerQualityOption);
         }
 
-        private void setUpSeedsOptionPositions()
+        private void SetUpSeedsOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -280,7 +275,7 @@ namespace ProfitCalculator.menus
             Options.Add(payForSeeds);
         }
 
-        private void setUpFertilizerOptionPositions()
+        private void SetUpFertilizerOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -305,7 +300,7 @@ namespace ProfitCalculator.menus
             Options.Add(payForFertilizer);
         }
 
-        private void setUpMoneyOptionPositions()
+        private void SetUpMoneyOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -334,7 +329,7 @@ namespace ProfitCalculator.menus
             Options.Add(maxMoneyOption);
         }
 
-        private void setUpBaseStatsOptionPositions()
+        private void SetUpBaseStatsOptionPositions()
         {
             Labels.Add(
                 new ClickableComponent(
@@ -357,12 +352,34 @@ namespace ProfitCalculator.menus
                 (bool value) => this.UseBaseStats = value
             );
             Options.Add(useBaseStatsOptions);
+            /*Labels.Add(
+                new ClickableComponent(
+                    new Rectangle(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
+                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7,
+                        Game1.tileSize * 2,
+                        Game1.tileSize
+                    ),
+                    "crossSeason",
+                    helper.Translation.Get("cross-season") + ": "
+                )
+            );
+            CheckboxOption crossSeason = new(
+                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
+                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7 + Game1.tileSize / 4,
+                () => "crossSeason",
+                () => helper.Translation.Get("cross-season"),
+                () => this.CrossSeason,
+                (bool value) => this.CrossSeason = value
+            );
+            Options.Add(crossSeason);*/
         }
 
         #endregion Menu Button Setups
 
         #region Draw Methods
 
+        /// <inheritdoc/>
         public override void draw(SpriteBatch b)
 
         {
@@ -373,12 +390,12 @@ namespace ProfitCalculator.menus
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, widthOnScreen, heightOnScreen, speaker: false, drawOnlyBox: true);
 
             // Draw Labels and Options and buttons
-            this.drawActions(b);
-            this.drawLabels(b);
+            this.DrawActions(b);
+            this.DrawLabels(b);
             //print active sort mode from b (private field called _sortMode)
             b.End();
             b.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
-            this.drawOptions(b);
+            this.DrawOptions(b);
             b.End();
             b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
@@ -386,7 +403,7 @@ namespace ProfitCalculator.menus
             if (!Game1.options.hardwareCursor) b.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
         }
 
-        private void drawActions(SpriteBatch b)
+        private void DrawActions(SpriteBatch b)
         {
             // Draw the calculate button.
             IClickableMenu.drawTextureBox
@@ -449,7 +466,7 @@ namespace ProfitCalculator.menus
             );
         }
 
-        private void drawLabels(SpriteBatch b)
+        private void DrawLabels(SpriteBatch b)
         {
             foreach (ClickableComponent label in Labels)
             {
@@ -465,7 +482,7 @@ namespace ProfitCalculator.menus
             }
         }
 
-        private void drawOptions(SpriteBatch b)
+        private void DrawOptions(SpriteBatch b)
         {
             foreach (BaseOption option in Options)
             {
@@ -477,6 +494,7 @@ namespace ProfitCalculator.menus
 
         #region Event Handling
 
+        /// <inheritdoc/>
         public override void receiveKeyPress(Keys key)
         {
             switch (key)
@@ -492,11 +510,13 @@ namespace ProfitCalculator.menus
             }
         }
 
+        /// <inheritdoc/>
         public override void performHoverAction(int x, int y)
         {
             //TODO: add hover actions for buttons
         }
 
+        /// <inheritdoc/>
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             if (calculateButton.containsPoint(x, y))
@@ -507,7 +527,7 @@ namespace ProfitCalculator.menus
             }
             if (resetButton.containsPoint(x, y))
             {
-                this.resetMenu();
+                this.ResetMenu();
                 if (playSound) Game1.playSound("dialogueCharacterClose");
                 return;
             }
@@ -524,7 +544,7 @@ namespace ProfitCalculator.menus
             }
         }
 
-        private void resetMenu()
+        private void ResetMenu()
         {
             //set all the options to default values
             //get day from game
@@ -536,16 +556,18 @@ namespace ProfitCalculator.menus
             PayForFertilizer = false;
             MaxMoney = (uint)Game1.player.team.money.Value;
             UseBaseStats = false;
-            this.updateMenu();
+            CrossSeason = true;
+            this.UpdateMenu();
         }
 
-        public void updateMenu()
+        public void UpdateMenu()
         {
             Labels.Clear();
             Options.Clear();
-            this.setUpPositions();
+            this.SetUpPositions();
         }
 
+        /// <inheritdoc/>
         public override void update(GameTime time)
         {
             base.update(time);
@@ -556,7 +578,7 @@ namespace ProfitCalculator.menus
             }
         }
 
-        public static Vector2 getAppropriateMenuPosition()
+        public static Vector2 GetAppropriateMenuPosition()
         {
             Vector2 defaultPosition = new Vector2(Game1.viewport.Width / 2 - widthOnScreen / 2, (Game1.viewport.Height / 2 - heightOnScreen / 2));
 
@@ -573,23 +595,24 @@ namespace ProfitCalculator.menus
             return defaultPosition;
         }
 
+        ///<inheritdoc/>
         /// <summary>The method called when the game window changes size.</summary>
         /// <param name="oldBounds">The former viewport.</param>
         /// <param name="newBounds">The new viewport.</param>
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             base.gameWindowSizeChanged(oldBounds, newBounds);
-            this.xPositionOnScreen = (int)getAppropriateMenuPosition().X;
-            this.yPositionOnScreen = (int)getAppropriateMenuPosition().Y;
+            this.xPositionOnScreen = (int)GetAppropriateMenuPosition().X;
+            this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
 
-            this.updateMenu();
+            this.UpdateMenu();
         }
 
         #endregion Event Handling
 
         private void DoCalculation()
         {
-            ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats);
+            ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats, CrossSeason);
 
             /*Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
             monitor.Log("----------------------------Data\\Crops----------------------------", LogLevel.Debug);

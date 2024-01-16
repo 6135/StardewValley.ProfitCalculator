@@ -1,16 +1,11 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
 
-namespace ProfitCalculator.UI
+namespace ProfitCalculator.ui
 {
-    internal class UIntOption : TextOption
+    public class UIntOption : TextOption
     {
         protected readonly Func<uint> Max;
         protected readonly Func<uint> Min;

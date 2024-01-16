@@ -5,7 +5,6 @@ namespace DynamicGameAssets
 {
     public interface IDynamicGameAssetsApi
     {
-
         /// <summary>
         /// Get the DGA item ID of this item, if it has one.
         /// </summary>
@@ -15,7 +14,6 @@ namespace DynamicGameAssets
 
         /// <summary>
         /// Spawn a DGA item, referenced with its full ID ("mod.id/ItemId").
-
         /// Some items, such as crafting recipes or crops, don't have an item representation.
         /// </summary>
         /// <param name="fullId">The full ID of the item to spawn.</param>

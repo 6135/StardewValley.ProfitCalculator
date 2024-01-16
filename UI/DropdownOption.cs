@@ -5,15 +5,11 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace ProfitCalculator.UI
+namespace ProfitCalculator.ui
 {
-    internal class DropdownOption : BaseOption
+    public class DropdownOption : BaseOption
     {
         public int RequestWidth { get; set; }
         public int MaxValuesAtOnce { get; set; } = 5;

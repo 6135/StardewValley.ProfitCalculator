@@ -1,19 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace ProfitCalculator.UI
+namespace ProfitCalculator.ui
 {
-    internal class CheckboxOption : BaseOption
+    public class CheckboxOption : BaseOption
     {
         public Texture2D Texture { get; set; } = Game1.mouseCursors;
         public Rectangle CheckedTextureRect { get; set; } = OptionsCheckbox.sourceRectChecked;

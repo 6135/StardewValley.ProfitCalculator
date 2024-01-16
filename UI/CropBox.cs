@@ -2,17 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.main;
 using StardewValley;
-using StardewValley.Menus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace ProfitCalculator.UI
+namespace ProfitCalculator.ui
 {
-    internal class CropBox : BaseOption
+    public class CropBox : BaseOption
     {
         private CropInfo cropInfo;
         private SpriteFont Font = Game1.smallFont;
@@ -21,7 +14,7 @@ namespace ProfitCalculator.UI
         public CropBox(int x, int y, int w, int h, CropInfo crop) : base(x, y, w, h, () => crop.Crop.Name, () => crop.Crop.Name, () => crop.Crop.Name)
         {
             this.mainText = crop.Crop.Name;
-            if(this.mainText.Length < 1)
+            if (this.mainText.Length < 1)
             {
                 this.mainText = "PlaceHolder";
             }
@@ -57,17 +50,6 @@ namespace ProfitCalculator.UI
                 Color.White
             );
 
-            //draw vertical stamina bar separating the text from the left side of the box
-            /*b.Draw(
-                Game1.staminaRect,
-                new Rectangle(
-                    (int)this.Position.X + Game1.tileSize,
-                    (int)this.Position.Y,
-                    2,
-                    this.ClickableComponent.bounds.Height
-                ),
-                Color.Wheat
-            );*/
             //draw string in middle of box, aligned to the left with a spacing of 2xtilesize from the left
             b.DrawString(
                 Font,
@@ -78,8 +60,18 @@ namespace ProfitCalculator.UI
                 ),
                 Color.Black
            );
-
-
+            //draw vertical stamina bar separating the text from the right side of the box
+            /**/
+            b.Draw(
+                Game1.staminaRect,
+                new Rectangle(
+                    (int)this.Position.X + Game1.tileSize,
+                    (int)this.Position.Y,
+                    2,
+                    this.ClickableComponent.bounds.Height
+                ),
+                Color.DarkOrange
+            );
         }
     }
 }

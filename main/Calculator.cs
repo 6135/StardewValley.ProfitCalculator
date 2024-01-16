@@ -2,41 +2,93 @@
 using StardewValley;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ProfitCalculator.Utils;
 
 namespace ProfitCalculator.main
 {
+    /// <summary>
+    /// Class used to calculate the profits for crops. Contains all the settings for the calculator and the functions used to calculate the profits. Also contains the list of crops and the crop parsers. <see cref="TotalCropProfit(Crop)"/> and <see cref="TotalCropProfitPerDay(Crop)"/>, <see cref="TotalFertilizerCost(Crop)"/>, <see cref="TotalFertilzerCostPerDay(Crop)"/>, <see cref="TotalSeedsCost(Crop)"/>, <see cref="TotalSeedsCostPerDay(Crop)"/> are the main functions used to calculate the profits. <see cref="RetrieveCropsAsOrderderList"/> and <see cref="RetrieveCropInfos"/> are the main functions used to retrieve the list of crops and crop infos.
+    /// </summary>
     public class Calculator
     {
-        // list of crops
+        /// <summary>
+        /// List of all crops in the game
+        /// </summary>
         private Dictionary<string, Crop> crops;
 
-        private CropParser[] cropParser;
+        /// <summary>
+        /// List of all crop parsers, used to get the list of crops
+        /// </summary>
+        private readonly CropParser[] cropParser;
 
-        //settings passed in constructor
+        /// <summary>
+        /// Day of the season
+        /// </summary>
         private uint Day { get; set; }
 
+        /// <summary>
+        /// Max days of a season
+        /// </summary>
         private uint MaxDay { get; set; }
-        private uint MinDay { get; set; }
-        private Season Season { get; set; }
-        private ProduceType ProduceType { get; set; }
-        private FertilizerQuality FertilizerQuality { get; set; }
-        private bool PayForSeeds { get; set; }
-        private bool PayForFertilizer { get; set; }
-        private uint MaxMoney { get; set; }
-        private bool UseBaseStats { get; set; }
-        private double[] PriceMultipliers { get; set; } = new double[4] { 1.0, 1.25, 1.5, 2.0 };
-        private double AverageValueForCrop { get; set; }
-        private int farmingLevel { get; set; }
 
-        // constructor
+        /// <summary>
+        /// Min days of a season
+        /// </summary>
+        private uint MinDay { get; set; }
+
+        /// <summary>
+        /// Season of the year selected
+        /// </summary>
+        private Season Season { get; set; }
+
+        /// <summary>
+        /// Type of produce selected
+        /// TODO: Implement this.
+        /// </summary>
+        private ProduceType ProduceType { get; set; }
+
+        /// <summary>
+        /// Type of fertilizer selected
+        /// </summary>
+        private FertilizerQuality FertilizerQuality { get; set; }
+
+        /// <summary>
+        /// Whether or not the player pays for seeds
+        /// </summary>
+        private bool PayForSeeds { get; set; }
+
+        /// <summary>
+        /// Whether or not the player pays for fertilizer
+        /// </summary>
+        private bool PayForFertilizer { get; set; }
+
+        /// <summary>
+        /// Max money the player is willing to spend on seeds or fertilizer
+        /// </summary>
+        private uint MaxMoney { get; set; }
+
+        /// <summary>
+        /// Whether or not to use base stats for the player or the current stats
+        /// </summary>
+        private bool UseBaseStats { get; set; }
+
+        /// <summary>
+        /// Whether or not to calculate crops that are not available for the current season. If false, then crops that are not available for the current season will not be calculated. Not used.
+        /// </summary>
+        private bool CrossSeason { get; set; }
+
+        private double[] PriceMultipliers { get; set; } = new double[4] { 1.0, 1.25, 1.5, 2.0 };
+
+        /// <summary>
+        /// Current farming level of the player or 0 if using base stats, used for calculating crop quality chances
+        /// </summary>
+        private int FarmingLevel { get; set; }
+
+        /// <summary>
+        /// Constructor for the calculator, initializes the list of crops and crop parsers. Instantiates the calculator with default values.
+        /// </summary>
         public Calculator()
         {
-            // get list of crops
-            // get list of crop parsers
             cropParser = new CropParser[]
             {
                 new VanillaCropParser()
@@ -44,7 +96,21 @@ namespace ProfitCalculator.main
             crops = new Dictionary<string, Crop>();
         }
 
-        public void SetSettings(uint day, uint maxDay, uint minDay, Season season, ProduceType produceType, FertilizerQuality fertilizerQuality, bool payForSeeds, bool payForFertilizer, uint maxMoney, bool useBaseStats, double[] priceMultipliers = null)
+        /// <summary>
+        /// Sets the settings for the calculator to use when calculating profits.
+        /// </summary>
+        /// <param name="day"><see cref="Day"/></param>
+        /// <param name="maxDay"><see cref="MaxDay"/></param>
+        /// <param name="minDay"><see cref="MinDay"/></param>
+        /// <param name="season"><see cref="Season"/></param>
+        /// <param name="produceType"><see cref="ProduceType"/></param>
+        /// <param name="fertilizerQuality"> <see cref="FertilizerQuality"/></param>
+        /// <param name="payForSeeds"> <see cref="PayForSeeds"/></param>
+        /// <param name="payForFertilizer"> <see cref="PayForFertilizer"/></param>
+        /// <param name="maxMoney"> <see cref="MaxMoney"/></param>
+        /// <param name="useBaseStats"> <see cref="UseBaseStats"/></param>
+        /// <param name="crossSeason"> <see cref="CrossSeason"/></param>
+        public void SetSettings(uint day, uint maxDay, uint minDay, Season season, ProduceType produceType, FertilizerQuality fertilizerQuality, bool payForSeeds, bool payForFertilizer, uint maxMoney, bool useBaseStats, bool crossSeason = true)
         {
             Day = day;
             MaxDay = maxDay;
@@ -56,29 +122,20 @@ namespace ProfitCalculator.main
             PayForFertilizer = payForFertilizer;
             MaxMoney = maxMoney;
             UseBaseStats = useBaseStats;
-            if (priceMultipliers != null)
-                PriceMultipliers = priceMultipliers;
-            AverageValueForCrop = getAverageValueForCropAfterModifiers();
+            CrossSeason = crossSeason;
             if (useBaseStats)
             {
-                farmingLevel = 0;
+                FarmingLevel = 0;
             }
             else
             {
-                farmingLevel = Game1.player.FarmingLevel;
+                FarmingLevel = Game1.player.FarmingLevel;
             }
         }
 
-        public void Calculate()
-        {
-            // calculate profit for each crop
-            foreach (KeyValuePair<string, Crop> crop in crops)
-            {
-                // calculate profit for crop
-                // add crop to list
-            }
-        }
-
+        /// <summary>
+        /// Retrieves the list of crops from the crop parsers and stores them in the crops dictionary.
+        /// </summary>
         private void RetrieveCropList()
         {
             foreach (CropParser parser in cropParser)
@@ -87,17 +144,23 @@ namespace ProfitCalculator.main
                 {
                     Crop crop = cr.Value;
                     crops.Add(cr.Key, crop);
-                    /*Monitor.Log($"Added crop: {cr.Value.Name} Id: {cr.Key} Seed: {cr.Value.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {cr.Value.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)}", LogLevel.Debug);*/
                 }
             }
         }
 
+        /// <summary>
+        /// Refreshes the list of crops by clearing the crops dictionary and calling <see cref="RetrieveCropList"/>
+        /// </summary>
         public void refreshCropList()
         {
             crops = new();
             RetrieveCropList();
         }
 
+        /// <summary>
+        /// Retrieves the list of crops as an ordered list by profit.
+        /// </summary>
+        /// <returns> List of crops ordered by profit </returns>
         public List<Crop> RetrieveCropsAsOrderderList()
         {
             // sort crops by profit
@@ -114,17 +177,21 @@ namespace ProfitCalculator.main
             cropList.Sort((x, y) => y.Price.CompareTo(x.Price));
             foreach (Crop crop in cropList)
             {
-                Monitor.Log($"OC: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.getAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {totalCropProfit(crop)} " +
-                    $"ppd: {totalCropProfitPerDay(crop)} " +
-                    $"tfn: {totalFertilizerNeeded(crop)} " +
-                    $"tfnpd: {totalFertilzerCostPerDay(crop)} " +
-                    $"tsn: {totalSeedsNeeded(crop)} " +
-                    $"tsc: {totalSeedsCost(crop)} " +
-                    $"tscpd: {totalSeedsCostPerDay(crop)}", LogLevel.Debug);
+                Monitor.Log($"OC: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.GetAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {TotalCropProfit(crop)} " +
+                    $"ppd: {TotalCropProfitPerDay(crop)} " +
+                    $"tfn: {TotalFertilizerNeeded(crop)} " +
+                    $"tfnpd: {TotalFertilzerCostPerDay(crop)} " +
+                    $"tsn: {TotalSeedsNeeded(crop)} " +
+                    $"tsc: {TotalSeedsCost(crop)} " +
+                    $"tscpd: {TotalSeedsCostPerDay(crop)}", LogLevel.Debug);
             }
             return cropList;
         }
 
+        /// <summary>
+        /// Retrieves the list of <see cref="CropInfo"/> as an ordered list by profit.
+        /// </summary>
+        /// <returns> List of <see cref="CropInfo"/> ordered by profit </returns>
         public List<CropInfo> RetrieveCropInfos()
         {
             if (crops.Count == 0)
@@ -134,19 +201,30 @@ namespace ProfitCalculator.main
             List<CropInfo> cropInfos = new();
             foreach (Crop crop in crops.Values)
             {
-                cropInfos.Add(RetrieveCropInfo(crop));
+                CropInfo ci = RetrieveCropInfo(crop);
+                if (ci.TotalHarvests >= 1)
+                    if (!PayForSeeds)
+                        cropInfos.Add(ci);
+                    else if (PayForSeeds && ci.TotalSeedLoss <= MaxMoney)
+                        cropInfos.Add(ci);
             }
+            cropInfos.Sort((x, y) => y.ProfitPerDay.CompareTo(x.ProfitPerDay));
             return cropInfos;
         }
 
+        /// <summary>
+        /// Retrieves the <see cref="CropInfo"/> for a specific crop. Uses information obtained by calling internal functions to calculate the values and build the object.
+        /// </summary>
+        /// <param name="crop"> Crop to retrieve <see cref="CropInfo"/> for </param>
+        /// <returns> <see cref="CropInfo"/> for the crop </returns>
         private CropInfo RetrieveCropInfo(Crop crop)
         {
-            double totalProfit = totalCropProfit(crop);
-            double profitPerDay = totalCropProfitPerDay(crop);
-            double totalSeedLoss = totalSeedsCost(crop);
-            double seedLossPerDay = totalSeedsCostPerDay(crop);
-            double totalFertilizerLoss = totalFertilizerCost(crop);
-            double fertilizerLossPerDay = totalFertilzerCostPerDay(crop);
+            double totalProfit = TotalCropProfit(crop);
+            double profitPerDay = TotalCropProfitPerDay(crop);
+            double totalSeedLoss = TotalSeedsCost(crop);
+            double seedLossPerDay = TotalSeedsCostPerDay(crop);
+            double totalFertilizerLoss = TotalFertilizerCost(crop);
+            double fertilizerLossPerDay = TotalFertilzerCostPerDay(crop);
             ProduceType produceType = ProduceType;
             int duration = crop.TotalAvailableDays(Season, (int)Day);
             int totalHarvests = crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
@@ -154,33 +232,57 @@ namespace ProfitCalculator.main
             int regrowthTime = crop.Regrow;
             int productCount = crop.MinHarvests;
             double chanceOfExtraProduct = crop.AverageExtraCropsFromRandomness();
-            double chanceOfNormalQuality = getCropBaseQualityChance();
-            double chanceOfSilverQuality = getCropSilverQualityChance();
-            double chanceOfGoldQuality = getCropGoldQualityChance();
-            double chanceOfIridiumQuality = getCropIridiumQualityChance();
+            double chanceOfNormalQuality = GetCropBaseQualityChance();
+            double chanceOfSilverQuality = GetCropSilverQualityChance();
+            double chanceOfGoldQuality = GetCropGoldQualityChance();
+            double chanceOfIridiumQuality = GetCropIridiumQualityChance();
             return new CropInfo(crop, totalProfit, profitPerDay, totalSeedLoss, seedLossPerDay, totalFertilizerLoss, fertilizerLossPerDay, produceType, duration, totalHarvests, growthTime, regrowthTime, productCount, chanceOfExtraProduct, chanceOfNormalQuality, chanceOfSilverQuality, chanceOfGoldQuality, chanceOfIridiumQuality);
         }
 
         #region Crop Profit Calculations
 
-        private double totalCropProfit(Crop crop)
+        /// <summary>
+        /// Calculates the total profit for a crop. See <see cref="GetAverageValueForCropAfterModifiers"/>, <see cref="Crop.AverageExtraCropsFromRandomness"/>, <see cref="Crop.TotalHarvestsWithRemainingDays"/> for more information.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate profit for </param>
+        /// <returns> Total profit for the crop </returns>
+        private double TotalCropProfit(Crop crop)
         {
-            double averageValue = crop.Price * this.getAverageValueForCropAfterModifiers();//only applies to first produce
-            double totalProfitFromFirstProduce = averageValue;
-            double averageExtraCrops = crop.AverageExtraCropsFromRandomness();
-            double totalProfitFromAllProduce = (crop.MinHarvests - 1 >= 0 ? crop.MinHarvests - 1 : 0) * crop.Price;
-            totalProfitFromAllProduce += crop.Price * averageExtraCrops;
+            double totalProfitFromFirstProduce;
+            double totalProfitFromRemainingProduce;
 
+            if (!crop.affectByQuality)
+            {
+                totalProfitFromFirstProduce = 0;
+                totalProfitFromRemainingProduce = crop.Price;
+            }
+            else
+            {
+                double averageValue = crop.Price * this.GetAverageValueForCropAfterModifiers();//only applies to first produce
+                totalProfitFromFirstProduce = averageValue;
+
+                double averageExtraCrops = crop.AverageExtraCropsFromRandomness();
+
+                totalProfitFromRemainingProduce = (crop.MinHarvests - 1 >= 0 ? crop.MinHarvests - 1 : 0) * crop.Price;
+
+                totalProfitFromRemainingProduce += (crop.Price * averageExtraCrops);
+            }
             if (!UseBaseStats && Game1.player.professions.Contains(Farmer.tiller))
             {
-                totalProfitFromAllProduce *= 1f; //TODO: Re-add 1.1f;
+                totalProfitFromRemainingProduce *= 1.1f;
             }
-            return (totalProfitFromFirstProduce + totalProfitFromAllProduce) * crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
+            double result = (totalProfitFromFirstProduce + totalProfitFromRemainingProduce) * crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
+            return result;
         }
 
-        private double totalCropProfitPerDay(Crop crop)
+        /// <summary>
+        /// Calculates the total profit per day for a crop. See <see cref="TotalCropProfit"/> for more information. Simply devides the total profit by the total available days for the crop.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate profit per day for </param>
+        /// <returns> Total profit per day for the crop </returns>
+        private double TotalCropProfitPerDay(Crop crop)
         {
-            double totalProfit = totalCropProfit(crop);
+            double totalProfit = TotalCropProfit(crop);
             if (totalProfit == 0)
             {
                 return 0;
@@ -189,9 +291,14 @@ namespace ProfitCalculator.main
             return totalCropProfitPerDay;
         }
 
-        private int totalFertilizerNeeded(Crop crop)
+        /// <summary>
+        /// Total fertilizer needed for a crop. If planted in greenhouse or if the crop only grows in one season, then only 1 fertilizer is needed. Otherwise, the total number of days the crop is available is divided by 28 and rounded up to get the total number of fertilizer needed.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate fertilizer needed for </param>
+        /// <returns> Total fertilizer needed for the crop </returns>
+        private int TotalFertilizerNeeded(Crop crop)
         {
-            if (Season == Season.Greenhouse || crop.Seasons.Length > 1)
+            if (Season == Season.Greenhouse || crop.Seasons.Length == 1)
                 return 1;
             else
             {
@@ -199,16 +306,30 @@ namespace ProfitCalculator.main
             }
         }
 
-        private int totalFertilizerCost(Crop crop)
+        /// <summary>
+        /// Total fertilizer cost for a crop. See <see cref="TotalFertilizerNeeded"/> and <see cref="Utils.FertilizerPrices(FertilizerQuality)"/> for more information.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate fertilizer cost for </param>
+        /// <returns> Total fertilizer cost for the crop </returns>
+        private int TotalFertilizerCost(Crop crop)
         {
-            int fertNeeded = totalFertilizerNeeded(crop);
+            if (!PayForFertilizer)
+            {
+                return 0;
+            }
+            int fertNeeded = TotalFertilizerNeeded(crop);
             int fertCost = Utils.FertilizerPrices(FertilizerQuality);
             return fertNeeded * fertCost;
         }
 
-        private double totalFertilzerCostPerDay(Crop crop)
+        /// <summary>
+        /// Total fertilizer cost per day for a crop. See <see cref="TotalFertilizerCost"/> for more information. Simply devides the total fertilizer cost by the total available days for the crop.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate fertilizer cost per day for </param>
+        /// <returns> Total fertilizer cost per day for the crop </returns>
+        private double TotalFertilzerCostPerDay(Crop crop)
         {
-            int fertCost = totalFertilizerCost(crop);
+            int fertCost = TotalFertilizerCost(crop);
             if (fertCost == 0)
             {
                 return 0;
@@ -217,23 +338,41 @@ namespace ProfitCalculator.main
             return totalFertilizerCostPerDay;
         }
 
-        private int totalSeedsNeeded(Crop crop)
+        /// <summary>
+        /// Total seeds needed for a crop. If the crop regrows, then only 1 seed is needed. Otherwise, the total number of harvests is calculated and multiplied by the number of seeds needed per harvest.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate seeds needed for </param>
+        /// <returns> Total seeds needed for the crop </returns>
+        private int TotalSeedsNeeded(Crop crop)
         {
             if (crop.Regrow > 0 && crop.TotalAvailableDays(Season, (int)Day) > 0)
                 return 1;
             else return crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day);
         }
 
-        private int totalSeedsCost(Crop crop)
+        /// <summary>
+        /// Total seeds cost for a crop. See <see cref="TotalSeedsNeeded"/> and <see cref="Crop.getSeedPrice"/> for more information.
+        /// </summary>
+        /// <param name="crop"> Crop to calculate seeds cost for </param>
+        /// <returns> Total seeds cost for the crop </returns>
+        private int TotalSeedsCost(Crop crop)
         {
-            int seedsNeeded = totalSeedsNeeded(crop);
-            int seedCost = crop.Seeds[0].salePrice();
+            if (!PayForSeeds)
+                return 0;
+            int seedsNeeded = TotalSeedsNeeded(crop);
+            int seedCost = crop.getSeedPrice();
+
             return seedsNeeded * seedCost;
         }
 
-        private double totalSeedsCostPerDay(Crop crop)
+        /// <summary>
+        /// Total seeds cost per day for a crop. See <see cref="TotalSeedsCost"/> for more information. Simply devides the total seeds cost by the total available days for the crop.
+        /// </summary>
+        /// <param name="crop"></param>
+        /// <returns></returns>
+        private double TotalSeedsCostPerDay(Crop crop)
         {
-            int seedCost = totalSeedsCost(crop);
+            int seedCost = TotalSeedsCost(crop);
             if (seedCost == 0)
             {
                 return 0;
@@ -246,21 +385,24 @@ namespace ProfitCalculator.main
 
         #region Crop Modifer Value Calculations
 
-        public void printCropChanceTablesForAllFarmingLevels()
+        /// <summary>
+        /// Prints the crop chance tables for all farming levels. Used for debugging.
+        /// </summary>
+        public void PrintCropChanceTablesForAllFarmingLevels()
         {
-            int backupFarmingLevel = farmingLevel;
+            int backupFarmingLevel = FarmingLevel;
             Monitor.Log("|Farming Level\tBase Chance\tSilver Chance\tGold Chance\tIridium Chance\tAvg Value|", LogLevel.Debug);
             for (int i = 0; i < 15; i++)
             {
-                farmingLevel = i;
-                double chanceForGoldQuality = getCropGoldQualityChance();
-                double chanceForSilverQuality = getCropSilverQualityChance();
-                double chanceForIridiumQuality = getCropIridiumQualityChance();
-                double chanceForBaseQuality = getCropBaseQualityChance();
-                double averageValue = getAverageValueForCropAfterModifiers();
+                FarmingLevel = i;
+                double chanceForGoldQuality = GetCropGoldQualityChance();
+                double chanceForSilverQuality = GetCropSilverQualityChance();
+                double chanceForIridiumQuality = GetCropIridiumQualityChance();
+                double chanceForBaseQuality = GetCropBaseQualityChance();
+                double averageValue = GetAverageValueForCropAfterModifiers();
 
                 Monitor.Log(
-                    $"|{farmingLevel}\t\t\t   "
+                    $"|{FarmingLevel}\t\t\t   "
                     + $"{(chanceForBaseQuality * 100).ToString("##")}\t\t"
                     + $"{(chanceForSilverQuality * 100).ToString("##")}\t\t"
                     + $"{(chanceForGoldQuality * 100).ToString("##")}\t\t"
@@ -268,30 +410,37 @@ namespace ProfitCalculator.main
                     + $"{averageValue}|"
                     , LogLevel.Debug);
             }
-            farmingLevel = backupFarmingLevel;
+            FarmingLevel = backupFarmingLevel;
         }
 
-        public void printCropChanceTablesForAllFarmingLevelsAndFertilizerType()
+        /// <summary>
+        /// Prints the crop chance tables for all farming levels and fertilizer types. Used for debugging.
+        /// </summary>
+        public void PrintCropChanceTablesForAllFarmingLevelsAndFertilizerType()
         {
             FertilizerQuality backupFertilizerQuality = FertilizerQuality;
             for (int i = 0; i < 4; i++)
             {
                 FertilizerQuality = (FertilizerQuality)i;
                 Monitor.Log($"Fertilizer: {FertilizerQuality}", LogLevel.Debug);
-                printCropChanceTablesForAllFarmingLevels();
+                PrintCropChanceTablesForAllFarmingLevels();
             }
             FertilizerQuality = backupFertilizerQuality;
         }
 
-        public double getAverageValueMultiplierForCrop()
+        /// <summary>
+        /// Prints the average crop value modifier for current farming level and fertilizer type. Used for debugging. Uses <see cref="GetCropGoldQualityChance"/>, <see cref="GetCropSilverQualityChance"/>, <see cref="GetCropIridiumQualityChance"/>, <see cref="GetCropBaseQualityChance"/>. <see cref="GetCropBaseQualityChance"/> and <see cref="PriceMultipliers"/> to calculate the average value modifier for the crop.
+        /// </summary>
+        /// <returns> Average crop value modifier for current farming level and fertilizer type </returns>
+        public double GetAverageValueMultiplierForCrop()
         {
             double[] priceMultipliers = PriceMultipliers;
 
             //apply farm level quality modifiers
-            double chanceForGoldQuality = getCropGoldQualityChance();
-            double chanceForSilverQuality = getCropSilverQualityChance();
-            double chanceForIridiumQuality = getCropIridiumQualityChance();
-            double chanceForBaseQuality = getCropBaseQualityChance();
+            double chanceForGoldQuality = GetCropGoldQualityChance();
+            double chanceForSilverQuality = GetCropSilverQualityChance();
+            double chanceForIridiumQuality = GetCropIridiumQualityChance();
+            double chanceForBaseQuality = GetCropBaseQualityChance();
             //calculate average value modifier for price
             double averageValue = 0f;
             averageValue += chanceForBaseQuality * priceMultipliers[0];
@@ -301,42 +450,67 @@ namespace ProfitCalculator.main
             return averageValue;
         }
 
-        public double getAverageValueForCropAfterModifiers()
+        /// <summary>
+        /// Calculates the average crop value modifier applying relevant skill modifiers. See <see cref="GetAverageValueMultiplierForCrop"/> for more information.
+        /// </summary>
+        /// <returns> Average crop value modifier applying relevant skill modifiers </returns>
+        public double GetAverageValueForCropAfterModifiers()
         {
-            double averageValue = this.getAverageValueMultiplierForCrop();
+            double averageValue = this.GetAverageValueMultiplierForCrop();
             if (!UseBaseStats && Game1.player.professions.Contains(Farmer.tiller))
             {
-                averageValue *= 1f;//1.1f;
+                averageValue *= 1.1f;
             }
             return Math.Round(averageValue, 2);
         }
 
-        private double getCropBaseGoldQualityChance(double limit = 9999999999)
+        /// <summary>
+        /// Calculates the base chance for gold quality. See <see cref="StardewValley.Crop.harvest"/> for more information.
+        /// </summary>
+        /// <param name="limit"> Limit for the chance</param>
+        /// <returns> Base chance for gold quality </returns>
+        private double GetCropBaseGoldQualityChance(double limit = 9999999999)
         {
             int fertilizerQualityLevel = ((int)FertilizerQuality) > 0 ? ((int)FertilizerQuality) : 0;
-            double part1 = (0.2 * (farmingLevel / 10.0)) + 0.01;
-            double part2 = 0.2 * (fertilizerQualityLevel * ((farmingLevel + 2) / 12.0));
+            double part1 = (0.2 * (FarmingLevel / 10.0)) + 0.01;
+            double part2 = 0.2 * (fertilizerQualityLevel * ((FarmingLevel + 2) / 12.0));
             return Math.Min(limit, part1 + part2);
         }
 
-        private double getCropBaseQualityChance()
+        /// <summary>
+        /// Calculates the chance for normal quality. See <see cref="StardewValley.Crop.harvest"/> for more information.
+        /// </summary>
+        /// <returns> Chance for normal quality </returns>
+        private double GetCropBaseQualityChance()
         {
-            return FertilizerQuality >= FertilizerQuality.Deluxe ? 0f : Math.Max(0f, 1f - (this.getCropIridiumQualityChance() + this.getCropGoldQualityChance() + this.getCropSilverQualityChance()));
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? 0f : Math.Max(0f, 1f - (this.GetCropIridiumQualityChance() + this.GetCropGoldQualityChance() + this.GetCropSilverQualityChance()));
         }
 
-        private double getCropSilverQualityChance()
+        /// <summary>
+        /// Calculates the chance for silver quality. See <see cref="StardewValley.Crop.harvest"/> for more information.
+        /// </summary>
+        /// <returns> Chance for silver quality </returns>
+        private double GetCropSilverQualityChance()
         {
-            return FertilizerQuality >= FertilizerQuality.Deluxe ? 1f - (this.getCropIridiumQualityChance() + this.getCropGoldQualityChance()) : (1f - this.getCropIridiumQualityChance()) * (1f - this.getCropBaseGoldQualityChance()) * Math.Min(0.75, 2 * this.getCropBaseGoldQualityChance());
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? 1f - (this.GetCropIridiumQualityChance() + this.GetCropGoldQualityChance()) : (1f - this.GetCropIridiumQualityChance()) * (1f - this.GetCropBaseGoldQualityChance()) * Math.Min(0.75, 2 * this.GetCropBaseGoldQualityChance());
         }
 
-        private double getCropGoldQualityChance()
+        /// <summary>
+        /// Calculates the chance for gold quality. See <see cref="StardewValley.Crop.harvest"/> for more information.
+        /// </summary>
+        /// <returns> Chance for gold quality </returns>
+        private double GetCropGoldQualityChance()
         {
-            return this.getCropBaseGoldQualityChance(1f) * (1f - this.getCropIridiumQualityChance());
+            return this.GetCropBaseGoldQualityChance(1f) * (1f - this.GetCropIridiumQualityChance());
         }
 
-        private double getCropIridiumQualityChance()
+        /// <summary>
+        /// Calculates the chance for iridium quality. See <see cref="StardewValley.Crop.harvest"/> for more information.
+        /// </summary>
+        /// <returns> Chance for iridium quality </returns>
+        private double GetCropIridiumQualityChance()
         {
-            return FertilizerQuality >= FertilizerQuality.Deluxe ? getCropBaseGoldQualityChance() / 2.0 : 0f;
+            return FertilizerQuality >= FertilizerQuality.Deluxe ? GetCropBaseGoldQualityChance() / 2.0 : 0f;
         }
 
         #endregion Crop Modifer Value Calculations

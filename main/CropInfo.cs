@@ -7,31 +7,86 @@ using ProfitCalculator;
 
 namespace ProfitCalculator.main
 {
+    /// <summary>
+    /// Contains information about a crop and its profit.
+    /// </summary>
     public class CropInfo
     {
+        ///<summary> The crop. </summary>
         public readonly Crop Crop;
+
+        /// <summary> The total profit. </summary>
         public readonly double TotalProfit;
+
+        /// <summary> The profit per day. </summary>
         public readonly double ProfitPerDay;
 
+        /// <summary> The total seed loss. </summary>
         public readonly double TotalSeedLoss;
+
+        /// <summary> The seed loss per day. </summary>
         public readonly double SeedLossPerDay;
 
+        /// <summary> The total fertilizer loss. </summary>
         public readonly double TotalFertilizerLoss;
+
+        /// <summary> The fertilizer loss per day. </summary>
         public readonly double FertilizerLossPerDay;
 
+        /// <summary> The produce type. </summary>
         public readonly Utils.ProduceType ProduceType;
+
+        /// <summary> The duration. </summary>
         public readonly int Duration;
+
+        /// <summary> The total harvests. </summary>
         public readonly int TotalHarvests;
+
+        /// <summary> The growth time. </summary>
         public readonly int GrowthTime;
+
+        /// <summary> The regrowth time. </summary>
         public readonly int RegrowthTime;
+
+        /// <summary> The product count. </summary>
         public readonly int ProductCount;
 
+        /// <summary> The chance of extra product. </summary>
         public readonly double ChanceOfExtraProduct;
+
+        /// <summary> The chance of normal quality. </summary>
         public readonly double ChanceOfNormalQuality;
+
+        /// <summary> The chance of silver quality. </summary>
         public readonly double ChanceOfSilverQuality;
+
+        /// <summary> The chance of gold quality. </summary>
         public readonly double ChanceOfGoldQuality;
+
+        /// <summary> The chance of iridium quality. </summary>
         public readonly double ChanceOfIridiumQuality;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CropInfo"/> class.
+        /// </summary>
+        /// <param name="crop"> The crop. </param>
+        /// <param name="totalProfit"> The total profit. Calculated from <c>totalProfit = totalProfit - (totalSeedLoss + totalFertilizerLoss)</c> </param>
+        /// <param name="profitPerDay"> The profit per day. </param>
+        /// <param name="totalSeedLoss"> The total seed loss. </param>
+        /// <param name="seedLossPerDay"> The seed loss per day. </param>
+        /// <param name="totalFertilizerLoss"> The total fertilizer loss. </param>
+        /// <param name="fertilizerLossPerDay"> The fertilizer loss per day. </param>
+        /// <param name="produceType"> The produce type. </param>
+        /// <param name="duration"> The duration. </param>
+        /// <param name="totalHarvests"> The total harvests. </param>
+        /// <param name="growthTime"> The growth time. </param>
+        /// <param name="regrowthTime"> The regrowth time. </param>
+        /// <param name="productCount"> The product count. </param>
+        /// <param name="chanceOfExtraProduct"> The chance of extra product. </param>
+        /// <param name="chanceOfNormalQuality"> The chance of normal quality. </param>
+        /// <param name="chanceOfSilverQuality"> The chance of silver quality. </param>
+        /// <param name="chanceOfGoldQuality"> The chance of gold quality. </param>
+        /// <param name="chanceOfIridiumQuality"> The chance of iridium quality. </param>
         public CropInfo(Crop crop, double totalProfit, double profitPerDay, double totalSeedLoss, double seedLossPerDay, double totalFertilizerLoss, double fertilizerLossPerDay, Utils.ProduceType produceType, int duration, int totalHarvests, int growthTime, int regrowthTime, int productCount, double chanceOfExtraProduct, double chanceOfNormalQuality, double chanceOfSilverQuality, double chanceOfGoldQuality, double chanceOfIridiumQuality)
         {
             Crop = crop;
@@ -56,6 +111,10 @@ namespace ProfitCalculator.main
 
         #region Overloads and Overrides
 
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the current <see cref="CropInfo"/> in json format.
+        /// </summary>
+        /// <returns> A <see cref="string"/> that represents the current <see cref="CropInfo"/> in json format. </returns>
         public override string ToString()
         { //return object in json format
             return "{" +
@@ -80,6 +139,11 @@ namespace ProfitCalculator.main
                 "}";
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="CropInfo"/> is equal to the current <see cref="CropInfo"/>.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns> <c>true</c> if the specified <see cref="CropInfo"/> is equal to the current <see cref="CropInfo"/>; otherwise, <c>false</c>. </returns>
         public override bool Equals(object obj)
         {
             return obj is CropInfo cropInfo &&
@@ -103,17 +167,10 @@ namespace ProfitCalculator.main
                    ChanceOfIridiumQuality == cropInfo.ChanceOfIridiumQuality;
         }
 
-        //override == and != operators
-        public static bool operator ==(CropInfo left, CropInfo right)
-        {
-            return EqualityComparer<CropInfo>.Default.Equals(left, right);
-        }
-
-        public static bool operator !=(CropInfo left, CropInfo right)
-        {
-            return !(left == right);
-        }
-
+        /// <summary>
+        /// Returns the hash code for this <see cref="CropInfo"/>.
+        /// </summary>
+        /// <returns> A 32-bit signed integer hash code. </returns>
         public override int GetHashCode()
         {
             HashCode hash = new HashCode();

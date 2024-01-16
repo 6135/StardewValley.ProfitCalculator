@@ -5,7 +5,7 @@ using JsonAssets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.menus;
-using ProfitCalculator.UI;
+using ProfitCalculator.ui;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -21,11 +21,11 @@ namespace ProfitCalculator
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
-        private ModConfig Config;
-        private ProfitCalculatorMainMenu mainMenu;
+        private ModConfig? Config;
+        private ProfitCalculatorMainMenu? mainMenu;
         public static Calculator? Calculator;
-        private IModHelper helper;
-        private IGenericModConfigMenuApi configMenu;
+        private IModHelper? helper;
+        private IGenericModConfigMenuApi? configMenu;
         private IApi? JApi;
         private IDynamicGameAssetsApi? DApi;
         /*********
@@ -43,10 +43,10 @@ namespace ProfitCalculator
             //read config
             Config = Helper.ReadConfig<ModConfig>();
             //hook events
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
-            helper.Events.GameLoop.GameLaunched += onGameLaunchedAddGenericModConfigMenu;
+            helper.Events.Input.ButtonPressed += OnButtonPressed;
+            helper.Events.GameLoop.GameLaunched += OnGameLaunchedAddGenericModConfigMenu;
             helper.Events.GameLoop.GameLaunched += onGameLaunchedAPIs;
-            helper.Events.GameLoop.SaveLoaded += onSaveGameLoaded;
+            helper.Events.GameLoop.SaveLoaded += OnSaveGameLoaded;
             helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
         }
 
@@ -54,7 +54,7 @@ namespace ProfitCalculator
         ** Private methods
         *********/
 
-        private void onGameLaunchedAPIs(object sender, GameLaunchedEventArgs e)
+        private void onGameLaunchedAPIs(object? sender, GameLaunchedEventArgs? e)
         {
             JApi = Helper.ModRegistry.GetApi<IApi>("spacechase0.JsonAssets");
             configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -76,11 +76,9 @@ namespace ProfitCalculator
 
             Utils.Initialize(helper, Monitor, JApi, DApi);
             Calculator = new();
-            //register app to mobile phone if mobile phone mod is installed
-            //TODO Maybe make mobile phone mod optional and add an app
         }
 
-        private void onGameLaunchedAddGenericModConfigMenu(object sender, GameLaunchedEventArgs e)
+        private void OnGameLaunchedAddGenericModConfigMenu(object? sender, GameLaunchedEventArgs? e)
         {
             //register config menu if generic mod config menu is installed
 
@@ -118,7 +116,7 @@ namespace ProfitCalculator
             );
         }
 
-        private void onSaveGameLoaded(object sender, SaveLoadedEventArgs e)
+        private void OnSaveGameLoaded(object? sender, SaveLoadedEventArgs? e)
         {
             if (Context.IsWorldReady)
                 mainMenu = new ProfitCalculatorMainMenu(Helper, Monitor, Config);
@@ -134,20 +132,20 @@ namespace ProfitCalculator
                 return;
 
             //check if button pressed is button in config
-            if (e.Button == Config.HotKey)
+            if (e.Button == (Config?.HotKey ?? SButton.None))
             {
                 //open menu if not already open else close
-                if (!mainMenu.isProfitCalculatorOpen)
+                if (mainMenu?.isProfitCalculatorOpen != null && !mainMenu.isProfitCalculatorOpen)
                 {
                     mainMenu.isProfitCalculatorOpen = true;
-                    mainMenu.updateMenu();
+                    mainMenu.UpdateMenu();
                     Game1.activeClickableMenu = mainMenu;
                     Game1.playSound("bigSelect");
                 }
-                else
+                else if (mainMenu?.isProfitCalculatorOpen != null)
                 {
                     mainMenu.isProfitCalculatorOpen = false;
-                    mainMenu.updateMenu();
+                    mainMenu.UpdateMenu();
                     DropdownOption.ActiveDropdown = null;
                     Game1.activeClickableMenu = null;
                     Game1.playSound("bigDeSelect");

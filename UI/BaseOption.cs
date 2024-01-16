@@ -1,16 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ProfitCalculator.UI
+namespace ProfitCalculator.ui
 {
     public abstract class BaseOption
     {
@@ -21,6 +15,7 @@ namespace ProfitCalculator.UI
         public bool Hover { get; private set; }
 
         public bool ClickGestured { get; private set; }
+
         public void setClickableComponent(Vector2 position, Vector2 Size)
         {
             ClickableComponent = new(
@@ -34,6 +29,7 @@ namespace ProfitCalculator.UI
                 Name()
             );
         }
+
         public ClickableComponent ClickableComponent
         {
             get => clickableComponent;
