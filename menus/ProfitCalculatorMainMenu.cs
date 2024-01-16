@@ -595,7 +595,6 @@ namespace ProfitCalculator.menus
             return defaultPosition;
         }
 
-        ///<inheritdoc/>
         /// <summary>The method called when the game window changes size.</summary>
         /// <param name="oldBounds">The former viewport.</param>
         /// <param name="newBounds">The new viewport.</param>
