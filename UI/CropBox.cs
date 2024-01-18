@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.main;
 using StardewValley;
 using StardewValley.Menus;
-
+using System;
 namespace ProfitCalculator.ui
 {
     /// <summary>
@@ -99,10 +99,50 @@ namespace ProfitCalculator.ui
                 Color.Black,
                 0f,
                 Vector2.Zero,
+                1.3f,
+                SpriteEffects.None,
+                0.6f
+            );
+            string price = Math.Round(cropInfo.TotalProfit).ToString() + $" {Utils.Helper.Translation.Get("g")}";
+            Color color = Color.Black;
+            if(cropInfo.TotalProfit < 0)
+            {
+                color = Color.Red;
+            } else
+            {
+                color = Color.DarkGreen;
+            }
+            b.DrawString(
+                Font,
+                price,
+                new Vector2(
+                    this.Position.X + (69 * (Game1.tileSize / 8)) - Font.MeasureString(price).X,
+                    this.Position.Y + (this.ClickableComponent.bounds.Height / 2) + 3 - (Font.MeasureString(price).Y)
+                ),
+                color,
+                0f,
+                Vector2.Zero,
                 1f,
                 SpriteEffects.None,
                 0.6f
-           );
+            );
+            //further left, draw the price per day of the crop in the box, rounded to the nearest two decimal places, with G/Day at the end
+            string pricePerDay = (cropInfo.ProfitPerDay).ToString("0.00") + $" {Utils.Helper.Translation.Get("g")}/{Utils.Helper.Translation.Get("day")}";
+            b.DrawString(
+                Font,
+                pricePerDay,
+                new Vector2(
+                    this.Position.X + (69 * (Game1.tileSize/8)) - Font.MeasureString(pricePerDay).X,
+                    this.Position.Y + (this.ClickableComponent.bounds.Height / 2) + 3 
+                ),
+                color,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.6f
+            );
+
 
             cropHoverBox.Draw(b);
 

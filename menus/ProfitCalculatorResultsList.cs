@@ -23,10 +23,10 @@ namespace ProfitCalculator.menus
         private readonly List<BaseOption> Options = new();
         private readonly List<Vector4> OptionSlots = new();
 
-        private readonly ClickableTextureComponent upArrow;
-        private readonly ClickableTextureComponent downArrow;
+        private ClickableTextureComponent upArrow;
+        private ClickableTextureComponent downArrow;
         private Rectangle scrollBarBounds;
-        private readonly ClickableTextureComponent scrollBar;
+        private ClickableTextureComponent scrollBar;
 
         private int currentItemIndex = 0;
         private readonly int maxOptions = 6;
@@ -51,8 +51,8 @@ namespace ProfitCalculator.menus
             {
                 OptionSlots.Add(
                     new(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + 10 ,
-                        this.yPositionOnScreen + (spaceToClearTopBorder + 5) + (Game1.tileSize / 2) - Game1.tileSize / 4 + ((Game1.tileSize + Game1.tileSize / 2) * i) ,
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + 10,
+                        this.yPositionOnScreen + (spaceToClearTopBorder + 5) + (Game1.tileSize / 2) - Game1.tileSize / 4 + ((Game1.tileSize + Game1.tileSize / 2) * i),
                         widthOnScreen - ((spaceToClearSideBorder + borderWidth + 10) * 2),
                         Game1.tileSize + Game1.tileSize / 2
                    )
@@ -78,6 +78,7 @@ namespace ProfitCalculator.menus
 
             this.xPositionOnScreen = (int)GetAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
+
             int scrollbar_x = xPositionOnScreen + width;
             this.upArrow = new ClickableTextureComponent(
                 new Rectangle(scrollbar_x, yPositionOnScreen + Game1.tileSize + Game1.tileSize / 3, 44, 48),
@@ -113,7 +114,6 @@ namespace ProfitCalculator.menus
             b.End();
             b.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
 
-
             for (int i = 0; i < maxOptions; i++)
             {
                 if (currentItemIndex + i >= Options.Count)
@@ -127,9 +127,7 @@ namespace ProfitCalculator.menus
                 Options[currentItemIndex + i].Draw(b);
             }
 
-
-
-            this.upArrow.draw(b,Color.White,0.6f);
+            this.upArrow.draw(b, Color.White, 0.6f);
             this.downArrow.draw(b, Color.White, 0.6f);
 
             IClickableMenu.drawTextureBox(
@@ -145,7 +143,11 @@ namespace ProfitCalculator.menus
                 drawShadow: false,
                 draw_layer: 0.6f
                 );
-            this.scrollBar.draw(b);
+            this.scrollBar.draw(
+                b,
+                Color.White,
+                0.65f
+            );
 
             b.End();
             b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
@@ -154,8 +156,6 @@ namespace ProfitCalculator.menus
                 base.draw(b);
             if (!Game1.options.hardwareCursor)
                 b.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
-
-
         }
 
         #endregion Draw Methods
@@ -259,8 +259,7 @@ namespace ProfitCalculator.menus
             {
                 return;
             }
-            
-            
+
             //if hover over any of the optionSlots, print to log "HoveringOver it"
             for (int i = 0; i < this.OptionSlots.Count; i++)
             {
@@ -418,8 +417,41 @@ namespace ProfitCalculator.menus
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             base.gameWindowSizeChanged(oldBounds, newBounds);
+
             this.xPositionOnScreen = (int)GetAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
+            OptionSlots.Clear();
+            for (int i = 0; i < maxOptions; i++)
+            {
+                OptionSlots.Add(
+                    new(
+                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + 10,
+                        this.yPositionOnScreen + (spaceToClearTopBorder + 5) + (Game1.tileSize / 2) - Game1.tileSize / 4 + ((Game1.tileSize + Game1.tileSize / 2) * i),
+                        widthOnScreen - ((spaceToClearSideBorder + borderWidth + 10) * 2),
+                        Game1.tileSize + Game1.tileSize / 2
+                   )
+                );
+            }
+
+
+
+            int scrollbar_x = xPositionOnScreen + width;
+            this.upArrow = new ClickableTextureComponent(
+                new Rectangle(scrollbar_x, yPositionOnScreen + Game1.tileSize + Game1.tileSize / 3, 44, 48),
+                Game1.mouseCursors,
+                new Rectangle(421, 459, 11, 12),
+                4f);
+            this.downArrow = new ClickableTextureComponent(
+                new Rectangle(scrollbar_x, yPositionOnScreen + height - 64, 44, 48),
+                Game1.mouseCursors,
+                new Rectangle(421, 472, 11, 12),
+                4f);
+            this.scrollBarBounds = default;
+            this.scrollBarBounds.X = this.upArrow.bounds.X + 12;
+            this.scrollBarBounds.Width = 24;
+            this.scrollBarBounds.Y = this.upArrow.bounds.Y + this.upArrow.bounds.Height + 4;
+            this.scrollBarBounds.Height = this.downArrow.bounds.Y - 4 - this.scrollBarBounds.Y;
+            this.scrollBar = new ClickableTextureComponent(new Rectangle(this.scrollBarBounds.X, this.scrollBarBounds.Y, 24, 40), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), 4f);
         }
 
         #endregion Event Handling

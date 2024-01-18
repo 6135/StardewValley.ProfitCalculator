@@ -27,8 +27,8 @@ namespace ProfitCalculator.ui
         public CropHoverBox(CropInfo cropInfo)
         {
             isOpen = false;
-            windowWidth = 100;
-            windowHeight = 100;
+            windowWidth = 400;
+            windowHeight = 600;
             x = 0;
             y = 0;
             drawBox = new(x, y, windowWidth, windowHeight);
@@ -60,8 +60,8 @@ namespace ProfitCalculator.ui
                     new Rectangle(0, 256, 60, 60),
                     drawBox.X,
                     drawBox.Y,
-                    300,
-                    100,
+                    windowWidth,
+                    windowHeight,
                     Color.White,
                     1f
                 );
@@ -99,10 +99,10 @@ namespace ProfitCalculator.ui
                 y = mouseY;
 
             //if the box is off the screen, move it back on
-            /*if (x < safeArea.Left)
-                x = safeArea.Left;
+            if (x < safeArea.Left)
+                x = safeArea.Left + Game1.tileSize / 4;
             if (y < safeArea.Top)
-                y = safeArea.Top;*/
+                y = safeArea.Top + Game1.tileSize / 4;
 
             drawBox = new(
                 x,
