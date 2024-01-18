@@ -3,7 +3,7 @@ using StardewModdingAPI;
 
 namespace ProfitCalculator
 {
-    public class ModConfig
+    internal class ModConfig
     {
         public SButton HotKey { get; set; }
 

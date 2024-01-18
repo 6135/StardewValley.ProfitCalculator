@@ -9,41 +9,81 @@ using System.Linq;
 
 namespace ProfitCalculator.ui
 {
+    /// <summary>
+    /// Dropdown option for the options menu.
+    /// </summary>
     public class DropdownOption : BaseOption
     {
+        /// <summary> The width of the dropdown box. </summary>
         public int RequestWidth { get; set; }
+
+        /// <summary> The maximum number of values to display at once. </summary>
         public int MaxValuesAtOnce { get; set; } = 5;
+
+        /// <summary> The texture to draw. </summary>
         public Texture2D Texture { get; set; } = Game1.mouseCursors;
+
+        /// <summary> The texture rectangle to draw for the background. </summary>
         public Rectangle BackgroundTextureRect { get; set; } = OptionsDropDown.dropDownBGSource;
+
+        /// <summary> The texture rectangle to draw for the button. </summary>
         public Rectangle ButtonTextureRect { get; set; } = OptionsDropDown.dropDownButtonSource;
 
+        /// <summary> The value of the option. Defines a get and set behaviour </summary>
         public string Value
         {
             get => this.Choices[this.ActiveChoice];
             set { if (this.Choices.Contains(value)) this.ActiveChoice = Array.IndexOf(this.Choices, value); }
         }
 
+        /// <summary> The width of the dropdown box. </summary>
         public int DropDownBoxWidth => Math.Max(300, Math.Min(300, this.RequestWidth));
 
+        /// <summary> The height of the dropdown box. </summary>
         public int DropDownBoxHeight => 44;
 
+        /// <summary> The name of the option. </summary>
         public new string Label => this.Labels[this.ActiveChoice];
 
+        /// <summary> The current active choice. </summary>
         public int ActiveChoice { get; set; }
 
+        /// <summary> The current active position. </summary>
         public int ActivePosition { get; set; }
+
+        /// <summary> The available choices. </summary>
         public string[] Choices { get; set; }
 
+        /// <summary> The labels for the options. </summary>
         public string[] Labels { get; set; }
 
-        public Action<string> ValueSetter;
-        public bool Dropped;
+        /// <summary> The value setter. Type Action </summary>
+        private readonly Action<string> ValueSetter;
 
-#pragma warning disable S2223 // Non-constant static fields should not be visible
+        /// <summary> Determines whether the dropdown is dropped. </summary>
+        private bool Dropped;
+
+#pragma warning disable S2223, CA2211, S1104
+
+        /// <summary> The current active dropdown. </summary>
         public static DropdownOption ActiveDropdown = null;
-        public static int SinceDropdownWasActive = 0;
-#pragma warning restore S2223 // Non-constant static fields should not be visible
 
+#pragma warning restore S2223, CA2211, S1104
+
+        /// <summary> The sound to play when the option is clicked. </summary>
+        public override string ClickedSound => "shwip";
+
+        /// <summary>
+        /// Creates a new DropdownOption
+        /// </summary>
+        /// <param name="x"> The x position of the clickable component</param>
+        /// <param name="y"> The y position of the clickable component</param>
+        /// <param name="name"> The name of the clickable component</param>
+        /// <param name="label"> The label of the clickable component</param>
+        /// <param name="choices"> The choices of the dropdown</param>
+        /// <param name="labels"> The labels of the dropdown</param>
+        /// <param name="valueGetter"> The value getter</param>
+        /// <param name="valueSetter"> The value setter</param>
         public DropdownOption(
             int x,
             int y,
@@ -63,11 +103,11 @@ namespace ProfitCalculator.ui
             ClickableComponent.bounds.Height = this.DropDownBoxHeight;
         }
 
-        public override string ClickedSound => "shwip";
-
+        /// <summary>
+        /// The Update behaviour of the option
+        /// </summary>
         public override void Update()
         {
-            base.Update();
             bool justClicked = false;
 
             if (this.Clicked && DropdownOption.ActiveDropdown == null)
@@ -120,6 +160,10 @@ namespace ProfitCalculator.ui
             }
         }
 
+        /// <summary>
+        /// Reacts to the scroll wheel action. By showing the next or previous options if the dropdown is dropped and there are more options to show
+        /// </summary>
+        /// <param name="direction"></param>
         public void ReceiveScrollWheelAction(int direction)
         {
             if (this.Dropped)
@@ -128,6 +172,7 @@ namespace ProfitCalculator.ui
                 DropdownOption.ActiveDropdown = null;
         }
 
+        /// <inheritdoc/>
         public override void Draw(SpriteBatch b)
         {
             IClickableMenu.drawTextureBox(
@@ -213,12 +258,23 @@ namespace ProfitCalculator.ui
             }
         }
 
+        /// <inheritdoc/>
+        public override void BeforeReceiveLeftClick(int x, int y)
+        {
+        }
+
+        /// <summary>
+        /// Behaviour when the left click is received. If the dropdown is not dropped then open it. If it is dropped then close it. If dropdown was open and the click was meant to close it then close it it stops the spread of the click to other options so as to not get any overlap with other options (i.e. clicking on one option and opening another or selecting an option and opening another)
+        /// </summary>
+        /// <param name="x"> The x position of the mouse</param>
+        /// <param name="y"> The y position of the mouse</param>
+        /// <param name="stopSpread"> The action to stop the spread of the click</param>
         public override void ReceiveLeftClick(int x, int y, Action stopSpread)
         {
             //if ClickMeantToCloseDropdown is false then open dropdown
             if (ClickableComponent.containsPoint(x, y) && !this.Dropped && !this.Clicked)
             {
-                this.executeClick();
+                this.ExecuteClick();
             }
             else if (this.Dropped || this.Clicked)
             {

@@ -107,13 +107,13 @@ namespace ProfitCalculator.main
             IsTrellisCrop = isTrellisCrop;
             IsGiantCrop = isGiantCrop;
             GiantSprite = giantSprite;
-            Seeds = Seeds.AddRange(seeds);
-            Phases = Phases.AddRange(phases);
+            Seeds = ImmutableArray.Create(seeds);
+            Phases = ImmutableArray.Create(phases);
             Regrow = regrow;
             IsPaddyCrop = isPaddyCrop;
             Days = Phases.Sum();
             Price = ((SObject)Item).Price;
-            Seasons = Seasons.AddRange(seasons);
+            Seasons = ImmutableArray.Create(seasons);
             MaxHarvests = (int)harvestChanceValues[0];
             MinHarvests = (int)harvestChanceValues[1];
             MaxHarvestIncreasePerFarmingLevel = (int)harvestChanceValues[2];
@@ -135,7 +135,7 @@ namespace ProfitCalculator.main
         /// Retrieves the seed buying price of the crop. Used to calculate the seed purchasing loss and it's per day value. If the seed price is not set, then it's calculated from the first seed in the seeds array. This is made for the override.
         /// </summary>
         /// <returns> Seed buying price of the crop. <c>int</c></returns>
-        public int getSeedPrice()
+        public int GetSeedPrice()
         {
             return seedPrice;
         }

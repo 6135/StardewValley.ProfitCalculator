@@ -151,7 +151,7 @@ namespace ProfitCalculator.main
         /// <summary>
         /// Refreshes the list of crops by clearing the crops dictionary and calling <see cref="RetrieveCropList"/>
         /// </summary>
-        public void refreshCropList()
+        public void RefreshCropList()
         {
             crops = new();
             RetrieveCropList();
@@ -351,7 +351,7 @@ namespace ProfitCalculator.main
         }
 
         /// <summary>
-        /// Total seeds cost for a crop. See <see cref="TotalSeedsNeeded"/> and <see cref="Crop.getSeedPrice"/> for more information.
+        /// Total seeds cost for a crop. See <see cref="TotalSeedsNeeded"/> and <see cref="Crop.GetSeedPrice"/> for more information.
         /// </summary>
         /// <param name="crop"> Crop to calculate seeds cost for </param>
         /// <returns> Total seeds cost for the crop </returns>
@@ -360,7 +360,7 @@ namespace ProfitCalculator.main
             if (!PayForSeeds)
                 return 0;
             int seedsNeeded = TotalSeedsNeeded(crop);
-            int seedCost = crop.getSeedPrice();
+            int seedCost = crop.GetSeedPrice();
 
             return seedsNeeded * seedCost;
         }
@@ -403,10 +403,10 @@ namespace ProfitCalculator.main
 
                 Monitor.Log(
                     $"|{FarmingLevel}\t\t\t   "
-                    + $"{(chanceForBaseQuality * 100).ToString("##")}\t\t"
-                    + $"{(chanceForSilverQuality * 100).ToString("##")}\t\t"
-                    + $"{(chanceForGoldQuality * 100).ToString("##")}\t\t"
-                    + $"{(chanceForIridiumQuality * 100).ToString("##")}\t\t"
+                    + $"{chanceForBaseQuality * 100:##}\t\t"
+                    + $"{chanceForSilverQuality * 100:##}\t\t"
+                    + $"{chanceForGoldQuality * 100:##}\t\t"
+                    + $"{chanceForIridiumQuality * 100:##}\t\t"
                     + $"{averageValue}|"
                     , LogLevel.Debug);
             }

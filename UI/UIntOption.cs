@@ -5,12 +5,35 @@ using System.Linq;
 
 namespace ProfitCalculator.ui
 {
+    /// <summary>
+    /// Option for uints in the options menu. Extends TextOption to allow for easy input of uints.
+    /// </summary>
     public class UIntOption : TextOption
     {
-        protected readonly Func<uint> Max;
+        /// <summary> The maximum value of the uintbox. </summary>
+        private readonly Func<uint> Max;
+
+        /// <summary> The minimum value of the uintbox. </summary>
         protected readonly Func<uint> Min;
+
+        /// <summary> Whether the uintbox should clamp the value to the min and max. </summary>
         protected readonly bool EnableClamping;
 
+        /// <summary> Whether the option is Valid. </summary>
+        public bool IsValid => int.TryParse(this.ValueGetter(), out _);
+
+        /// <summary>
+        /// Creates a new uint option.
+        /// </summary>
+        /// <param name="x"> The x position of the option. </param>
+        /// <param name="y"> The y position of the option. </param>
+        /// <param name="name"> The name of the option. </param>
+        /// <param name="label"> The label of the option. </param>
+        /// <param name="valueGetter"> The function to get the value of the option. </param>
+        /// <param name="max"> The function to get the maximum value of the option. </param>
+        /// <param name="min"> The function to get the minimum value of the option. </param>
+        /// <param name="valueSetter"> The function to set the value of the option. </param>
+        /// <param name="enableClamping"> Whether the uintbox should clamp the value to the min and max. </param>
         public UIntOption(
             int x,
             int y,
@@ -27,16 +50,6 @@ namespace ProfitCalculator.ui
             this.Min = min;
             this.EnableClamping = enableClamping;
         }
-
-        /*********
-                ** Accessors
-                *********/
-
-        public bool IsValid => int.TryParse(this.ValueGetter(), out _);
-
-        /*********
-        ** Protected methods
-        *********/
 
         /// <inheritdoc />
         protected override void ReceiveInput(string str)
@@ -73,6 +86,7 @@ namespace ProfitCalculator.ui
             }
         }
 
+        /// <inheritdoc />
         public override void RecieveCommandInput(char command)
         {
             if (command == '\b' && this.ValueGetter().Length > 0)
@@ -82,11 +96,11 @@ namespace ProfitCalculator.ui
                 if (this.ValueGetter().Length == 1 || this.ValueGetter().All(c => c == '0'))
                     this.ValueSetter("0");
                 else
-                    this.ValueSetter(this.ValueGetter().Substring(0, this.ValueGetter().Length - 1));
+                    this.ValueSetter(this.ValueGetter()[..^1]);
             }
         }
 
-        //allow adding or subtracting from the uintbox by using the arrow keys
+        /// <inheritdoc />
         public override void RecieveSpecialInput(Keys key)
         {
             if (key == Keys.Up)
@@ -101,10 +115,10 @@ namespace ProfitCalculator.ui
             }
         }
 
-        //after select is set to false, set the value to the value getter
-        public override void beforeReceiveLeftClick(int x, int y)
+        /// <inheritdoc />
+        public override void BeforeReceiveLeftClick(int x, int y)
         {
-            base.beforeReceiveLeftClick(x, y);
+            base.BeforeReceiveLeftClick(x, y);
             if (!this.Selected && this.EnableClamping)
                 this.ValueSetter(
                     Math.Clamp(

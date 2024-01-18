@@ -42,10 +42,14 @@ namespace ProfitCalculator
 
             //read config
             Config = Helper.ReadConfig<ModConfig>();
+            if (Config is null || Helper is null)
+            {
+                return;
+            }
             //hook events
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.GameLaunched += OnGameLaunchedAddGenericModConfigMenu;
-            helper.Events.GameLoop.GameLaunched += onGameLaunchedAPIs;
+            helper.Events.GameLoop.GameLaunched += OnGameLaunchedAPIs;
             helper.Events.GameLoop.SaveLoaded += OnSaveGameLoaded;
             helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
         }
@@ -54,7 +58,7 @@ namespace ProfitCalculator
         ** Private methods
         *********/
 
-        private void onGameLaunchedAPIs(object? sender, GameLaunchedEventArgs? e)
+        private void OnGameLaunchedAPIs(object? sender, GameLaunchedEventArgs? e)
         {
             JApi = Helper.ModRegistry.GetApi<IApi>("spacechase0.JsonAssets");
             configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -119,13 +123,13 @@ namespace ProfitCalculator
         private void OnSaveGameLoaded(object? sender, SaveLoadedEventArgs? e)
         {
             if (Context.IsWorldReady)
-                mainMenu = new ProfitCalculatorMainMenu(Helper, Monitor, Config);
+                mainMenu = new ProfitCalculatorMainMenu();
         }
 
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event data.</param>
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void OnButtonPressed(object? sender, ButtonPressedEventArgs? e)
         {
             // ignore if player hasn't loaded a save yet
             if (!Context.IsWorldReady)
@@ -135,16 +139,16 @@ namespace ProfitCalculator
             if (e.Button == (Config?.HotKey ?? SButton.None))
             {
                 //open menu if not already open else close
-                if (mainMenu?.isProfitCalculatorOpen != null && !mainMenu.isProfitCalculatorOpen)
+                if (mainMenu?.IsProfitCalculatorOpen != null && !mainMenu.IsProfitCalculatorOpen)
                 {
-                    mainMenu.isProfitCalculatorOpen = true;
+                    mainMenu.IsProfitCalculatorOpen = true;
                     mainMenu.UpdateMenu();
                     Game1.activeClickableMenu = mainMenu;
                     Game1.playSound("bigSelect");
                 }
-                else if (mainMenu?.isProfitCalculatorOpen != null)
+                else if (mainMenu?.IsProfitCalculatorOpen != null)
                 {
-                    mainMenu.isProfitCalculatorOpen = false;
+                    mainMenu.IsProfitCalculatorOpen = false;
                     mainMenu.UpdateMenu();
                     DropdownOption.ActiveDropdown = null;
                     Game1.activeClickableMenu = null;
@@ -153,9 +157,10 @@ namespace ProfitCalculator
             }
         }
 
-        private void OnMouseWheelScrolled(object sender, MouseWheelScrolledEventArgs e)
+        private void OnMouseWheelScrolled(object? sender, MouseWheelScrolledEventArgs? e)
         {
-            DropdownOption.ActiveDropdown?.ReceiveScrollWheelAction(e.Delta);
+            if (e != null)
+                DropdownOption.ActiveDropdown?.ReceiveScrollWheelAction(e.Delta);
         }
     }
 }

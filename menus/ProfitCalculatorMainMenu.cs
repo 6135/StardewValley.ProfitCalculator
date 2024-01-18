@@ -13,65 +13,84 @@ using static ProfitCalculator.Utils;
 
 namespace ProfitCalculator.menus
 {
+    /// <summary>
+    /// The main menu for the profit calculator. This menu is opened by pressing the "F8" key by default. It is used to set the settings for the profit calculator. It is also used to open the results menu. This menu is the parent menu for the <see cref="ProfitCalculatorResultsList"/> menu.
+    /// </summary>
     public class ProfitCalculatorMainMenu : IClickableMenu
     {
-        private readonly IModHelper helper;
-
-        private readonly IMonitor monitor;
-        private readonly ModConfig config;
-
+        /// <summary> The day for planting. </summary>
         public uint Day { get; set; } = 1;
 
+        /// <summary> The ammount of days a season can have. </summary>
         public uint MaxDay { get; set; } = 28;
+
+        /// <summary> The minimum day a season can have. </summary>
         public uint MinDay { get; set; } = 1;
+
+        /// <summary> The season for planting. </summary>
         public Season Season { get; set; } = Utils.Season.Spring;
 
-        public void setSeason(string season)
+        /// <summary>
+        /// Sets the season for planting.
+        /// </summary>
+        /// <param name="season"> The season to set. String, case insensetive</param>
+        public void SetSeason(string season)
         {
             Season = (Season)Season.Parse(typeof(Season), season, false);
         }
 
+        /// <summary> The type of produce to calculate with, for now only raw works. </summary>
         public ProduceType ProduceType { get; set; } = Utils.ProduceType.Raw;
+
+        /// <summary> The quality of fertilizer to use. </summary>
         public FertilizerQuality FertilizerQuality { get; set; } = Utils.FertilizerQuality.None;
+
+        /// <summary>
+        /// Whether the play wants to check which plants he can purchase with available cash.
+        /// </summary>
         public bool PayForSeeds { get; set; } = true;
+
+        /// <summary> Whether the play wants to check which plants he can purchase with available cash. </summary>
         public bool PayForFertilizer { get; set; } = false;
+
+        /// <summary> The maximum ammount of money the player wants to spend in seeds. </summary>
         public uint MaxMoney { get; set; } = 0;
+
+        /// <summary> Whether the player wants to use base stats or not. </summary>
         public bool UseBaseStats { get; set; } = false;
 
-        public bool CrossSeason { get; set; } = true;
-
-        public string exampleString { get; set; } = "example";
-        private static int widthOnScreen = 632 + borderWidth * 2;
-        private static int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
+        private static readonly int widthOnScreen = 632 + borderWidth * 2;
+        private static readonly int heightOnScreen = 600 + borderWidth * 2 + Game1.tileSize;
         private bool stopSpreadingClick = false;
 
-        private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
+        private readonly List<ClickableComponent> Labels = new();
 
-        private readonly List<BaseOption> Options = new List<BaseOption>();
+        private readonly List<BaseOption> Options = new();
 
         private ClickableComponent calculateButton;
         private ClickableComponent resetButton;
-        public bool isProfitCalculatorOpen { get; set; } = false;
 
-        public ProfitCalculatorMainMenu(IModHelper _helper, IMonitor _monitor, ModConfig _modConfig) :
+        /// <summary> Whether the profit calculator is open or not.  </summary>
+        public bool IsProfitCalculatorOpen { get; set; } = false;
+
+        /// <summary>
+        /// Constructor for the ProfitCalculatorMainMenu class.
+        /// </summary>
+        public ProfitCalculatorMainMenu() :
             base(
                 (int)GetAppropriateMenuPosition().X,
                 (int)GetAppropriateMenuPosition().Y,
                 widthOnScreen,
                 heightOnScreen)
         {
-            helper = _helper;
-            monitor = _monitor;
-            config = _modConfig;
-
             behaviorBeforeCleanup = delegate
             {
-                isProfitCalculatorOpen = false;
+                IsProfitCalculatorOpen = false;
             };
 
             this.xPositionOnScreen = (int)GetAppropriateMenuPosition().X;
             this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
-            this.ResetMenu();
+            this.Reset();
         }
 
         #region Menu Button Setups
@@ -109,7 +128,7 @@ namespace ProfitCalculator.menus
                     Game1.tileSize
                 ),
                 "calculate",
-                helper.Translation.Get("calculate")
+                Helper.Translation.Get("calculate")
             );
 
             resetButton = new ClickableComponent(
@@ -120,7 +139,7 @@ namespace ProfitCalculator.menus
                     Game1.tileSize
                 ),
                 "reset",
-                helper.Translation.Get("reset")
+                Helper.Translation.Get("reset")
                 );
         }
 
@@ -135,7 +154,7 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "day",
-                    helper.Translation.Get("day") + ": "
+                    Helper.Translation.Get("day") + ": "
                 )
             );
             UIntOption dayOption =
@@ -143,14 +162,14 @@ namespace ProfitCalculator.menus
                    this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5 - Game1.tileSize / 8,
                    this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize / 4,
                    () => "day",
-                   () => helper.Translation.Get("day"),
+                   () => Helper.Translation.Get("day"),
                    valueGetter: () => this.Day,
                    max: () => this.MaxDay,
                    min: () => this.MinDay,
                    valueSetter: (string value) => this.Day = uint.Parse(value),
                    enableClamping: true
                );
-            dayOption.setTexture(Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "text_box_small.png")));
+            dayOption.SetTexture(Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "text_box_small.png")));
             Options.Add(dayOption);
         }
 
@@ -165,7 +184,7 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "season",
-                    helper.Translation.Get("season") + ": "
+                    Helper.Translation.Get("season") + ": "
                 )
             );
 
@@ -173,7 +192,7 @@ namespace ProfitCalculator.menus
                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize + Game1.tileSize / 4,
                 name: () => "season",
-                label: () => helper.Translation.Get("season"),
+                label: () => Helper.Translation.Get("season"),
                 choices: () => Utils.Season.GetNames(typeof(Utils.Season)),
                 labels: () => Utils.GetAllTranslatedSeasons(),
                 valueGetter: this.Season.ToString,
@@ -198,7 +217,7 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "produceType",
-                    helper.Translation.Get("produce-type") + ": "
+                    Helper.Translation.Get("produce-type") + ": "
                 )
             );
 
@@ -206,7 +225,7 @@ namespace ProfitCalculator.menus
                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 2 + Game1.tileSize / 4,
                 name: () => "produceType",
-                label: () => helper.Translation.Get("produce-type"),
+                label: () => Helper.Translation.Get("produce-type"),
                 choices: () => Utils.ProduceType.GetNames(typeof(Utils.ProduceType)),
                 labels: () => Utils.GetAllTranslatedProduceTypes(),
                 valueGetter: this.ProduceType.ToString,
@@ -229,14 +248,14 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "fertilizerQuality",
-                    helper.Translation.Get("fertilizer-type") + ": "
+                    Helper.Translation.Get("fertilizer-type") + ": "
                 )
             );
             DropdownOption fertilizerQualityOption = new(
                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 3 + Game1.tileSize / 4,
                 name: () => "fertilizerQuality",
-                label: () => helper.Translation.Get("fertilizer-quality"),
+                label: () => Helper.Translation.Get("fertilizer-quality"),
                 choices: () => Utils.FertilizerQuality.GetNames(typeof(Utils.FertilizerQuality)),
                 labels: () => Utils.GetAllTranslatedFertilizerQualities(),
                 valueGetter: this.FertilizerQuality.ToString,
@@ -259,7 +278,7 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "payForSeeds",
-                    helper.Translation.Get("pay-for-seeds") + ": "
+                    Helper.Translation.Get("pay-for-seeds") + ": "
                 )
             );
 
@@ -267,7 +286,7 @@ namespace ProfitCalculator.menus
                     this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                     this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 4 + Game1.tileSize / 4,
                     () => "payForSeeds",
-                    () => helper.Translation.Get("pay-for-seeds"),
+                    () => Helper.Translation.Get("pay-for-seeds"),
                     () => this.PayForSeeds,
                     (bool value) => this.PayForSeeds = value
 
@@ -286,14 +305,14 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "payForFertilizer",
-                    helper.Translation.Get("pay-for-fertilizer") + ": "
+                    Helper.Translation.Get("pay-for-fertilizer") + ": "
                 )
             );
             CheckboxOption payForFertilizer = new(
                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 5 + Game1.tileSize / 4,
                 () => "payForFertilizer",
-                () => helper.Translation.Get("pay-for-fertilizer"),
+                () => Helper.Translation.Get("pay-for-fertilizer"),
                 () => this.PayForFertilizer,
                 (bool value) => this.PayForFertilizer = value
             );
@@ -311,7 +330,7 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "maxMoney",
-                    helper.Translation.Get("max-money") + ": "
+                    Helper.Translation.Get("max-money") + ": "
                 )
         );
             UIntOption maxMoneyOption =
@@ -319,7 +338,7 @@ namespace ProfitCalculator.menus
                    this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5 - Game1.tileSize / 8,
                    this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 6 + Game1.tileSize / 4,
                    () => "maxMoney",
-                   () => helper.Translation.Get("max-money"),
+                   () => Helper.Translation.Get("max-money"),
                    valueGetter: () => this.MaxMoney,
                    max: () => 99999999,
                    min: () => 0,
@@ -340,46 +359,28 @@ namespace ProfitCalculator.menus
                         Game1.tileSize
                     ),
                     "useBaseStats",
-                    helper.Translation.Get("base-stats") + ": "
+                    Helper.Translation.Get("base-stats") + ": "
                 )
             );
             CheckboxOption useBaseStatsOptions = new(
                 this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
                 this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7 + Game1.tileSize / 4,
                 () => "useBaseStats",
-                () => helper.Translation.Get("base-stats"),
+                () => Helper.Translation.Get("base-stats"),
                 () => this.UseBaseStats,
                 (bool value) => this.UseBaseStats = value
             );
             Options.Add(useBaseStatsOptions);
-            /*Labels.Add(
-                new ClickableComponent(
-                    new Rectangle(
-                        this.xPositionOnScreen + spaceToClearSideBorder + borderWidth,
-                        this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7,
-                        Game1.tileSize * 2,
-                        Game1.tileSize
-                    ),
-                    "crossSeason",
-                    helper.Translation.Get("cross-season") + ": "
-                )
-            );
-            CheckboxOption crossSeason = new(
-                this.xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 5,
-                this.yPositionOnScreen + spaceToClearTopBorder + Game1.tileSize * 7 + Game1.tileSize / 4,
-                () => "crossSeason",
-                () => helper.Translation.Get("cross-season"),
-                () => this.CrossSeason,
-                (bool value) => this.CrossSeason = value
-            );
-            Options.Add(crossSeason);*/
         }
 
         #endregion Menu Button Setups
 
         #region Draw Methods
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Draws the menu. This method is called by the game. Options are drawn in SpriteSortMode.FrontToBack, Actions and Labels are drawn in SpriteSortMode.Deferred. This is done to prevent the options from being drawn over the actions and labels. Including dropdowns.
+        /// </summary>
+        /// <param name="b"> The spritebatch to draw with. </param>
         public override void draw(SpriteBatch b)
 
         {
@@ -494,7 +495,10 @@ namespace ProfitCalculator.menus
 
         #region Event Handling
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Handles key presses received by the menu.
+        /// </summary>
+        /// <param name="key"> The key that was pressed. </param>
         public override void receiveKeyPress(Keys key)
         {
             switch (key)
@@ -510,13 +514,22 @@ namespace ProfitCalculator.menus
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Handles mouse hovers received by the menu.
+        /// </summary>
+        /// <param name="x"> The x position of the mouse. </param>
+        /// <param name="y"> The y position of the mouse. </param>
         public override void performHoverAction(int x, int y)
         {
             //TODO: add hover actions for buttons
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Handles mouse clicks received by the menu.
+        /// </summary>
+        /// <param name="x"> The x position of the mouse. </param>
+        /// <param name="y"> The y position of the mouse. </param>
+        /// <param name="playSound"> Whether to play a sound when the click is received. </param>
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             if (calculateButton.containsPoint(x, y))
@@ -527,7 +540,7 @@ namespace ProfitCalculator.menus
             }
             if (resetButton.containsPoint(x, y))
             {
-                this.ResetMenu();
+                this.Reset();
                 if (playSound) Game1.playSound("dialogueCharacterClose");
                 return;
             }
@@ -544,7 +557,7 @@ namespace ProfitCalculator.menus
             }
         }
 
-        private void ResetMenu()
+        private void Reset()
         {
             //set all the options to default values
             //get day from game
@@ -556,10 +569,12 @@ namespace ProfitCalculator.menus
             PayForFertilizer = false;
             MaxMoney = (uint)Game1.player.team.money.Value;
             UseBaseStats = false;
-            CrossSeason = true;
             this.UpdateMenu();
         }
 
+        /// <summary>
+        /// Updates the menu. Refreshes the positions of the buttons and options.
+        /// </summary>
         public void UpdateMenu()
         {
             Labels.Clear();
@@ -567,7 +582,10 @@ namespace ProfitCalculator.menus
             this.SetUpPositions();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Propagates an update call to the menu and all of its children.
+        /// </summary>
+        /// <param name="time"></param>
         public override void update(GameTime time)
         {
             base.update(time);
@@ -578,9 +596,13 @@ namespace ProfitCalculator.menus
             }
         }
 
+        /// <summary>
+        /// Gets the appropriate position for the menu to be in.
+        /// </summary>
+        /// <returns> The appropriate position for the menu to be in, in Vector2 format </returns>
         public static Vector2 GetAppropriateMenuPosition()
         {
-            Vector2 defaultPosition = new Vector2(Game1.viewport.Width / 2 - widthOnScreen / 2, (Game1.viewport.Height / 2 - heightOnScreen / 2));
+            Vector2 defaultPosition = new(Game1.viewport.Width / 2 - widthOnScreen / 2, (Game1.viewport.Height / 2 - heightOnScreen / 2));
 
             //Force the viewport into a position that it should fit into on the screen???
             if (defaultPosition.X + widthOnScreen > Game1.viewport.Width)
@@ -611,7 +633,7 @@ namespace ProfitCalculator.menus
 
         private void DoCalculation()
         {
-            ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats, CrossSeason);
+            ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats);
 
             /*Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
             monitor.Log("----------------------------Data\\Crops----------------------------", LogLevel.Debug);
@@ -649,13 +671,11 @@ namespace ProfitCalculator.menus
                     //monitor.Log($"{obj?.GetType()} {obj?.Category} {item}", LogLevel.Debug);
                 }
             }*/
-            monitor.Log("Doing Calculation", LogLevel.Debug);
-            //ModEntry.Calculator.Calculate();
+            Monitor.Log("Doing Calculation", LogLevel.Debug);
             ModEntry.Calculator.RetrieveCropsAsOrderderList();
             List<CropInfo> cropList = ModEntry.Calculator.RetrieveCropInfos();
 
-            ProfitCalculatorResultsList profitCalculatorResultsList = new ProfitCalculatorResultsList(helper, monitor, config, cropList);
-            //Game1.activeClickableMenu = profitCalculatorResultsList;
+            ProfitCalculatorResultsList profitCalculatorResultsList = new(cropList);
             this.SetChildMenu(profitCalculatorResultsList);
         }
     }

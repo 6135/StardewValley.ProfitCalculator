@@ -7,15 +7,24 @@ using System;
 
 namespace ProfitCalculator.ui
 {
+    /// <summary>
+    /// Base class for all writing based options in the options menu.
+    /// </summary>
     public class TextOption : BaseOption, IKeyboardSubscriber
     {
         private Texture2D Tex;
-        private SpriteFont Font = Game1.smallFont;
-        protected bool SelectedImpl;
+        private readonly SpriteFont Font = Game1.smallFont;
+        private bool SelectedImpl;
 
+        /// <summary> The Function to retrieve the current value. </summary>
         protected readonly Func<string> ValueGetter;
+
+        /// <summary> The Function to set the current value. </summary>
         protected readonly Action<string> ValueSetter;
 
+        /// <summary>
+        /// Whether the option is currently selected.
+        /// </summary>
         public bool Selected
         {
             get => this.SelectedImpl;
@@ -35,6 +44,15 @@ namespace ProfitCalculator.ui
             }
         }
 
+        /// <summary>
+        /// Creates a new text option.
+        /// </summary>
+        /// <param name="x"> The x position of the option. </param>
+        /// <param name="y"> The y position of the option. </param>
+        /// <param name="name"> The name of the option. </param>
+        /// <param name="label"> The label of the option. </param>
+        /// <param name="valueGetter"> The function to get the value of the option. </param>
+        /// <param name="valueSetter"> The function to set the value of the option. </param>
         public TextOption(
             int x,
             int y,
@@ -44,23 +62,23 @@ namespace ProfitCalculator.ui
             Action<string> valueSetter
          ) : base(x, y, 192, 48, name, label, label)
         {
-            this.setTexture(Game1.content.Load<Texture2D>("LooseSprites\\textBox"));
+            this.SetTexture(Game1.content.Load<Texture2D>("LooseSprites\\textBox"));
             this.ValueGetter = valueGetter;
             this.ValueSetter = valueSetter;
         }
 
-        public void setTexture(Texture2D tex)
+        /// <summary>
+        /// Sets the texture of the option. Updates width and height of the clickable component.
+        /// </summary>
+        /// <param name="tex"> The texture to set. </param>
+        public void SetTexture(Texture2D tex)
         {
             this.Tex = tex;
             ClickableComponent.bounds.Width = tex.Width;
             ClickableComponent.bounds.Height = tex.Height;
         }
 
-        public void setFont(SpriteFont font)
-        {
-            this.Font = font;
-        }
-
+        /// <inheritdoc/>
         public override void Draw(SpriteBatch b)
         {
             b.Draw(
@@ -80,7 +98,7 @@ namespace ProfitCalculator.ui
             Vector2 vector2;
             float writeBarOffset = 26f;
             for (vector2 = this.Font.MeasureString(text); vector2.X > (float)this.Tex.Width - writeBarOffset; vector2 = this.Font.MeasureString(text))
-                text = text.Substring(1);
+                text = text[1..];
 
             if (DateTime.UtcNow.Millisecond % 1000 >= 500 && this.Selected)
                 b.Draw(
@@ -102,7 +120,10 @@ namespace ProfitCalculator.ui
             b.DrawString(this.Font, text, this.Position + new Vector2(16, 12), Game1.textColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.35f);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Recieves text input from the keyboard and adds it to the string. Calls <see cref="ReceiveInput(string)"/>.
+        /// </summary>
+        /// <param name="inputChar"> The character to add. </param>
         public void RecieveTextInput(char inputChar)
         {
             this.ReceiveInput(inputChar.ToString());
@@ -139,50 +160,73 @@ namespace ProfitCalculator.ui
             }
         }
 
-        /// <inheritdoc />
-        public void RecieveTextInput(string text)
+        /// <summary>
+        /// Recieves text input from the keyboard and adds it to the string. Calls <see cref="ReceiveInput(string)"/>.
+        /// </summary>
+        /// <param name="text"> The text to add. </param>
+        public virtual void RecieveTextInput(string text)
         {
             this.ReceiveInput(text);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Recieves command input from the keyboard and removes the last character if it is backspace.
+        /// </summary>
+        /// <param name="command"> The command to recieve. </param>
         public virtual void RecieveCommandInput(char command)
         {
             if (command == '\b' && this.ValueGetter().Length > 0)
             {
                 Game1.playSound("tinyWhip");
-                this.ValueSetter(this.ValueGetter().Substring(0, this.ValueGetter().Length - 1));
+                this.ValueSetter(this.ValueGetter()[..^1]);
             }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Recieves special input from the keyboard.
+        /// </summary>
+        /// <param name="key"> The key to recieve. </param>
         public virtual void RecieveSpecialInput(Keys key)
         {
         }
 
-        /*********
-        ** Protected methods
-        *********/
-
+        /// <summary>
+        /// Recieves text input from the keyboard and adds it to the string. Updates the value on the option.
+        /// </summary>
+        /// <param name="str"> The string to add. </param>
         protected virtual void ReceiveInput(string str)
         {
             //this.String += str; to value setter and getter
             this.ValueSetter(this.ValueGetter() + str);
         }
 
-        public override void beforeReceiveLeftClick(int x, int y)
+        /// <summary>
+        /// Called before the left mouse button click action. Deselects the option if the click is not on the option.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public override void BeforeReceiveLeftClick(int x, int y)
         {
-            base.beforeReceiveLeftClick(x, y);
             if (this.Selected && !this.ClickableComponent.containsPoint(x, y))
             {
                 this.Selected = false;
             }
         }
 
-        public override void executeClick()
+        /// <summary>
+        /// Called when the left mouse button is clicked. Selects the option.
+        /// </summary>
+        public override void ExecuteClick()
         {
-            base.executeClick();
+            base.ExecuteClick();
             this.Selected = true;
+        }
+
+        /// <summary>
+        /// Called when the option is updated.
+        /// </summary>
+        public override void Update()
+        {
         }
     }
 }

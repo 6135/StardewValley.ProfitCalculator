@@ -1,8 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 
+#nullable enable
+
 namespace DynamicGameAssets
 {
+    /// <summary>
+    /// API for Dynamic Game Assets.
+    /// </summary>
     public interface IDynamicGameAssetsApi
     {
         /// <summary>

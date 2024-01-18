@@ -2,15 +2,29 @@
 using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.main;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace ProfitCalculator.ui
 {
+    /// <summary>
+    /// A box that displays a crop and its information
+    /// </summary>
     public class CropBox : BaseOption
     {
-        private CropInfo cropInfo;
-        private SpriteFont Font = Game1.smallFont;
-        private string mainText = "PlaceHolder";
+        public readonly CropInfo cropInfo;
 
+        public readonly CropHoverBox cropHoverBox;
+        private readonly SpriteFont Font = Game1.smallFont;
+        private readonly string mainText;
+
+        /// <summary>
+        /// Creates a new CropBox
+        /// </summary>
+        /// <param name="x"> The x position of the box</param>
+        /// <param name="y"> The y position of the box</param>
+        /// <param name="w"> The width of the box</param>
+        /// <param name="h"> The height of the box</param>
+        /// <param name="crop"> The cropInfo to display. <see cref="CropInfo"/> </param>
         public CropBox(int x, int y, int w, int h, CropInfo crop) : base(x, y, w, h, () => crop.Crop.Name, () => crop.Crop.Name, () => crop.Crop.Name)
         {
             this.mainText = crop.Crop.Name;
@@ -19,16 +33,36 @@ namespace ProfitCalculator.ui
                 this.mainText = "PlaceHolder";
             }
             cropInfo = crop;
+            cropHoverBox = new CropHoverBox(cropInfo);
+
         }
 
+        /// <summary>
+        /// Called when the left mouse button is pressed. Executes before the action of the button is performed
+        /// </summary>
+        /// <param name="x"> The x position of the mouse</param>
+        /// <param name="y"> The y position of the mouse</param>
+        public override void BeforeReceiveLeftClick(int x, int y)
+        {
+        }
+
+        /// <inheritdoc/>
         public override void Draw(SpriteBatch b)
         {
-            Game1.DrawBox(
-                (int)this.Position.X,
-                (int)this.Position.Y,
-                this.ClickableComponent.bounds.Width,
-                this.ClickableComponent.bounds.Height
-                );
+
+            IClickableMenu.drawTextureBox(
+                b,
+                Game1.menuTexture,
+                new(0,256,60,60),
+                (int)this.Position.X,// - 16,
+                (int)this.Position.Y,// - 8 - 4,
+                this.ClickableComponent.bounds.Width,// + 32,
+                this.ClickableComponent.bounds.Height,// + 16 + 8,
+                Color.White,
+                1.2f,
+                false,
+                0.5f
+             );
             //draw crop sprite in the middle of the box aligned to the left
             int spriteSize = 16;
             int spriteDisplaySize = (int)(spriteSize * 3.25);
@@ -36,7 +70,7 @@ namespace ProfitCalculator.ui
             b.Draw(
                 Game1.objectSpriteSheet,
                 new Rectangle(
-                    (int)this.Position.X + 8,
+                    (int)this.Position.X + (3*Game1.tileSize) / 8 ,
                     (int)this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Game1.tileSize / 2) + 6,
                     spriteDisplaySize,
                     spriteDisplaySize
@@ -47,7 +81,11 @@ namespace ProfitCalculator.ui
                     spriteSize,
                     spriteSize
                 ),
-                Color.White
+                Color.White,
+                0f,
+                Vector2.Zero,
+                SpriteEffects.None,
+                0.6f
             );
 
             //draw string in middle of box, aligned to the left with a spacing of 2xtilesize from the left
@@ -55,23 +93,45 @@ namespace ProfitCalculator.ui
                 Font,
                 this.mainText,
                 new Vector2(
-                    this.Position.X + 10 + Game1.tileSize,
+                    this.Position.X + (3 * Game1.tileSize ) / 2,
                     this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Font.MeasureString(this.mainText).Y / 2)
                 ),
-                Color.Black
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.6f
            );
-            //draw vertical stamina bar separating the text from the right side of the box
-            /**/
-            b.Draw(
-                Game1.staminaRect,
-                new Rectangle(
-                    (int)this.Position.X + Game1.tileSize,
-                    (int)this.Position.Y,
-                    2,
-                    this.ClickableComponent.bounds.Height
-                ),
-                Color.DarkOrange
-            );
+
+            cropHoverBox.Draw(b);
+
+
+        }
+
+        /// <summary>
+        /// The update event.
+        /// </summary>
+        public override void Update()
+        {
+        }
+
+        ///<inheritdoc/>
+        public override void PerformHoverAction(int x, int y)
+        {
+            base.PerformHoverAction(x, y);
+            if(this.ClickableComponent.containsPoint(x,y))
+            {
+                cropHoverBox.Update();
+                cropHoverBox.Open(true);
+            }
+            else
+            {
+                cropHoverBox.Open(false);
+            }
+
+ 
+
         }
     }
 }

@@ -122,7 +122,6 @@ namespace ProfitCalculator.main
                         16, 32);
             }
 
-            /*Helpers.Monitor.Log($"Sprite: {sprite}, Harvest: {harvest}, Regrow: {regrow}, HarvestMethod: {harvestMethod}, RaisedSeeds: {raisedSeeds}", LogLevel.Debug);*/
             int tileSize = SObject.spriteSheetTileSize;
 
             bool isGiantCrop = false;
@@ -265,12 +264,12 @@ namespace ProfitCalculator.main
             bool isGiantCrop = Convert.ToBoolean(values[16]);
 
             double[] harvestValues = new double[4]
-          {
+            {
                 minHarvest,
                 maxHarvest,
                 maxHarvestIncreasePerFarmingLevel,
                 chanceForExtraCrops
-          };
+            };
 
             // If the sprite is 23, it's a seasonal multi-seed
             // so we want to show that rather than the seed.
@@ -301,36 +300,6 @@ namespace ProfitCalculator.main
                     Game1.cropSpriteSheet,
                     new Rectangle(112 + which * 48, 512, 48, 64)
                 );
-            }
-
-            WorldDate? startDate = null;
-            WorldDate? endDate = null;
-
-            // TODO: Handle weird crops with a gap.
-
-            foreach (string season in seasons)
-            {
-                WorldDate? start = null;
-                WorldDate? end = null;
-
-                try
-                {
-                    start = new(1, season, 1);
-                    end = new(1, season, 28);
-
-                    // Sanity check the seasons, just in case.
-                    string test = start.Season;
-                    test = end.Season;
-                }
-                catch (Exception)
-                {
-                    Monitor.Log($"Invalid season for crop {id} (harvest:{harvest}): {season}", LogLevel.Warn);
-                }
-
-                if (startDate == null || startDate > start)
-                    startDate = start;
-                if (endDate == null || endDate < end)
-                    endDate = end;
             }
 
             Crop crop = new(
