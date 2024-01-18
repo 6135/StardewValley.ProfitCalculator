@@ -1,1 +1,75 @@
-# ProfitCalculator
+# Profit Calculator
+
+This is a simple profit calculator that calculates the profit of a product based on the cost of buying the seed, selling price and the number of units sold and their quality.
+
+Provides the ability to select whether the user wants to buy seeds or fertilizer and the quality of said fertilizer. The user can select the day of the season and the season itself. Works for Modded crops but might have a slight seed price error. For more accurecy, disable the seed buying option or add the seed price manually.
+
+## Installation
+
+1. Install [SMAPI](https://smapi.io/).
+2. Install [Generic Config Menu](https://www.nexusmods.com/stardewvalley/mods/5098). Optional but recommended to allow for more customization of settings.
+2. Install [Content Patcher](https://www.nexusmods.com/stardewvalley/mods/1915). (Optional to add CP Crops)
+3. Install [Json Assets](https://www.nexusmods.com/stardewvalley/mods/1720). (Optional to add JA Crops)
+4. Install [DGA](https://www.nexusmods.com/stardewvalley/mods/9365). (Optional to add DGA Crops)		
+5. Drop the contents of the provided folder into your `Stardew Valley/Mods` folder, or install from Nexus.
+6. Run the game using SMAPI.
+7. Press `F8` to open the calculator. This can be changed in the config file or in the Generic Config Menu.
+
+## Configuration
+
+The config file is located in `Stardew Valley/Mods/ProfitCalculator/config.json`. It allows you to change the keybind to open the calculator and the time for the tooltip to appear.
+
+## Seed Price Override
+
+The mod will automatically calculate the seed price based on the crop's base price and the season. However, if you want to override the seed price, you can do so by adding a `price` to the `SeedPrices.json` file in the `assets` folder. The `price` field should be a number. For example, if you want to override the seed price for the potato crop, you would add the following to the `SeedPrices.json` file:
+
+```json
+{
+  //"SeedID": "price"
+  "475": 50,
+  ...
+}
+```
+
+## Manual Crops 
+
+If you want to add a crop that is not in the game, you can do so by adding a `crop` to the `ManualCrops.json` file in the `assets` folder. The `crop` field should be an object with the following fields (this example is for the tea bush crop):
+
+```json
+{
+  "215": [
+    "Tea Leaves",               // Name of the crop.
+    "815",                      // Harvest ID (Id of item that drops).
+    "20",                       // Growth time. Time it takes to grow.
+    "1",                        // Regrowth time. Time it takes to regrow.
+    "spring summer fall",       // Seasons the crop grows in.
+    "50",                       // Sale price of the crop.
+    "1500",                     // Seed price of the crop.
+    "1",                        // Min harvest. Minimum number of items that drop.
+    "1",                        // Max harvest. Maximum number of items that drop.
+    "0",                        // Max harvest increase per farming level. The Number of items that the maximum limit increases by per farming level.
+    "0.0",                      // Extra chance. Extra chance of getting an extra item.
+    "false",                    // Affects quality. Whether the crop is affected by the quality (gold, Silver, Iridium).
+    "false",                    // Affects Fertilizer. Whether the crop is affected by fertilizer.
+    "false",                    // Raised crop. Whether the crop is raised (trelis).
+    "true",                     // Wheter the crop is a bush.
+    "false",                    // Paddy crop. Whether the crop is a paddy crop. (grows in water like rice)
+    "false"                     // Giant crop. Whether the crop can grow into a giant crop.
+  ]
+}
+```
+
+### TODO:
+
+- [X] Add support for Vanilla crops.
+- [X] Take Fertilizer into account.
+- [X] Take Quality into account.
+- [X] Add support for JA crops.
+- [X] Add support for CP crops.
+- [ ] Add support for DGA crops.
+- [ ] Add support to multi-drop crops.
+
+- [ ] Add options to disable cross season crops.
+- [ ] Automatically get accurate price for modded crop seeds. Currently it uses the base price it finds and not the actual shop price.
+- [ ] Add Support for different types of output. (i.e. Jelly, Wine, Juice, etc.)
+- [ ] Possibly add easer ways to add manual crops and seed prices maybe through a config menu or command.

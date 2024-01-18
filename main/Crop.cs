@@ -79,6 +79,7 @@ namespace ProfitCalculator.main
         /// <value>Property <c>affectByFertilizer</c> represents whether the crop is affected by fertilizer or not.</value>
         public readonly bool affectByFertilizer;
 
+        private int? totalHarvestsWithRemainingDays = null;
         /// <summary>
         /// Constructor for <c>Crop</c> class. It's used to create a new instance of the class.
         /// </summary>
@@ -209,9 +210,9 @@ namespace ProfitCalculator.main
         /// </summary>
         /// <param name="fertilizerQuality"> Quality of the used Fertilizer</param>
         /// <returns> Average growth speed value for the crop. <c>float</c></returns>
-        private float GetAverageGrowthSpeedValueForCrop(FertilizerQuality fertilizerQuality)
+        public float GetAverageGrowthSpeedValueForCrop(FertilizerQuality fertilizerQuality)
         {
-            float speedIncreaseModifier = 1.0f;
+            float speedIncreaseModifier = 0.0f;
             if (!affectByFertilizer)
             {
                 speedIncreaseModifier = 1.0f;
@@ -258,6 +259,7 @@ namespace ProfitCalculator.main
         /// <returns> Total available days for planting and harvesting the crop. <c>int</c></returns>
         public int TotalAvailableDays(Season currentSeason, int day)
         {
+
             int totalAvailableDays = 0;
             if (IsAvailableForCurrentSeason(currentSeason))
             {
@@ -300,9 +302,14 @@ namespace ProfitCalculator.main
         {
             int totalHarvestTimes = 0;
             int totalAvailableDays = TotalAvailableDays(currentSeason, day);
-
+            if(Id == 382)
+            {
+                   Console.WriteLine($"Total Available Days: {totalAvailableDays}");
+            }
             //season is Greenhouse
-            int growingDays = Days * (int)GetAverageGrowthSpeedValueForCrop(fertilizerQuality);
+            float averageGrowthSpeedValueForCrop = GetAverageGrowthSpeedValueForCrop(fertilizerQuality);
+            int daysToRemove = (int)Math.Ceiling((float)Days * averageGrowthSpeedValueForCrop);
+            int growingDays = Math.Max(Days - daysToRemove,1);
             if (IsAvailableForCurrentSeason(currentSeason) || currentSeason == Season.Greenhouse)
             {
                 if (totalAvailableDays < growingDays)
@@ -310,7 +317,7 @@ namespace ProfitCalculator.main
                 //if the crop regrows, then the total harvest times are 1 for the first harvest and then the number of times it can regrow in the remaining days. We always need to subtract one to account for the day lost in the planting day.
                 if (Regrow > 0)
                 {
-                    totalHarvestTimes = ((int)(1 + ((totalAvailableDays - Days) / (double)Regrow)));
+                    totalHarvestTimes = ((int)(1 + ((totalAvailableDays - growingDays) / (double)Regrow)));
                 }
                 else
                     totalHarvestTimes = totalAvailableDays / growingDays;

@@ -4,6 +4,7 @@
   "hot-key-tooltip": "Hotkey to open the calculator",
   //main screen
   "day": "Day",
+  "days":  "days",
   "Season": "Season",
   "pay-for-seeds": "Pay for seeds",
   "pay-for-fertilizer": "Pay for fertilizer",
@@ -15,25 +16,8 @@
   "calculate": "Calculate",
   "reset": "Reset",
   //result screen
-  "total-p": "Total Profit",
-  "total-p-day": "Total Pro/Day",
-  //hover details
-  "total-s-loss": "Total seeds loss",
-  "seed-bought-count": "Seeds bought",
-  "total-f-loss": "Total fertilizer loss",
-  "fertilizer-bought-count": "Fertilizer bought",
-  "total-s-loss-day": "Total seeds loss/day",
-  "total-f-loss-day": "Total fertilizer loss/day",
-  "produce-type-sold": "Produce type sold",
-  "produce-count": "Produce count",
-  "duration": "Duration",
-  "harvest-count": "Harvests",
-  "grow-time": "Grow time",
-  "regrow-time": "Regrow time",
-  "extra-harvest-chance": "Extra chance",
-  "value-normal": "Value normal",
-  "value-silver": "Value silver",
-  "value-gold": "Value gold",
+
+
 
   //season names
   "spring": "Spring",
@@ -55,5 +39,29 @@
   "deluxe": "Deluxe",
   "speedgro": "Speed-Gro",
   "deluxespeedgro": "Deluxe Speed-Gro",
-  "hyperspeedgro": "Hyper Speed-Gro"
+  "hyperspeedgro": "Hyper Speed-Gro",
+  //Gold Abvreviation
+  "g": "G",
+
+  //hover details
+  "total-p": "Total Profit",
+  "total-p-day": "Profit/Day",
+  "tooltip-delay": "ToolTip Delay",
+  "tooltip-delay-desc": "How long it takes for the profit tooltip to show up when hovering over each entry. Default is 30. Note this unit is not a time unit, but an arbitrary one where the greater the value the longer the wait.",
+  "total-s-loss": "T. Seed loss",
+  "total-s-loss-day": "SeedLoss/Day",
+  "total-f-loss": "T. Fertilizer loss",
+  "total-f-loss-day": "FertLoss/Day",
+  "seed-bought-count": "Seeds bought",
+  "fertilizer-bought-count": "Fertilizer bought",
+  "produce-type-sold": "Produce type sold",
+  "produce-count": "Produce count",
+  "duration": "Duration",
+  "harvest-count": "Harvests",
+  "grow-time": "Grow time",
+  "regrow-time": "Regrow time",
+  "extra-harvest-chance": "Extra chance",
+  "value-normal": "Value normal",
+  "value-silver": "Value silver",
+  "value-gold": "Value gold"
 }

@@ -627,6 +627,7 @@ namespace ProfitCalculator.menus
             this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
 
             this.UpdateMenu();
+            _childMenu?.gameWindowSizeChanged(oldBounds,newBounds);
         }
 
         #endregion Event Handling

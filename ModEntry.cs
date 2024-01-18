@@ -48,8 +48,8 @@ namespace ProfitCalculator
             }
             //hook events
             helper.Events.Input.ButtonPressed += OnButtonPressed;
-            helper.Events.GameLoop.GameLaunched += OnGameLaunchedAddGenericModConfigMenu;
             helper.Events.GameLoop.GameLaunched += OnGameLaunchedAPIs;
+            helper.Events.GameLoop.GameLaunched += OnGameLaunchedAddGenericModConfigMenu;
             helper.Events.GameLoop.SaveLoaded += OnSaveGameLoaded;
             helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
         }
@@ -104,19 +104,14 @@ namespace ProfitCalculator
                 tooltip: () => this.Helper.Translation.Get("hot-key-tooltip")
             );
 
-            configMenu.AddTextOption(
+            configMenu.AddNumberOption(
                 mod: this.ModManifest,
-                name: () => "Example dropdown",
-                getValue: () => "Test",
-                setValue: (value) => { },
-                allowedValues: new string[] { "choice A", "choice B", "choice C" }
-            );
-            configMenu.AddTextOption(
-                mod: this.ModManifest,
-                name: () => "Example dropdown",
-                getValue: () => "Test",
-                setValue: (value) => { },
-                allowedValues: new string[] { "choice A", "choice B", "choice C" }
+                name: () => this.Helper.Translation.Get("tooltip-delay"),
+                tooltip: () => this.Helper.Translation.Get("tooltip-delay-desc"),
+                getValue: () => this.Config.ToolTipDelay,
+                setValue: value => this.Config.ToolTipDelay = value,
+                min: 0,
+                max: 1000
             );
         }
 

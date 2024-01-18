@@ -26,6 +26,7 @@ namespace ProfitCalculator
         /// </summary>
         public static IMonitor? Monitor { get; set; }
 
+
         /// <summary>
         /// The Json Assets API. Declared here to prevend the need to pass it to every class that needs it.
         /// </summary>
