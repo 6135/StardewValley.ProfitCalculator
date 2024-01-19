@@ -73,7 +73,6 @@ namespace ProfitCalculator.ui
 
         private void DrawMainBox(SpriteBatch b)
         {
-
             IClickableMenu.drawTextureBox(
                 b,
                 Game1.menuTexture,
@@ -87,7 +86,9 @@ namespace ProfitCalculator.ui
                 draw_layer: 0.7f
             );
             Vector3 currentTextPosition = new(drawBox.X, drawBox.Y, drawBox.X + drawBox.Width - (Game1.tileSize / 4));
+
             #region Crop Value
+
             //Total profit: Total Profit
             //Total Profit Per Day: P/D
             string totalProfit = $"{Utils.Helper.Translation.Get("total-p")}:";
@@ -153,12 +154,15 @@ namespace ProfitCalculator.ui
                 SpriteEffects.None,
                 0.75f
             );
-            #endregion
+
+            #endregion Crop Value
+
             #region Seed Loss
+
             string totalSeedLoss = $"{Utils.Helper.Translation.Get("total-s-loss")}:";
             string totalSeedLossValue = $"{Math.Round(cropInfo.TotalSeedLoss)} {Utils.Helper.Translation.Get("g")}";
 
-            currentTextPosition.Y += font.MeasureString(pricePerDay).Y  + 16;
+            currentTextPosition.Y += font.MeasureString(pricePerDay).Y + 16;
             b.DrawString(
                 font,
                 totalSeedLoss,
@@ -218,8 +222,11 @@ namespace ProfitCalculator.ui
                 SpriteEffects.None,
                 0.75f
             );
-            #endregion
+
+            #endregion Seed Loss
+
             #region Crop details
+
             string grow = $"{Utils.Helper.Translation.Get("grow-time")}:";
             string growValue = $"{cropInfo.GrowthTime} {Utils.Helper.Translation.Get("days")}";
             currentTextPosition.Y += font.MeasureString(seedLossPerDay).Y + 16;
@@ -313,10 +320,10 @@ namespace ProfitCalculator.ui
                 0.75f
             );
 
-            #endregion
+            #endregion Crop details
         }
 
-        private void DrawSecondaryBox(SpriteBatch b) 
+        private void DrawSecondaryBox(SpriteBatch b)
         {
             IClickableMenu.drawTextureBox(
                 b,
@@ -331,6 +338,7 @@ namespace ProfitCalculator.ui
                 draw_layer: 0.71f
             );
         }
+
         /// <inheritdoc/>
 
         public void Reset()
