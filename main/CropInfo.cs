@@ -173,7 +173,7 @@ namespace ProfitCalculator.main
         /// <returns> A 32-bit signed integer hash code. </returns>
         public override int GetHashCode()
         {
-            HashCode hash = new HashCode();
+            HashCode hash = new();
             hash.Add(Crop);
             hash.Add(TotalProfit);
             hash.Add(ProfitPerDay);

@@ -25,7 +25,7 @@ namespace ProfitCalculator.main
     /// <summary>
     /// Parses the vanilla crops from the game files. Also parses crops from the ManualCrops.json file.
     /// </summary>
-    public class DGACropParser : CropParser
+    public class DgaCropParser : CropParser
     {
         private readonly Dictionary<string, int> seedPriceOverrides;
 
@@ -33,7 +33,7 @@ namespace ProfitCalculator.main
         /// Constructor for the VanillaCropParser class.
         /// </summary>
         /// <param name="name"> The name of the parser. Defaults to "VanillaCropParser". </param>
-        public DGACropParser(string name = "DGACropParser") : base(name)
+        public DgaCropParser(string name = "DGACropParser") : base(name)
         {
             seedPriceOverrides = Helper.ModContent.Load<Dictionary<string, int>>(Path.Combine("assets", "SeedPrices.json"));
         }
@@ -45,7 +45,6 @@ namespace ProfitCalculator.main
         /// <returns> A dictionary of crops. </returns>
         public override Dictionary<string, Crop> BuildCrops()
         {
-            string[] items = Utils.DApi.GetAllItems();
             Dictionary<string, List<ObjectPackData>> seeds = new();
             Dictionary<string, Crop> crops = new();
 
@@ -141,7 +140,7 @@ namespace ProfitCalculator.main
             Texture2D? texture;
             Rectangle? rect;
             object? Data = Helper?.Reflection.GetProperty<object>(cropItem, "Data", required: false)?.GetValue();
-            if(Data != null) 
+            if (Data != null)
             {
                 object? Tex = Helper?.Reflection.GetMethod(Data, "GetTexture", required: false)?.Invoke<object>();
                 texture = Helper?.Reflection.GetProperty<Texture2D>(Tex, "Texture", required: false)?.GetValue();

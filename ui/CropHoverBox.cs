@@ -18,15 +18,15 @@ namespace ProfitCalculator.ui
     public class CropHoverBox : IDisposable, IDrawable
     {
         private bool isOpen;
-        private int windowWidth;
-        private int windowHeight;
+        private readonly int windowWidth;
+        private readonly int windowHeight;
         private int x;
         private int y;
         private int hoverDelay;
-        private int hoverDelayDefault;
+        private readonly int hoverDelayDefault;
         private Rectangle drawBox;
         private readonly CropInfo cropInfo;
-        private SpriteFont font;
+        private readonly SpriteFont font;
         private readonly ModConfig Config;
 
         public CropHoverBox(CropInfo cropInfo)
@@ -382,7 +382,7 @@ namespace ProfitCalculator.ui
 
             string maxHarvest = $"{Utils.Helper.Translation.Get("max-harvests")}:";
             string maxHarvestValue = $"#{cropInfo.Crop.MaxHarvests}";
-            
+
             currentTextPosition.Y += font.MeasureString(maxHarvest).Y;
 
             b.DrawString(
@@ -484,11 +484,11 @@ namespace ProfitCalculator.ui
                 );
             }
 
-            #endregion
+            #endregion Crop Value
 
             #region Probabilities
-            currentTextPosition.Y += 8;
 
+            currentTextPosition.Y += 8;
 
             string chanceOf = $"{Utils.Helper.Translation.Get("value-normal")}:";
             string chanceOfValue = $"{(cropInfo.ChanceOfNormalQuality * 100):0.00}%";
@@ -623,9 +623,9 @@ namespace ProfitCalculator.ui
                     0.75f
                 );
             }
-            #endregion
-        }
 
+            #endregion Probabilities
+        }
 
         /// <inheritdoc/>
 

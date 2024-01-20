@@ -79,7 +79,7 @@ namespace ProfitCalculator.main
         /// <value>Property <c>affectByFertilizer</c> represents whether the crop is affected by fertilizer or not.</value>
         public readonly bool affectByFertilizer;
 
-        private int? totalHarvestsWithRemainingDays = null;
+        private readonly int? totalHarvestsWithRemainingDays = null;
 
         /// <summary>
         /// Constructor for <c>Crop</c> class. It's used to create a new instance of the class.

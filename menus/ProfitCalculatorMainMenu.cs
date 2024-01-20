@@ -627,7 +627,7 @@ namespace ProfitCalculator.menus
             this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
 
             this.UpdateMenu();
-            _childMenu?.gameWindowSizeChanged(oldBounds,newBounds);
+            _childMenu?.gameWindowSizeChanged(oldBounds, newBounds);
         }
 
         #endregion Event Handling
@@ -636,42 +636,6 @@ namespace ProfitCalculator.menus
         {
             ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats);
 
-            /*Dictionary<int, string> crops = Game1.content.Load<Dictionary<int, string>>(@"Data\Crops");
-            monitor.Log("----------------------------Data\\Crops----------------------------", LogLevel.Debug);
-            //order keyvaluepair by key
-            List<KeyValuePair<int, string>> cropsList = new List<KeyValuePair<int, string>>(crops);
-            cropsList.Sort(
-                delegate (KeyValuePair<int, string> pair1, KeyValuePair<int, string> pair2)
-                {
-                    Item item = new SObject(pair1.Key, 1).getOne();
-                    Item item2 = new SObject(pair2.Key, 1).getOne();
-                    return item.Name.CompareTo(item2.Name);
-                }
-            );
-            foreach (KeyValuePair<int, string> crop in cropsList)
-            {
-                Item item = new SObject(crop.Key, 1);
-                monitor.Log($"{item.Name} {item.salePrice()} {item}: {crop.Key}", LogLevel.Debug);
-            }*/
-
-            /*if (Helpers.JApi != null)
-            {
-                monitor.Log("----------------------------JApi----------------------------", LogLevel.Debug);
-                foreach (KeyValuePair<string, int> crop in Helpers.JApi.GetAllCropIds())
-                {
-                    //monitor.Log($"{crop.Key} : {crop.Value}", LogLevel.Debug);
-                }
-            }
-            if (Helpers.DApi != null)
-            {
-                monitor.Log("----------------------------DApi----------------------------", LogLevel.Debug);
-                foreach (string item in Helpers.DApi.GetAllItems())
-                {
-                    //spawn item as object and get name
-                    SObject obj = (SObject)Helpers.DApi.SpawnDGAItem(item);
-                    //monitor.Log($"{obj?.GetType()} {obj?.Category} {item}", LogLevel.Debug);
-                }
-            }*/
             Monitor.Log("Doing Calculation", LogLevel.Debug);
             ModEntry.Calculator.RetrieveCropsAsOrderderList();
             List<CropInfo> cropList = ModEntry.Calculator.RetrieveCropInfos();

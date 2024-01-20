@@ -92,7 +92,7 @@ namespace ProfitCalculator.main
             cropParser = new CropParser[]
             {
                 new VanillaCropParser(),
-                new DGACropParser()
+                new DgaCropParser()
             };
             crops = new Dictionary<string, Crop>();
         }
@@ -195,13 +195,10 @@ namespace ProfitCalculator.main
         /// <returns> List of <see cref="CropInfo"/> ordered by profit </returns>
         public List<CropInfo> RetrieveCropInfos()
         {
-            /*if (crops.Count == 0)
-            {*/
-            //TODO: Remove this and make it only once
-            crops.Clear();
+            if (crops.Count == 0)
+            {
                 RetrieveCropList();
-
-            //}
+            }
             List<CropInfo> cropInfos = new();
             foreach (Crop crop in crops.Values)
             {
