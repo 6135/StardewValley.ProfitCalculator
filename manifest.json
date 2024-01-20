@@ -6,5 +6,5 @@
   "UniqueID": "6135.ProfitCalculator",
   "EntryDll": "ProfitCalculator.dll",
   "MinimumApiVersion": "3.0.0",
-  "UpdateKeys": ["nexus:19931"]
+  "UpdateKeys": ["Nexus:19931"]
 }
