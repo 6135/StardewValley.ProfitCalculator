@@ -27,8 +27,11 @@ namespace ProfitCalculator.ui
         private Rectangle drawBox;
         private readonly CropInfo cropInfo;
         private readonly SpriteFont font;
-        private readonly ModConfig Config;
 
+        /// <summary>
+        /// Creates a new CropHoverBox.
+        /// </summary>
+        /// <param name="cropInfo"></param>
         public CropHoverBox(CropInfo cropInfo)
         {
             font = Game1.smallFont;
@@ -39,9 +42,9 @@ namespace ProfitCalculator.ui
             y = 0;
             drawBox = new(x, y, windowWidth, windowHeight);
             this.cropInfo = cropInfo;
-            this.Config = Utils.Helper.ReadConfig<ModConfig>();
-            this.hoverDelay = Config?.ToolTipDelay ?? 30;
-            this.hoverDelayDefault = Config?.ToolTipDelay ?? 30;
+            ModConfig config = Utils.Helper.ReadConfig<ModConfig>();
+            this.hoverDelay = config?.ToolTipDelay ?? 30;
+            this.hoverDelayDefault = config?.ToolTipDelay ?? 30;
         }
 
         /// <inheritdoc/>
@@ -52,6 +55,7 @@ namespace ProfitCalculator.ui
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
         protected virtual void Dispose(bool disposing)
         {
             isOpen = false;
@@ -675,6 +679,10 @@ namespace ProfitCalculator.ui
         {
         }
 
+        /// <summary>
+        ///  Opens or closes the hover box.
+        /// </summary>
+        /// <param name="open"> Whether to open or close the box.</param>
         public void Open(bool open = false)
         {
             isOpen = open;

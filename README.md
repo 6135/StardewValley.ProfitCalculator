@@ -62,6 +62,14 @@ If you want to add a crop that is not in the game, you can do so by adding a `cr
 }
 ```
 
+## Know Issues
+
+1. The mod does not take into account the farming level buffs. This is because I don't know how to get the farming level buffs. If anyone knows how to get them, please let me know.
+2. The mod does not take into account the luck based chances of getting extra items.
+3. Some modded crops might have a seed price error. This is because the mod uses the `SalePrice()` function to get the seed price but it seems that some modded crops don't return the correct seed price with this function, more specifically, DGA crops. If anyone Knows how to get these for DGA crops, please let me know. For now, you can add the seed price manually as described in section [Seed Price Override](#seed-price-override).
+4. Some extra large text may be too small to read. This is because the mod lowers the size of huge text to make it fit in the crop box. If you notice this, please let me know which crop it is and from which mod it is from so I can figure out a proper fix.
+5. When changing the scale of the game, the main options menu will be scaled but the options will be in the original positions, to fix this you need to close and reopen the options menu. 
+
 ### TODO:
 
 - [X] Add support for Vanilla crops.
@@ -70,9 +78,10 @@ If you want to add a crop that is not in the game, you can do so by adding a `cr
 - [X] Add support for JA crops.
 - [X] Add support for CP crops.
 - [X] Add support for DGA crops.
+- [ ] Add proper scaling support for options menu.
 - [ ] Obtain Seed prices from stores and from DGA to get more accurate seed prices.
 - [ ] Add support to multi-drop crops.
-
+- [ ] Add support for fruit trees.
 - [ ] Add options to disable cross season crops.
 - [ ] Automatically get accurate price for modded crop seeds. Currently it uses the base price it finds and not the actual shop price.
 - [ ] Add Support for different types of output. (i.e. Jelly, Wine, Juice, etc.)

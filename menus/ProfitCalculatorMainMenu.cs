@@ -589,6 +589,8 @@ namespace ProfitCalculator.menus
         public override void update(GameTime time)
         {
             base.update(time);
+            this.xPositionOnScreen = (int)GetAppropriateMenuPosition().X;
+            this.yPositionOnScreen = (int)GetAppropriateMenuPosition().Y;
             //update all the options and labels and buttons
             foreach (BaseOption option in Options)
             {
@@ -602,8 +604,10 @@ namespace ProfitCalculator.menus
         /// <returns> The appropriate position for the menu to be in, in Vector2 format </returns>
         public static Vector2 GetAppropriateMenuPosition()
         {
-            Vector2 defaultPosition = new(Game1.viewport.Width / 2 - widthOnScreen / 2, (Game1.viewport.Height / 2 - heightOnScreen / 2));
-
+            Vector2 defaultPosition = new(
+                (Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (widthOnScreen / 2),
+                (Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (heightOnScreen / 2)
+            );
             //Force the viewport into a position that it should fit into on the screen???
             if (defaultPosition.X + widthOnScreen > Game1.viewport.Width)
             {

@@ -12,9 +12,12 @@ namespace ProfitCalculator.ui
     /// </summary>
     public class CropBox : BaseOption
     {
+        /// <summary> The crop info to display. <see cref="CropInfo"/> </summary>
         public readonly CropInfo cropInfo;
 
+        /// <summary> The hover box to display when the mouse is over the box. <see cref="CropHoverBox"/> </summary>
         public readonly CropHoverBox cropHoverBox;
+
         private readonly SpriteFont Font = Game1.smallFont;
         private readonly string mainText;
 
@@ -64,28 +67,41 @@ namespace ProfitCalculator.ui
              );
             //draw crop sprite in the middle of the box aligned to the left
             int spriteSize = 16;
-            int spriteDisplaySize = (int)(spriteSize * 3.25);
+            int spriteDisplaySize = (int)(spriteSize * 3.25f);
 
-
-           b.Draw(
-               cropInfo.Crop.Sprite.Item1,
-               new Rectangle(
-                   (int)this.Position.X + (3 * Game1.tileSize) / 8,
-                   (int)this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Game1.tileSize / 2) + 6,
-                   spriteDisplaySize,
-                   spriteDisplaySize
-               ),
-               cropInfo.Crop.Sprite.Item2,
-               Color.White,
-               0f,
-               Vector2.Zero,
-               SpriteEffects.None,
-               0.6f
-           );
-
-
+            b.Draw(
+                cropInfo.Crop.Sprite.Item1,
+                new Rectangle(
+                    (int)this.Position.X + (3 * Game1.tileSize) / 8,
+                    (int)this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Game1.tileSize / 2) + 6,
+                    spriteDisplaySize,
+                    spriteDisplaySize
+                ),
+                cropInfo.Crop.Sprite.Item2,
+                Color.White,
+                0f,
+                Vector2.Zero,
+                SpriteEffects.None,
+                0.6f
+            );
 
             //draw string in middle of box, aligned to the left with a spacing of 2xtilesize from the left
+            //But if string size is too big, draw, reduce font size, and draw again
+            float fontSizeModifier = 1.3f;
+
+            float fontSize = (Font.MeasureString(this.mainText).X * fontSizeModifier);
+
+            float rightSideTextMaxSize = Font.MeasureString(cropInfo.ProfitPerDay.ToString("0.00")).X + Font.MeasureString($" {Utils.Helper.Translation.Get("g")}/{Utils.Helper.Translation.Get("day")}").X;
+            rightSideTextMaxSize *= 1.8f;
+
+            float boxWidth = (this.ClickableComponent.bounds.Width) - ((3 * Game1.tileSize) / 8) - rightSideTextMaxSize;
+
+            while(fontSize > boxWidth)
+            {
+                fontSizeModifier -= 0.005f;
+                fontSize = (Font.MeasureString(this.mainText).X * fontSizeModifier);
+            }
+
             b.DrawString(
                 Font,
                 this.mainText,
@@ -96,10 +112,11 @@ namespace ProfitCalculator.ui
                 Color.Black,
                 0f,
                 Vector2.Zero,
-                1.3f,
+                fontSizeModifier,
                 SpriteEffects.None,
                 0.6f
             );
+
 
             string price = Math.Round(cropInfo.TotalProfit).ToString();
             string g = $" {Utils.Helper.Translation.Get("g")}";
@@ -175,6 +192,27 @@ namespace ProfitCalculator.ui
             cropHoverBox.Draw(b);
         }
 
+
+        private static string AbbreviateText(string s)
+        {
+            ///if More than 2 words, abbreviate the last word
+
+            string[] words = s.Split(' ');
+            if (words.Length > 2)
+            {
+                string lastWord = words[words.Length - 1];
+                string secondToLastWord = words[words.Length - 2];
+                if (lastWord.Length > 3)
+                {
+                    lastWord = lastWord.Substring(0, 4) + ".";
+                }
+                
+                words[words.Length - 1] = lastWord;
+                s = string.Join(" ", words);
+            }
+            return s;
+
+        }
         /// <summary>
         /// The update event.
         /// </summary>

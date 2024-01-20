@@ -79,8 +79,6 @@ namespace ProfitCalculator.main
         /// <value>Property <c>affectByFertilizer</c> represents whether the crop is affected by fertilizer or not.</value>
         public readonly bool affectByFertilizer;
 
-        private readonly int? totalHarvestsWithRemainingDays = null;
-
         /// <summary>
         /// Constructor for <c>Crop</c> class. It's used to create a new instance of the class.
         /// </summary>
@@ -287,7 +285,7 @@ namespace ProfitCalculator.main
         /// </summary>
         /// <param name="day">Current day as int, can be from 0 to 1</param>
         /// <returns>Total available days for planting and harvesting the crop in current season. <c>int</c></returns>
-        public int TotalAvailableDaysInCurrentSeason(int day)
+        public static int TotalAvailableDaysInCurrentSeason(int day)
         {
             return 28 - day;
         }
@@ -355,16 +353,19 @@ namespace ProfitCalculator.main
             //TODO: Verify this is correct
             double AverageExtraCrop = ChanceForExtraCrops;
 
+#pragma warning disable S125
+            // Sections of code should not be commented out
             /*
-            if (ChanceForExtraCrops <= 0.0)
-                return AverageExtraCrop;
+                        if (ChanceForExtraCrops <= 0.0)
+                            return AverageExtraCrop;
 
-            var items = Enumerable.Range(1, 2);
-            AverageExtraCrop += items.Select(i => Math.Pow(ChanceForExtraCrops, i)).Sum();
-            */
+                        var items = Enumerable.Range(1, 2);
+                        AverageExtraCrop += items.Select(i => Math.Pow(ChanceForExtraCrops, i)).Sum();
+                        */
 
             //average extra crops, should be 0.111 for 0.1 chance and
             return AverageExtraCrop;
+#pragma warning restore S125 // Sections of code should not be commented out
         }
 
         #endregion Growth Values Calculations

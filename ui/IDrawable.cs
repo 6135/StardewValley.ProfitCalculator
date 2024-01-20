@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ProfitCalculator.ui
 {
+    /// <summary>
+    /// An object that can be drawn to the screen. With update and reset methods.
+    /// </summary>
     public interface IDrawable
     {
         /// <summary>

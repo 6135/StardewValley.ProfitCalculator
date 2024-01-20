@@ -167,10 +167,11 @@ namespace ProfitCalculator.main
             // sort crops by profit
             // return list
             List<Crop> cropList = new();
-            if (crops.Count == 0)
-            {
-                RetrieveCropList();
-            }
+            //if (crops.Count == 0)
+            //{
+            crops.Clear();
+            RetrieveCropList();
+            //}
             foreach (KeyValuePair<string, Crop> crop in crops)
             {
                 cropList.Add(crop.Value);

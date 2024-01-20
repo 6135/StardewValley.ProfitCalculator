@@ -59,8 +59,6 @@ namespace ProfitCalculator.main
                             crop.Add(obj);
                         else
                             seeds.Add(obj.Plants, new List<ObjectPackData> { obj });
-
-                        Monitor.Log($"ObjectPackData: {obj.Plants}", LogLevel.Debug);
                     }
                 }
 
@@ -81,8 +79,8 @@ namespace ProfitCalculator.main
         private Crop ProcessCrop(CropPackData crop, ContentPack pack, Dictionary<string, List<ObjectPackData>> seedList)
         {
             Season[]? seasons = ParseSeasonConditions(crop.DynamicFields);
-            Item? cropItem = null;
-            Item[] seeds;
+            Item? cropItem = new SObject();
+            Item[]? seeds;
             List<int>? phases = new();
             bool isTrellisCrop = false;
             int return_idx = -1;
@@ -91,7 +89,8 @@ namespace ProfitCalculator.main
             bool giant = false;
             IReflectedMethod? GetMultiTexture = Helper?.Reflection.GetMethod(pack, "GetMultiTexture");
             string id = $"{pack.GetManifest().UniqueID}/{crop.ID}";
-
+            if (crop.ID.Equals("Bay Crop"))
+                Monitor.Log("");
             foreach (var phase in crop.Phases)
             {
                 isTrellisCrop |= phase.Trellis;
@@ -102,6 +101,7 @@ namespace ProfitCalculator.main
                     var choices = phase.HarvestedDrops[0].Item;
                     if (choices.Count > 0)
                         cropItem = choices[0].Value.Create();
+
                 }
 
                 return_idx = phase.HarvestedNewPhase;
@@ -156,8 +156,8 @@ namespace ProfitCalculator.main
                             SObject.spriteSheetTileSize
                         );
             }
-            int? seedPrice = seeds[0].salePrice();
-            string seedId = $"{pack.GetManifest().UniqueID}/{seeds[0].Name}";
+            int? seedPrice = seeds?[0].salePrice() ?? 0;
+            string seedId = $"{pack.GetManifest().UniqueID}/{seeds?[0].Name ?? "Null"}";
             seedPrice = SeedPrice(seedId, seedPrice);
             return new Crop
             (
@@ -180,10 +180,8 @@ namespace ProfitCalculator.main
             );
         }
 
-        private Season[]? ParseSeasonConditions(DynamicFieldData[] dynamicFields)
+        private static Season[]? ParseSeasonConditions(DynamicFieldData[] dynamicFields)
         {
-            // TODO: Actually parse the conditions to see when
-            // we can grow this crop.
             bool? spring = null;
             bool? summer = null;
             bool? fall = null;
