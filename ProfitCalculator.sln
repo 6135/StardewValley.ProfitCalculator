@@ -5,10 +5,7 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfitCalculator", "ProfitCalculator.csproj", "{A4741CF3-B474-4BA0-9301-2D964468221D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EB681DA-1BC1-411A-95E5-703071E5F14F}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfitCalculatorDGA", "..\ProfitCalculatorDGA\ProfitCalculatorDGA.csproj", "{93012106-AF56-4AFD-8475-0C2B329948B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +17,10 @@ Global
 		{A4741CF3-B474-4BA0-9301-2D964468221D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4741CF3-B474-4BA0-9301-2D964468221D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4741CF3-B474-4BA0-9301-2D964468221D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93012106-AF56-4AFD-8475-0C2B329948B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93012106-AF56-4AFD-8475-0C2B329948B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93012106-AF56-4AFD-8475-0C2B329948B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93012106-AF56-4AFD-8475-0C2B329948B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

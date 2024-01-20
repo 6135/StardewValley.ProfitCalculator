@@ -96,7 +96,7 @@ namespace ProfitCalculator.ui
 
             float boxWidth = (this.ClickableComponent.bounds.Width) - ((3 * Game1.tileSize) / 8) - rightSideTextMaxSize;
 
-            while(fontSize > boxWidth)
+            while (fontSize > boxWidth)
             {
                 fontSizeModifier -= 0.005f;
                 fontSize = (Font.MeasureString(this.mainText).X * fontSizeModifier);
@@ -116,7 +116,6 @@ namespace ProfitCalculator.ui
                 SpriteEffects.None,
                 0.6f
             );
-
 
             string price = Math.Round(cropInfo.TotalProfit).ToString();
             string g = $" {Utils.Helper.Translation.Get("g")}";
@@ -192,27 +191,6 @@ namespace ProfitCalculator.ui
             cropHoverBox.Draw(b);
         }
 
-
-        private static string AbbreviateText(string s)
-        {
-            ///if More than 2 words, abbreviate the last word
-
-            string[] words = s.Split(' ');
-            if (words.Length > 2)
-            {
-                string lastWord = words[words.Length - 1];
-                string secondToLastWord = words[words.Length - 2];
-                if (lastWord.Length > 3)
-                {
-                    lastWord = lastWord.Substring(0, 4) + ".";
-                }
-                
-                words[words.Length - 1] = lastWord;
-                s = string.Join(" ", words);
-            }
-            return s;
-
-        }
         /// <summary>
         /// The update event.
         /// </summary>

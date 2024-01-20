@@ -1,5 +1,4 @@
-﻿using DynamicGameAssets;
-using JsonAssets;
+﻿using JsonAssets;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley.Locations;
@@ -26,16 +25,10 @@ namespace ProfitCalculator
         /// </summary>
         public static IMonitor? Monitor { get; set; }
 
-
         /// <summary>
         /// The Json Assets API. Declared here to prevend the need to pass it to every class that needs it.
         /// </summary>
         public static IApi? JApi { get; set; }
-
-        /// <summary>
-        /// The DGA API. Declared here to prevend the need to pass it to every class that needs it.
-        /// </summary>
-        public static IDynamicGameAssetsApi? DApi { get; set; }
 
         /// <summary>
         /// Sets the mod's helper, monitor, and APIs static variables. This method should be called by the mod's entry point.
@@ -44,12 +37,11 @@ namespace ProfitCalculator
         /// <param name="_monitor"> The mod's monitor.</param>
         /// <param name="jApi"> The Json Assets API.</param>
         /// <param name="dApi"> The DGA API.</param>
-        public static void Initialize(IModHelper _helper, IMonitor _monitor, IApi? jApi = null, IDynamicGameAssetsApi? dApi = null)
+        public static void Initialize(IModHelper _helper, IMonitor _monitor, IApi? jApi = null)
         {
             Helper = _helper;
             Monitor = _monitor;
             JApi = jApi;
-            DApi = dApi;
         }
 
         /// <summary>

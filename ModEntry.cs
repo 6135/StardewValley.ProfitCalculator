@@ -12,30 +12,33 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
 using ProfitCalculator.main;
+using Crop = ProfitCalculator.main.Crop;
 
 #nullable enable
 
 namespace ProfitCalculator
 {
     /// <summary>The mod entry point.</summary>
-    internal sealed class ModEntry : Mod
+    public class ModEntry : Mod
     {
         private ModConfig? Config;
         private ProfitCalculatorMainMenu? mainMenu;
+
+        /// <summary>The mod's calculator functions.</summary>
         public static Calculator? Calculator;
+
         private IModHelper? helper;
         private IGenericModConfigMenuApi? configMenu;
-        private IApi? JApi;
-        private DynamicGameAssets.IDynamicGameAssetsApi? DApi;
-        /*********
 
-        ** Public methods
-        *********/
+        /// <summary>The mod's API.</summary>
+        public static ModApi API { get; private set; }
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
+            Calculator = new();
+            API = new ModApi(this);
             Monitor.Log($"Helpers initialized", LogLevel.Debug);
             this.helper = helper;
 
@@ -45,12 +48,20 @@ namespace ProfitCalculator
             {
                 return;
             }
+
             //hook events
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.GameLaunched += OnGameLaunchedAPIs;
             helper.Events.GameLoop.GameLaunched += OnGameLaunchedAddGenericModConfigMenu;
+            helper.Events.GameLoop.GameLaunched += OnGameLaunchedParseCrops;
             helper.Events.GameLoop.SaveLoaded += OnSaveGameLoaded;
             helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
+        }
+
+        /// <inheritdoc/>
+        public override object GetApi()
+        {
+            return API;
         }
 
         /*********
@@ -59,26 +70,14 @@ namespace ProfitCalculator
 
         private void OnGameLaunchedAPIs(object? sender, GameLaunchedEventArgs? e)
         {
-            JApi = Helper.ModRegistry.GetApi<IApi>("spacechase0.JsonAssets");
             configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            DApi = this.Helper.ModRegistry.GetApi<DynamicGameAssets.IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
 
-            //if not send message to use about it being not found
-            if (JApi is null)
-            {
-                Monitor.Log($"Json Assets not found", LogLevel.Debug);
-            }
             if (configMenu is null)
             {
                 Monitor.Log($"Generic Mod Config Menu not found", LogLevel.Debug);
             }
-            if (DApi is null)
-            {
-                Monitor.Log($"Dynamic Game Assets not found", LogLevel.Debug);
-            }
 
-            Utils.Initialize(helper, Monitor, JApi, DApi);
-            Calculator = new();
+            Utils.Initialize(helper, Monitor);
         }
 
         private void OnGameLaunchedAddGenericModConfigMenu(object? sender, GameLaunchedEventArgs? e)
@@ -112,6 +111,16 @@ namespace ProfitCalculator
                 min: 0,
                 max: 1000
             );
+        }
+
+        private void OnGameLaunchedParseCrops(object? sender, GameLaunchedEventArgs? e)
+        {
+            ICropParser cropParser = new VanillaCropParser();
+            Calculator?.ClearCrops();
+            foreach (var crop in cropParser.BuildCrops())
+            {
+                AddCrop(crop.Key, crop.Value);
+            }
         }
 
         private void OnSaveGameLoaded(object? sender, SaveLoadedEventArgs? e)
@@ -155,6 +164,16 @@ namespace ProfitCalculator
         {
             if (e != null)
                 DropdownOption.ActiveDropdown?.ReceiveScrollWheelAction(e.Delta);
+        }
+
+        /// <summary>
+        /// Adds a crop to the Profit Calculator.
+        /// </summary>
+        /// <param name="id"> The id of the crop. Must be unique.</param>
+        /// <param name="crop"> The crop to add. <see cref="Crop"/> </param>
+        public void AddCrop(string id, Crop crop)
+        {
+            Calculator?.AddCrop(id, crop);
         }
     }
 }

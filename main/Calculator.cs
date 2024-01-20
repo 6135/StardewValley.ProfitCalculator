@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using HarmonyLib;
+using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,12 @@ namespace ProfitCalculator.main
     /// </summary>
     public class Calculator
     {
+        #region properties
+
         /// <summary>
         /// List of all crops in the game
         /// </summary>
-        private Dictionary<string, Crop> crops;
-
-        /// <summary>
-        /// List of all crop parsers, used to get the list of crops
-        /// </summary>
-        private readonly CropParser[] cropParser;
+        private readonly Dictionary<string, Crop> crops;
 
         /// <summary>
         /// Day of the season
@@ -84,16 +82,13 @@ namespace ProfitCalculator.main
         /// </summary>
         private int FarmingLevel { get; set; }
 
+        #endregion properties
+
         /// <summary>
         /// Constructor for the calculator, initializes the list of crops and crop parsers. Instantiates the calculator with default values.
         /// </summary>
         public Calculator()
         {
-            cropParser = new CropParser[]
-            {
-                new VanillaCropParser(),
-                new DgaCropParser()
-            };
             crops = new Dictionary<string, Crop>();
         }
 
@@ -135,27 +130,11 @@ namespace ProfitCalculator.main
         }
 
         /// <summary>
-        /// Retrieves the list of crops from the crop parsers and stores them in the crops dictionary.
+        /// Clears the list of crops.
         /// </summary>
-        private void RetrieveCropList()
+        public void ClearCrops()
         {
-            foreach (CropParser parser in cropParser)
-            {
-                foreach (KeyValuePair<string, Crop> cr in parser.BuildCrops())
-                {
-                    Crop crop = cr.Value;
-                    crops.Add(cr.Key, crop);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Refreshes the list of crops by clearing the crops dictionary and calling <see cref="RetrieveCropList"/>
-        /// </summary>
-        public void RefreshCropList()
-        {
-            crops = new();
-            RetrieveCropList();
+            crops.Clear();
         }
 
         /// <summary>
@@ -167,16 +146,12 @@ namespace ProfitCalculator.main
             // sort crops by profit
             // return list
             List<Crop> cropList = new();
-            //if (crops.Count == 0)
-            //{
-            crops.Clear();
-            RetrieveCropList();
-            //}
             foreach (KeyValuePair<string, Crop> crop in crops)
             {
                 cropList.Add(crop.Value);
             }
             cropList.Sort((x, y) => y.Price.CompareTo(x.Price));
+#pragma warning disable
             /*foreach (Crop crop in cropList)
             {
                 Monitor.Log($"OC: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.GetAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {TotalCropProfit(crop)} " +
@@ -187,6 +162,7 @@ namespace ProfitCalculator.main
                     $"tsc: {TotalSeedsCost(crop)} " +
                     $"tscpd: {TotalSeedsCostPerDay(crop)}", LogLevel.Debug);
             }*/
+#pragma warning enable
             return cropList;
         }
 
@@ -196,10 +172,6 @@ namespace ProfitCalculator.main
         /// <returns> List of <see cref="CropInfo"/> ordered by profit </returns>
         public List<CropInfo> RetrieveCropInfos()
         {
-            if (crops.Count == 0)
-            {
-                RetrieveCropList();
-            }
             List<CropInfo> cropInfos = new();
             foreach (Crop crop in crops.Values)
             {
@@ -244,6 +216,16 @@ namespace ProfitCalculator.main
             double chanceOfGoldQuality = GetCropGoldQualityChance();
             double chanceOfIridiumQuality = GetCropIridiumQualityChance();
             return new CropInfo(crop, totalProfit, profitPerDay, totalSeedLoss, seedLossPerDay, totalFertilizerLoss, fertilizerLossPerDay, produceType, duration, totalHarvests, growthTime, regrowthTime, productCount, chanceOfExtraProduct, chanceOfNormalQuality, chanceOfSilverQuality, chanceOfGoldQuality, chanceOfIridiumQuality);
+        }
+
+        /// <summary>
+        /// Adds a crop to the list of crops.
+        /// </summary>
+        /// <param name="id"> Id of the crop </param>
+        /// <param name="crop"> Crop to add </param>
+        public void AddCrop(string id, Crop crop)
+        {
+            crops.Add(id, crop);
         }
 
         #region Crop Profit Calculations

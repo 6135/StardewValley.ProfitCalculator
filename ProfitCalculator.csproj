@@ -8,6 +8,7 @@
 	  <EnableHarmony>true</EnableHarmony>
 	  <GamePath>$(STARDEW_GAME_DIR)</GamePath>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <DefineConstants Condition="Exists('DynamicGameAssets.dll') ">$(DefineConstants);DLLEXISTS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,11 +24,5 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
   </ItemGroup>
-	<ItemGroup>
-		<Reference Include="DynamicGameAssets">
-			<HintPath>$(STARDEW_GAME_DIR)\mods\DynamicGameAssets\DynamicGameAssets.dll</HintPath>
-			<Private>false</Private>
-		</Reference>
-	</ItemGroup>
 
 </Project>

@@ -16,7 +16,7 @@ namespace ProfitCalculator.main
     /// <summary>
     /// Parses the vanilla crops from the game files. Also parses crops from the ManualCrops.json file.
     /// </summary>
-    public class VanillaCropParser : CropParser
+    public class VanillaCropParser : ICropParser
     {
         private readonly Dictionary<string, int> seedPriceOverrides;
 
@@ -24,7 +24,7 @@ namespace ProfitCalculator.main
         /// Constructor for the VanillaCropParser class.
         /// </summary>
         /// <param name="name"> The name of the parser. Defaults to "VanillaCropParser". </param>
-        public VanillaCropParser(string name = "VanillaCropParser") : base(name)
+        public VanillaCropParser()
         {
             seedPriceOverrides = Helper.ModContent.Load<Dictionary<string, int>>(Path.Combine("assets", "SeedPrices.json"));
         }
@@ -34,7 +34,7 @@ namespace ProfitCalculator.main
         /// Builds a dictionary of crops from the game files. Accesses the crops from the game files (@"Data\Crops) and parses them into a dictionary.
         /// </summary>
         /// <returns> A dictionary of crops. </returns>
-        public override Dictionary<string, Crop> BuildCrops()
+        public virtual Dictionary<string, Crop> BuildCrops()
         {
             //read crop data from game files
             //add crops to list
