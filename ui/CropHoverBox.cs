@@ -260,6 +260,7 @@ namespace ProfitCalculator.ui
 
             string reGrow = $"{Utils.Helper.Translation.Get("regrow-time")}:";
             string reGrowValue = $"{cropInfo.RegrowthTime} {Utils.Helper.Translation.Get("days")}";
+            if (cropInfo.RegrowthTime <= 0) reGrowValue = Utils.Helper.Translation.Get("no");
             currentTextPosition.Y += font.MeasureString(seedLossPerDay).Y;
             b.DrawString(
                 font,
@@ -337,7 +338,294 @@ namespace ProfitCalculator.ui
                 1f,
                 draw_layer: 0.71f
             );
+
+            Vector3 currentTextPosition = new(
+                drawBox.X,
+                drawBox.Y + +(windowHeight / 2) - (Game1.tileSize / 4),
+                drawBox.X + drawBox.Width - (Game1.tileSize / 4));
+
+            #region Crop Value
+
+            //Total profit: Total Profit
+            //Total Profit Per Day: P/D
+            string minHarvest = $"{Utils.Helper.Translation.Get("min-harvests")}:";
+            string minHarvestValue = $"#{cropInfo.Crop.MinHarvests}";
+            currentTextPosition.X += (float)Game1.tileSize / 4;
+            currentTextPosition.Y += (float)Game1.tileSize / 4;
+            b.DrawString(
+                font,
+                minHarvest,
+                new Vector2(
+                    currentTextPosition.X,
+                    currentTextPosition.Y
+                ),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+            b.DrawString(
+                font,
+                minHarvestValue,
+                new Vector2(
+                    currentTextPosition.Z - font.MeasureString(minHarvestValue).X,
+                    currentTextPosition.Y),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+
+            string maxHarvest = $"{Utils.Helper.Translation.Get("max-harvests")}:";
+            string maxHarvestValue = $"#{cropInfo.Crop.MaxHarvests}";
+            
+            currentTextPosition.Y += font.MeasureString(maxHarvest).Y;
+
+            b.DrawString(
+                font,
+                maxHarvest,
+                new Vector2(
+                    currentTextPosition.X,
+                    currentTextPosition.Y
+                ),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+            b.DrawString(
+                font,
+                maxHarvestValue,
+                new Vector2(
+                    currentTextPosition.Z - font.MeasureString(maxHarvestValue).X,
+                    currentTextPosition.Y),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+
+            if (cropInfo.Crop.MaxHarvestIncreasePerFarmingLevel != 0)
+            {
+                string maxHarvestIncLevl = $"{Utils.Helper.Translation.Get("max-harvests-level")}:";
+                string maxHarvestIncLevlValue = $"#{cropInfo.Crop.MaxHarvestIncreasePerFarmingLevel}";
+
+                currentTextPosition.Y += font.MeasureString(maxHarvestIncLevl).Y;
+
+                b.DrawString(
+                    font,
+                    maxHarvestIncLevl,
+                    new Vector2(
+                        currentTextPosition.X,
+                        currentTextPosition.Y
+                    ),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+                b.DrawString(
+                    font,
+                    maxHarvestIncLevlValue,
+                    new Vector2(
+                        currentTextPosition.Z - font.MeasureString(maxHarvestIncLevlValue).X,
+                        currentTextPosition.Y),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+            }
+            if (cropInfo.Crop.ChanceForExtraCrops != 0)
+            {
+                string extraChance = $"{Utils.Helper.Translation.Get("extra-harvest-chance")}:";
+                string extraChanceValue = $"{cropInfo.Crop.ChanceForExtraCrops * 100}%";
+
+                currentTextPosition.Y += font.MeasureString(extraChance).Y;
+
+                b.DrawString(
+                    font,
+                    extraChance,
+                    new Vector2(
+                        currentTextPosition.X,
+                        currentTextPosition.Y
+                    ),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+                b.DrawString(
+                    font,
+                    extraChanceValue,
+                    new Vector2(
+                        currentTextPosition.Z - font.MeasureString(extraChanceValue).X,
+                        currentTextPosition.Y),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+            }
+
+            #endregion
+
+            #region Probabilities
+            currentTextPosition.Y += 8;
+
+
+            string chanceOf = $"{Utils.Helper.Translation.Get("value-normal")}:";
+            string chanceOfValue = $"{(cropInfo.ChanceOfNormalQuality * 100):0.00}%";
+            if (cropInfo.ChanceOfNormalQuality != 0)
+            {
+                currentTextPosition.Y += font.MeasureString(chanceOf).Y;
+
+                b.DrawString(
+                    font,
+                    chanceOf,
+                    new Vector2(
+                        currentTextPosition.X,
+                        currentTextPosition.Y
+                    ),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+                b.DrawString(
+                    font,
+                    chanceOfValue,
+                    new Vector2(
+                        currentTextPosition.Z - font.MeasureString(chanceOfValue).X,
+                        currentTextPosition.Y),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+            }
+            chanceOf = $"{Utils.Helper.Translation.Get("value-silver")}:";
+            chanceOfValue = $"{(cropInfo.ChanceOfSilverQuality * 100):0.00}%";
+
+            currentTextPosition.Y += font.MeasureString(chanceOf).Y;
+
+            b.DrawString(
+                font,
+                chanceOf,
+                new Vector2(
+                    currentTextPosition.X,
+                    currentTextPosition.Y
+                ),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+            b.DrawString(
+                font,
+                chanceOfValue,
+                new Vector2(
+                    currentTextPosition.Z - font.MeasureString(chanceOfValue).X,
+                    currentTextPosition.Y),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+            chanceOf = $"{Utils.Helper.Translation.Get("value-gold")}:";
+            chanceOfValue = $"{(cropInfo.ChanceOfGoldQuality * 100):0.00}%";
+
+            currentTextPosition.Y += font.MeasureString(chanceOf).Y;
+
+            b.DrawString(
+                font,
+                chanceOf,
+                new Vector2(
+                    currentTextPosition.X,
+                    currentTextPosition.Y
+                ),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+            b.DrawString(
+                font,
+                chanceOfValue,
+                new Vector2(
+                    currentTextPosition.Z - font.MeasureString(chanceOfValue).X,
+                    currentTextPosition.Y),
+                Color.Black,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.75f
+            );
+            chanceOf = $"{Utils.Helper.Translation.Get("value-iridium")}:";
+            chanceOfValue = $"{(cropInfo.ChanceOfIridiumQuality * 100):0.0}%";
+
+            if (cropInfo.ChanceOfIridiumQuality != 0)
+            {
+                currentTextPosition.Y += font.MeasureString(chanceOf).Y;
+
+                b.DrawString(
+                    font,
+                    chanceOf,
+                    new Vector2(
+                        currentTextPosition.X,
+                        currentTextPosition.Y
+                    ),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+                b.DrawString(
+                    font,
+                    chanceOfValue,
+                    new Vector2(
+                        currentTextPosition.Z - font.MeasureString(chanceOfValue).X,
+                        currentTextPosition.Y),
+                    Color.Black,
+                    0f,
+                    Vector2.Zero,
+                    1f,
+                    SpriteEffects.None,
+                    0.75f
+                );
+            }
+            #endregion
         }
+
 
         /// <inheritdoc/>
 

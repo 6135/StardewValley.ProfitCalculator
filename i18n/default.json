@@ -2,9 +2,10 @@
   "open": "Open",
   "app-name": "Profit Calculator",
   "hot-key-tooltip": "Hotkey to open the calculator",
+  "no":  "No",
   //main screen
   "day": "Day",
-  "days":  "days",
+  "days": "days",
   "Season": "Season",
   "pay-for-seeds": "Pay for seeds",
   "pay-for-fertilizer": "Pay for fertilizer",
@@ -60,8 +61,13 @@
   "harvest-count": "Harvests",
   "grow-time": "Grow time",
   "regrow-time": "Regrow time",
-  "extra-harvest-chance": "Extra chance",
   "value-normal": "Value normal",
   "value-silver": "Value silver",
-  "value-gold": "Value gold"
+  "value-gold": "Value gold",
+  "value-iridium": "Value iridium",
+  "min-harvests": "Minimun # of Drops",
+  "max-harvests": "Maximum # of Drop",
+  "max-harvests-level": "Max # Drops/Level",
+  "extra-harvest-chance": "Extra chance"
+
 }

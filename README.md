@@ -73,3 +73,4 @@ If you want to add a crop that is not in the game, you can do so by adding a `cr
 - [ ] Automatically get accurate price for modded crop seeds. Currently it uses the base price it finds and not the actual shop price.
 - [ ] Add Support for different types of output. (i.e. Jelly, Wine, Juice, etc.)
 - [ ] Possibly add easer ways to add manual crops and seed prices maybe through a config menu or command.
+- [ ] Take into account farming level buffs.
