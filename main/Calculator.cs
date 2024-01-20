@@ -91,7 +91,8 @@ namespace ProfitCalculator.main
         {
             cropParser = new CropParser[]
             {
-                new VanillaCropParser()
+                new VanillaCropParser(),
+                new DGACropParser()
             };
             crops = new Dictionary<string, Crop>();
         }
@@ -175,7 +176,7 @@ namespace ProfitCalculator.main
                 cropList.Add(crop.Value);
             }
             cropList.Sort((x, y) => y.Price.CompareTo(x.Price));
-            foreach (Crop crop in cropList)
+            /*foreach (Crop crop in cropList)
             {
                 Monitor.Log($"OC: {crop.Name} Id: {crop.Id} Seed: {crop.Seeds[0].ParentSheetIndex} ValueWithStats: {crop.Price * this.GetAverageValueForCropAfterModifiers()} #Harvests: {crop.TotalHarvestsWithRemainingDays(Season, FertilizerQuality, (int)Day)} TotalProfit: {TotalCropProfit(crop)} " +
                     $"ppd: {TotalCropProfitPerDay(crop)} " +
@@ -184,7 +185,7 @@ namespace ProfitCalculator.main
                     $"tsn: {TotalSeedsNeeded(crop)} " +
                     $"tsc: {TotalSeedsCost(crop)} " +
                     $"tscpd: {TotalSeedsCostPerDay(crop)}", LogLevel.Debug);
-            }
+            }*/
             return cropList;
         }
 
@@ -194,10 +195,13 @@ namespace ProfitCalculator.main
         /// <returns> List of <see cref="CropInfo"/> ordered by profit </returns>
         public List<CropInfo> RetrieveCropInfos()
         {
-            if (crops.Count == 0)
-            {
+            /*if (crops.Count == 0)
+            {*/
+            //TODO: Remove this and make it only once
+            crops.Clear();
                 RetrieveCropList();
-            }
+
+            //}
             List<CropInfo> cropInfos = new();
             foreach (Crop crop in crops.Values)
             {

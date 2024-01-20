@@ -27,6 +27,9 @@ The mod will automatically calculate the seed price based on the crop's base pri
 {
   //"SeedID": "price"
   "475": 50,
+  //or for dga crops
+  "ppja.fruitsandveggies.DGA/Adzuki Bean Seeds": 50
+
   ...
 }
 ```
@@ -66,7 +69,8 @@ If you want to add a crop that is not in the game, you can do so by adding a `cr
 - [X] Take Quality into account.
 - [X] Add support for JA crops.
 - [X] Add support for CP crops.
-- [ ] Add support for DGA crops.
+- [X] Add support for DGA crops.
+- [ ] Obtain Seed prices from stores and from DGA to get more accurate seed prices.
 - [ ] Add support to multi-drop crops.
 
 - [ ] Add options to disable cross season crops.
@@ -74,3 +78,4 @@ If you want to add a crop that is not in the game, you can do so by adding a `cr
 - [ ] Add Support for different types of output. (i.e. Jelly, Wine, Juice, etc.)
 - [ ] Possibly add easer ways to add manual crops and seed prices maybe through a config menu or command.
 - [ ] Take into account farming level buffs.
+- [ ] Make API to allow other mods to add crops or Providers.

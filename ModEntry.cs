@@ -11,7 +11,6 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
-using DynamicGameAssets;
 using ProfitCalculator.main;
 
 #nullable enable
@@ -27,7 +26,7 @@ namespace ProfitCalculator
         private IModHelper? helper;
         private IGenericModConfigMenuApi? configMenu;
         private IApi? JApi;
-        private IDynamicGameAssetsApi? DApi;
+        private DynamicGameAssets.IDynamicGameAssetsApi? DApi;
         /*********
 
         ** Public methods
@@ -62,7 +61,7 @@ namespace ProfitCalculator
         {
             JApi = Helper.ModRegistry.GetApi<IApi>("spacechase0.JsonAssets");
             configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            DApi = this.Helper.ModRegistry.GetApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
+            DApi = this.Helper.ModRegistry.GetApi<DynamicGameAssets.IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
 
             //if not send message to use about it being not found
             if (JApi is null)

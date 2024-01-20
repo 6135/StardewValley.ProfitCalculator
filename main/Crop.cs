@@ -20,7 +20,7 @@ namespace ProfitCalculator.main
         private readonly int seedPrice;
 
         /// <value>Property <c>Id</c> represents the crop id AKA the slot in the sprite sheet.</value>
-        public readonly int Id;
+        public readonly string Id;
 
         /// <value>Property <c>Item</c> represents the item object of the crop's produce.</value>
         public readonly Item Item;
@@ -80,6 +80,7 @@ namespace ProfitCalculator.main
         public readonly bool affectByFertilizer;
 
         private int? totalHarvestsWithRemainingDays = null;
+
         /// <summary>
         /// Constructor for <c>Crop</c> class. It's used to create a new instance of the class.
         /// </summary>
@@ -99,7 +100,7 @@ namespace ProfitCalculator.main
         /// <param name="affectByQuality"> Whether the crop is affected by fertilizer quality or not.</param>
         /// <param name="affectByFertilizer"> Whether the crop is affected by fertilizer or not.</param>
         /// <param name="seedPrice"> Crop's seed buying price. If null, then it's calculated from the first seed in the seeds array. This is made for the override.</param>
-        public Crop(int id, Item item, string name, Tuple<Texture2D, Rectangle>? sprite, bool isTrellisCrop, bool isGiantCrop, Tuple<Texture2D, Rectangle>? giantSprite, Item[] seeds, int[] phases, int regrow, bool isPaddyCrop, Season[] seasons, double[] harvestChanceValues, bool affectByQuality = true, bool affectByFertilizer = true, int? seedPrice = null)
+        public Crop(string id, Item item, string name, Tuple<Texture2D, Rectangle>? sprite, bool isTrellisCrop, bool isGiantCrop, Tuple<Texture2D, Rectangle>? giantSprite, Item[] seeds, int[] phases, int regrow, bool isPaddyCrop, Season[] seasons, double[] harvestChanceValues, bool affectByQuality = true, bool affectByFertilizer = true, int? seedPrice = null)
         {
             Id = id;
             Item = item;
@@ -127,7 +128,8 @@ namespace ProfitCalculator.main
             }
             else if (seeds != null)
             {
-                this.seedPrice = seeds[0].salePrice();
+                int price = seeds[0].salePrice();
+                this.seedPrice = price;
             }
             else this.seedPrice = 0;
         }
@@ -185,7 +187,7 @@ namespace ProfitCalculator.main
                 const int p = 16777619;
                 int hash = (int)2166136261;
 
-                hash = (hash ^ Id) * p;
+                hash = (hash ^ Id.GetHashCode()) * p;
                 hash = (hash ^ Name.GetHashCode()) * p;
                 hash = (hash ^ IsTrellisCrop.GetHashCode()) * p;
                 hash = (hash ^ IsGiantCrop.GetHashCode()) * p;
@@ -259,7 +261,6 @@ namespace ProfitCalculator.main
         /// <returns> Total available days for planting and harvesting the crop. <c>int</c></returns>
         public int TotalAvailableDays(Season currentSeason, int day)
         {
-
             int totalAvailableDays = 0;
             if (IsAvailableForCurrentSeason(currentSeason))
             {
@@ -302,14 +303,14 @@ namespace ProfitCalculator.main
         {
             int totalHarvestTimes = 0;
             int totalAvailableDays = TotalAvailableDays(currentSeason, day);
-            if(Id == 382)
+            if (Id.Equals("382"))
             {
-                   Console.WriteLine($"Total Available Days: {totalAvailableDays}");
+                Console.WriteLine($"Total Available Days: {totalAvailableDays}");
             }
             //season is Greenhouse
             float averageGrowthSpeedValueForCrop = GetAverageGrowthSpeedValueForCrop(fertilizerQuality);
             int daysToRemove = (int)Math.Ceiling((float)Days * averageGrowthSpeedValueForCrop);
-            int growingDays = Math.Max(Days - daysToRemove,1);
+            int growingDays = Math.Max(Days - daysToRemove, 1);
             if (IsAvailableForCurrentSeason(currentSeason) || currentSeason == Season.Greenhouse)
             {
                 if (totalAvailableDays < growingDays)

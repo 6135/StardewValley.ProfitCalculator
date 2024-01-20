@@ -4,6 +4,7 @@ using ProfitCalculator.main;
 using StardewValley;
 using StardewValley.Menus;
 using System;
+
 namespace ProfitCalculator.ui
 {
     /// <summary>
@@ -34,7 +35,6 @@ namespace ProfitCalculator.ui
             }
             cropInfo = crop;
             cropHoverBox = new CropHoverBox(cropInfo);
-
         }
 
         /// <summary>
@@ -49,11 +49,10 @@ namespace ProfitCalculator.ui
         /// <inheritdoc/>
         public override void Draw(SpriteBatch b)
         {
-
             IClickableMenu.drawTextureBox(
                 b,
                 Game1.menuTexture,
-                new(0,256,60,60),
+                new(0, 256, 60, 60),
                 (int)this.Position.X,// - 16,
                 (int)this.Position.Y,// - 8 - 4,
                 this.ClickableComponent.bounds.Width,// + 32,
@@ -67,33 +66,31 @@ namespace ProfitCalculator.ui
             int spriteSize = 16;
             int spriteDisplaySize = (int)(spriteSize * 3.25);
 
-            b.Draw(
-                Game1.objectSpriteSheet,
-                new Rectangle(
-                    (int)this.Position.X + (3*Game1.tileSize) / 8 ,
-                    (int)this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Game1.tileSize / 2) + 6,
-                    spriteDisplaySize,
-                    spriteDisplaySize
-                ),
-                Game1.getSourceRectForStandardTileSheet(
-                    Game1.objectSpriteSheet,
-                    cropInfo.Crop.Id,
-                    spriteSize,
-                    spriteSize
-                ),
-                Color.White,
-                0f,
-                Vector2.Zero,
-                SpriteEffects.None,
-                0.6f
-            );
+
+           b.Draw(
+               cropInfo.Crop.Sprite.Item1,
+               new Rectangle(
+                   (int)this.Position.X + (3 * Game1.tileSize) / 8,
+                   (int)this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Game1.tileSize / 2) + 6,
+                   spriteDisplaySize,
+                   spriteDisplaySize
+               ),
+               cropInfo.Crop.Sprite.Item2,
+               Color.White,
+               0f,
+               Vector2.Zero,
+               SpriteEffects.None,
+               0.6f
+           );
+
+
 
             //draw string in middle of box, aligned to the left with a spacing of 2xtilesize from the left
             b.DrawString(
                 Font,
                 this.mainText,
                 new Vector2(
-                    this.Position.X + (3 * Game1.tileSize ) / 2,
+                    this.Position.X + (3 * Game1.tileSize) / 2,
                     this.Position.Y + (this.ClickableComponent.bounds.Height / 2) - (Font.MeasureString(this.mainText).Y / 2)
                 ),
                 Color.Black,
@@ -104,14 +101,14 @@ namespace ProfitCalculator.ui
                 0.6f
             );
 
-
             string price = Math.Round(cropInfo.TotalProfit).ToString();
             string g = $" {Utils.Helper.Translation.Get("g")}";
             Color color;
-            if(cropInfo.TotalProfit < 0)
+            if (cropInfo.TotalProfit < 0)
             {
                 color = Color.Red;
-            } else
+            }
+            else
             {
                 color = Color.DarkGreen;
             }
@@ -150,8 +147,8 @@ namespace ProfitCalculator.ui
                 Font,
                 pricePerDay,
                 new Vector2(
-                    this.Position.X + (69 * (Game1.tileSize/8)) - Font.MeasureString(pricePerDay).X -  Font.MeasureString(ppd).X,
-                    this.Position.Y + (this.ClickableComponent.bounds.Height / 2) + 3 
+                    this.Position.X + (69 * (Game1.tileSize / 8)) - Font.MeasureString(pricePerDay).X - Font.MeasureString(ppd).X,
+                    this.Position.Y + (this.ClickableComponent.bounds.Height / 2) + 3
                 ),
                 color,
                 0f,
@@ -175,10 +172,7 @@ namespace ProfitCalculator.ui
                 0.6f
             );
 
-
             cropHoverBox.Draw(b);
-
-
         }
 
         /// <summary>
@@ -192,7 +186,7 @@ namespace ProfitCalculator.ui
         public override void PerformHoverAction(int x, int y)
         {
             base.PerformHoverAction(x, y);
-            if(this.ClickableComponent.containsPoint(x,y))
+            if (this.ClickableComponent.containsPoint(x, y))
             {
                 cropHoverBox.Update();
                 cropHoverBox.Open(true);
@@ -201,9 +195,6 @@ namespace ProfitCalculator.ui
             {
                 cropHoverBox.Open(false);
             }
-
- 
-
         }
     }
 }

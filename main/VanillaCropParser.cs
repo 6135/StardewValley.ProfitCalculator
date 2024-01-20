@@ -18,7 +18,7 @@ namespace ProfitCalculator.main
     /// </summary>
     public class VanillaCropParser : CropParser
     {
-        private readonly Dictionary<int, int> seedPriceOverrides;
+        private readonly Dictionary<string, int> seedPriceOverrides;
 
         /// <summary>
         /// Constructor for the VanillaCropParser class.
@@ -26,7 +26,7 @@ namespace ProfitCalculator.main
         /// <param name="name"> The name of the parser. Defaults to "VanillaCropParser". </param>
         public VanillaCropParser(string name = "VanillaCropParser") : base(name)
         {
-            seedPriceOverrides = Helper.ModContent.Load<Dictionary<int, int>>(Path.Combine("assets", "SeedPrices.json"));
+            seedPriceOverrides = Helper.ModContent.Load<Dictionary<string, int>>(Path.Combine("assets", "SeedPrices.json"));
         }
 
         /// <inheritdoc/>
@@ -163,10 +163,10 @@ namespace ProfitCalculator.main
 
             Item[] seeds = { new SObject(id, 1) };
             int? seedPrice = seeds[0].salePrice();
-            seedPrice = this.SeedPrice(id, seedPrice);
+            seedPrice = this.SeedPrice(id.ToString(), seedPrice);
 
             Crop crop = new(
-                id: harvest,
+                id: harvest.ToString(),
                 item: item,
                 name: item.DisplayName,
                 sprite: new(Game1.objectSpriteSheet, Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, item.ParentSheetIndex, tileSize, tileSize)),
@@ -190,7 +190,7 @@ namespace ProfitCalculator.main
         /// <param name="id"> The id of the seed. </param>
         /// <param name="seedPrice"> The current seed price of the crop. </param>
         /// <returns></returns>
-        private int? SeedPrice(int id, int? seedPrice)
+        private int? SeedPrice(string id, int? seedPrice)
         {
             if (seedPriceOverrides.ContainsKey(id))
             {
@@ -303,7 +303,7 @@ namespace ProfitCalculator.main
             }
 
             Crop crop = new(
-                id: harvest,
+                id: harvest.ToString(),
                 item: item,
                 name: item.DisplayName,
                 sprite: new(Game1.objectSpriteSheet, Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, item.ParentSheetIndex, tileSize, tileSize)),
