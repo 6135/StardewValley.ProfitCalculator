@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,7 @@ namespace ProfitCalculator.main
         /// <summary>
         /// Constructor for the VanillaCropParser class.
         /// </summary>
-        /// <param name="name"> The name of the parser. Defaults to "VanillaCropParser". </param>
+        ///
         public VanillaCropParser()
         {
             seedPriceOverrides = Helper.ModContent.Load<Dictionary<string, int>>(Path.Combine("assets", "SeedPrices.json"));

@@ -1,14 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
-using System;
-using StardewModdingAPI.Utilities;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using StardewValley.Menus;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ProfitCalculator.main;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
-using StardewModdingAPI;
-using StardewValley.Monsters;
+using StardewValley;
+using StardewValley.Menus;
+using System;
 
 namespace ProfitCalculator.ui
 {

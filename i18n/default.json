@@ -2,7 +2,7 @@
   "open": "Open",
   "app-name": "Profit Calculator",
   "hot-key-tooltip": "Hotkey to open the calculator",
-  "no":  "No",
+  "no": "No",
   //main screen
   "day": "Day",
   "days": "days",
@@ -17,8 +17,6 @@
   "calculate": "Calculate",
   "reset": "Reset",
   //result screen
-
-
 
   //season names
   "spring": "Spring",
@@ -69,5 +67,4 @@
   "max-harvests": "Maximum # of Drop",
   "max-harvests-level": "Max # Drops/Level",
   "extra-harvest-chance": "Extra chance"
-
 }

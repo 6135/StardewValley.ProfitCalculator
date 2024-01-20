@@ -3,12 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ProfitCalculator.main;
 using ProfitCalculator.ui;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace ProfitCalculator.menus
 {
@@ -439,8 +437,6 @@ namespace ProfitCalculator.menus
                    )
                 );
             }
-
-
 
             int scrollbar_x = xPositionOnScreen + width;
             this.upArrow = new ClickableTextureComponent(

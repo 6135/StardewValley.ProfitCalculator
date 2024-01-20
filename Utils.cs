@@ -36,7 +36,6 @@ namespace ProfitCalculator
         /// <param name="_helper"> The mod's helper.</param>
         /// <param name="_monitor"> The mod's monitor.</param>
         /// <param name="jApi"> The Json Assets API.</param>
-        /// <param name="dApi"> The DGA API.</param>
         public static void Initialize(IModHelper _helper, IMonitor _monitor, IApi? jApi = null)
         {
             Helper = _helper;
