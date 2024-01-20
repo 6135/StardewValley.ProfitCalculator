@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ProfitCalculator.main;
 using StardewValley;
+using System;
 using static ProfitCalculator.Utils;
 using Crop = ProfitCalculator.main.Crop;
 
