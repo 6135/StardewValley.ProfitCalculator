@@ -53,7 +53,7 @@ namespace ProfitCalculator
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.GameLaunched += OnGameLaunchedAPIs;
             helper.Events.GameLoop.GameLaunched += OnGameLaunchedAddGenericModConfigMenu;
-            helper.Events.GameLoop.GameLaunched += OnGameLaunchedParseCrops;
+            helper.Events.GameLoop.SaveLoaded += OnSaveLoadedParseCrops;
             helper.Events.GameLoop.SaveLoaded += OnSaveGameLoaded;
             helper.Events.Input.MouseWheelScrolled += this.OnMouseWheelScrolled;
         }
@@ -113,7 +113,8 @@ namespace ProfitCalculator
             );
         }
 
-        private void OnGameLaunchedParseCrops(object? sender, GameLaunchedEventArgs? e)
+        [EventPriority(EventPriority.Low - 9999)]
+        private void OnSaveLoadedParseCrops(object? sender, SaveLoadedEventArgs? e)
         {
             ICropParser cropParser = new VanillaCropParser();
             Calculator?.ClearCrops();

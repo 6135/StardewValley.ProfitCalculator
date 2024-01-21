@@ -1,7 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-
-using Microsoft.Xna.Framework;
-
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
@@ -18,7 +15,7 @@ namespace ProfitCalculator.main
     /// <summary>
     /// Parses the vanilla crops from the game files. Also parses crops from the ManualCrops.json file.
     /// </summary>
-    public class VanillaCropParser : ICropParser
+    public class JsonAssetsCropParser : ICropParser
     {
         private readonly Dictionary<string, int> seedPriceOverrides;
 
@@ -26,7 +23,7 @@ namespace ProfitCalculator.main
         /// Constructor for the VanillaCropParser class.
         /// </summary>
         ///
-        public VanillaCropParser()
+        public JsonAssetsCropParser()
         {
             seedPriceOverrides = Helper.ModContent.Load<Dictionary<string, int>>(Path.Combine("assets", "SeedPrices.json"));
         }
