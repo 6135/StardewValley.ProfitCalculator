@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfitCalculator", "ProfitCalculator.csproj", "{A4741CF3-B474-4BA0-9301-2D964468221D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfitCalculatorDGA", "..\ProfitCalculatorDGA\ProfitCalculatorDGA.csproj", "{93012106-AF56-4AFD-8475-0C2B329948B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfitCalculatorDGA", "..\ProfitCalculatorDGA\ProfitCalculatorDGA.csproj", "{93012106-AF56-4AFD-8475-0C2B329948B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
