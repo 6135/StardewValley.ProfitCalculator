@@ -116,7 +116,8 @@ namespace ProfitCalculator.menus
             {
                 if (currentItemIndex + i >= Options.Count)
                     break;
-                Options[currentItemIndex + i].ClickableComponent = new(new(
+                Options[currentItemIndex + i].ClickableComponent = new(
+                    new(
                     (int)OptionSlots[i].X,
                     (int)OptionSlots[i].Y,
                     (int)OptionSlots[i].Z,

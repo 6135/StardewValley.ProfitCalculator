@@ -227,7 +227,14 @@ namespace ProfitCalculator.main
             //check if already exists
             if (!crops.ContainsKey(id))
             {
-                crops.Add(id, crop);
+                try
+                {
+                    crops.Add(id, crop);
+                }
+                catch (Exception e)
+                {
+                    Monitor.Log("Failed to add\n" + crop.ToString(), LogLevel.Debug);
+                }
             }
         }
 

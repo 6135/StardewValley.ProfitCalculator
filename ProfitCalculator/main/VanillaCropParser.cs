@@ -47,7 +47,7 @@ namespace ProfitCalculator.main
             foreach (KeyValuePair<int, string> crop in crops)
             {
                 Crop? cropToAdd = BuildCrop(crop.Value.Split('/'), crop.Key);
-                if (cropToAdd != null && !Crops.ContainsKey(crop.Key.ToString()))
+                if (cropToAdd != null && !Crops.ContainsKey(cropToAdd.Id.ToString()))
                     Crops.Add(cropToAdd.Id.ToString(), cropToAdd);
             }
             foreach (KeyValuePair<string, Crop> crop in this.BuildCropsFromJson())
