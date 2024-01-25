@@ -641,7 +641,6 @@ namespace ProfitCalculator.menus
             ModEntry.Calculator.SetSettings(Day, MaxDay, MinDay, Season, ProduceType, FertilizerQuality, PayForSeeds, PayForFertilizer, MaxMoney, UseBaseStats);
 
             Monitor.Log("Doing Calculation", LogLevel.Debug);
-            ModEntry.Calculator.RetrieveCropsAsOrderderList();
             List<CropInfo> cropList = ModEntry.Calculator.RetrieveCropInfos();
 
             ProfitCalculatorResultsList profitCalculatorResultsList = new(cropList);

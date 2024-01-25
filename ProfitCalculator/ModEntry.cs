@@ -76,7 +76,6 @@ namespace ProfitCalculator
             {
                 Monitor.Log($"Generic Mod Config Menu not found", LogLevel.Debug);
             }
-
             Utils.Initialize(helper, Monitor);
         }
 
@@ -117,7 +116,6 @@ namespace ProfitCalculator
         private void OnSaveLoadedParseCrops(object? sender, SaveLoadedEventArgs? e)
         {
             ICropParser cropParser = new VanillaCropParser();
-            Calculator?.ClearCrops();
             foreach (var crop in cropParser.BuildCrops())
             {
                 AddCrop(crop.Key, crop.Value);

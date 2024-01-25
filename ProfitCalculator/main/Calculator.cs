@@ -16,7 +16,7 @@ namespace ProfitCalculator.main
         /// <summary>
         /// List of all crops in the game
         /// </summary>
-        private readonly Dictionary<string, Crop> crops;
+        private Dictionary<string, Crop> crops;
 
         /// <summary>
         /// Day of the season
@@ -224,7 +224,11 @@ namespace ProfitCalculator.main
         /// <param name="crop"> Crop to add </param>
         public void AddCrop(string id, Crop crop)
         {
-            crops.Add(id, crop);
+            //check if already exists
+            if (!crops.ContainsKey(id))
+            {
+                crops.Add(id, crop);
+            }
         }
 
         #region Crop Profit Calculations
