@@ -259,7 +259,8 @@ namespace ProfitCalculator.menus
             }
 
             //if hover over any of the optionSlots, print to log "HoveringOver it"
-            for (int i = 0; i < this.OptionSlots.Count; i++)
+            int maxIndex = Math.Min(this.OptionSlots.Count, Options.Count);
+            for (int i = 0; i < maxIndex; i++)
             {
                 BaseOption option = (CropBox)Options[currentItemIndex + i];
                 option.PerformHoverAction(x, y);
