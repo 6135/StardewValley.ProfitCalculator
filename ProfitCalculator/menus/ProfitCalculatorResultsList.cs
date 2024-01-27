@@ -112,7 +112,8 @@ namespace ProfitCalculator.menus
             b.End();
             b.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
 
-            for (int i = 0; i < maxOptions; i++)
+            int maxIndex = Math.Min(maxOptions, Options.Count);
+            for (int i = 0; i < maxIndex; i++)
             {
                 if (currentItemIndex + i >= Options.Count)
                     break;
