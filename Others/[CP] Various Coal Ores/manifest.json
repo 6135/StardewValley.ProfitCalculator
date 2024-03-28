@@ -1,0 +1,17 @@
+{
+  "Name": "Various Coal nodes in the mines",
+  "Author": "Dojando",
+  "Version": "1.0.0",
+  "Description": "Adds different variations of Coal ores into the mines to add a better way of getting coal.",
+  "UniqueID": "Dojando.VariousCoalOres",
+  "MinimumApiVersion": "3.4.0",
+  "Dependencies": [
+    {
+      "UniqueID": "mistyspring.ItemExtensions",
+      "IsRequired": true
+    }
+  ],
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  }
+}
