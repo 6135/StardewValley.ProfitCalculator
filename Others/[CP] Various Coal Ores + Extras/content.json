@@ -50,13 +50,13 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "Floors": "21/39",
-                            "SpawnFrequency": 0.08,
+                            "SpawnOnFloors": "1/20",
+                            "SpawnFrequency": 0.07,
                             "Type": "All"
                         },
                         {
-                            "SpawnOnFloors": "1/20",
-                            "SpawnFrequency": 0.07,
+                            "Floors": "21/39",
+                            "SpawnFrequency": 0.08,
                             "Type": "All"
                         }
                     ]
@@ -106,8 +106,8 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "Floors": "70/79",
-                            "SpawnFrequency": 0.12,
+                            "Floors": "40/59",
+                            "SpawnFrequency": 0.08,
                             "Type": "All"
                         },
                         {
@@ -116,8 +116,8 @@
                             "Type": "All"
                         },
                         {
-                            "Floors": "40/59",
-                            "SpawnFrequency": 0.08,
+                            "Floors": "70/79",
+                            "SpawnFrequency": 0.12,
                             "Type": "All"
                         }
                     ]
@@ -167,13 +167,13 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "Floors": "100/120",
-                            "SpawnFrequency": 0.12,
+                            "SpawnOnFloors": "80/100",
+                            "SpawnFrequency": 0.1,
                             "Type": "All"
                         },
                         {
-                            "SpawnOnFloors": "80/100",
-                            "SpawnFrequency": 0.1,
+                            "Floors": "100/120",
+                            "SpawnFrequency": 0.12,
                             "Type": "All"
                         }
                     ]
@@ -284,13 +284,13 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "Floors": "111/120",
-                            "SpawnFrequency": 0.3,
+                            "Floors": "100/110",
+                            "SpawnFrequency": 0.01,
                             "Type": "All"
                         },
                         {
-                            "Floors": "100/110",
-                            "SpawnFrequency": 0.1,
+                            "Floors": "111/120",
+                            "SpawnFrequency": 0.03,
                             "Type": "All"
                         }
                     ]
@@ -350,8 +350,9 @@
                     "MineSpawns": [
                         {
                             "Floors": "81/119",
-                            "SpawnFrequency": 0.1,
-                            "Type": "All"
+                            "Type": "All",
+                            "SpawnFrequency": 0.05,
+                            "AdditionalChancePerLevel": 0
                         }
                     ]
                 },
@@ -410,7 +411,7 @@
                     "MineSpawns": [
                         {
                             "Floors": "1/39", // from 1 to last mine level
-                            "SpawnFrequency": 0.05, //10% to spawn
+                            "SpawnFrequency": 0.15, //10% to spawn
                             "Type": "All" //on any difficulty
                         }
                     ]
