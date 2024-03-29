@@ -1,0 +1,18 @@
+{
+   "Name": "[CP] Pizza Ore Nodes",
+   "Author": "6135",
+   "Version": "1.0.0",
+   "Description": "Pizza Node",
+   "UniqueID": "6135.PizzaNode",
+   "MinimumApiVersion": "3.4.0",
+   "UpdateKeys": [],
+   "Dependencies": [
+      {
+        "UniqueID": "mistyspring.ItemExtensions",
+        "IsRequired": true
+      }
+    ],
+    "ContentPackFor": {
+      "UniqueID": "Pathoschild.ContentPatcher"
+    }
+}
