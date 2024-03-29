@@ -58,6 +58,11 @@
                             "Floors": "21/39",
                             "SpawnFrequency": 0.08,
                             "Type": "All"
+                        },
+                        {
+                            "Floors": "121/-999",
+                            "SpawnFrequency": 0.1,
+                            "Type": "All"
                         }
                     ]
                 },
@@ -223,8 +228,8 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "Floors": "81/119",
-                            "SpawnFrequency": 0.15,
+                            "Floors": "1/39",
+                            "SpawnFrequency": 0.05,
                             "Type": "All"
                         },
                         {
@@ -233,8 +238,13 @@
                             "Type": "All"
                         },
                         {
-                            "Floors": "1/39",
-                            "SpawnFrequency": 0.05,
+                            "Floors": "81/119",
+                            "SpawnFrequency": 0.15,
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "121/-999",
+                            "SpawnFrequency": 0.15,
                             "Type": "All"
                         }
                     ]
@@ -291,6 +301,11 @@
                         {
                             "Floors": "111/120",
                             "SpawnFrequency": 0.03,
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "121/-999",
+                            "SpawnFrequency": 0.1,
                             "Type": "All"
                         }
                     ]
@@ -352,7 +367,11 @@
                             "Floors": "81/119",
                             "Type": "All",
                             "SpawnFrequency": 0.05,
-                            "AdditionalChancePerLevel": 0
+                        },
+                        {
+                            "Floors": "120/-999",
+                            "Type": "All",
+                            "SpawnFrequency": 0.075
                         }
                     ]
                 },
