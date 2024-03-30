@@ -6,6 +6,7 @@
             "Action": "EditData",
             "Target": "Mods/mistyspring.ItemExtensions/Resources",
             "Entries": {
+                //normal coal
                 "Dojando.VariousCoalOresExtras_0": {
                     "Name": "Dojando.VariousCoalOresExtras_0",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
@@ -50,7 +51,7 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "SpawnOnFloors": "1/20",
+                            "Floors": "1/20",
                             "SpawnFrequency": 0.07,
                             "Type": "All"
                         },
@@ -66,6 +67,7 @@
                         }
                     ]
                 },
+                //ice coal
                 "Dojando.VariousCoalOresExtras_1": {
                     "Name": "Dojando.VariousCoalOresExtras_1",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
@@ -127,6 +129,7 @@
                         }
                     ]
                 },
+                //lava coal
                 "Dojando.VariousCoalOresExtras_2": {
                     "Name": "Dojando.VariousCoalOresExtras_2",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
@@ -172,17 +175,18 @@
                     "OnDestroy": null,
                     "MineSpawns": [
                         {
-                            "SpawnOnFloors": "80/100",
-                            "SpawnFrequency": 0.1,
+                            "Floors": "80/100",
+                            "SpawnFrequency": 0.15,
                             "Type": "All"
                         },
                         {
                             "Floors": "100/120",
-                            "SpawnFrequency": 0.12,
+                            "SpawnFrequency": 0.2,
                             "Type": "All"
                         }
                     ]
                 },
+                //pure coal
                 "Dojando.VariousCoalOresExtras_3": {
                     "Name": "Dojando.VariousCoalOresExtras_3",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
@@ -229,17 +233,17 @@
                     "MineSpawns": [
                         {
                             "Floors": "1/39",
-                            "SpawnFrequency": 0.05,
+                            "SpawnFrequency": 0.025,
                             "Type": "All"
                         },
                         {
                             "Floors": "40/80",
-                            "SpawnFrequency": 0.1,
+                            "SpawnFrequency": 0.05,
                             "Type": "All"
                         },
                         {
                             "Floors": "81/119",
-                            "SpawnFrequency": 0.15,
+                            "SpawnFrequency": 0.1,
                             "Type": "All"
                         },
                         {
@@ -249,6 +253,7 @@
                         }
                     ]
                 },
+                //Extras
                 "Dojando.VariousCoalOresExtras_4": {
                     "Name": "Dojando.VariousCoalOresExtras_4",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
@@ -264,7 +269,7 @@
                     "ExtraItems": [
                         {
                             "ItemId": "(O)74",
-                            "Chance": 1,
+                            "Chance": 0.5,
                             "MinStack": 1,
                             "MaxStack": 1,
                             "Condition": null,
@@ -366,12 +371,12 @@
                         {
                             "Floors": "81/119",
                             "Type": "All",
-                            "SpawnFrequency": 0.05,
+                            "SpawnFrequency": 0.025
                         },
                         {
                             "Floors": "120/-999",
                             "Type": "All",
-                            "SpawnFrequency": 0.075
+                            "SpawnFrequency": 0.05
                         }
                     ]
                 },
