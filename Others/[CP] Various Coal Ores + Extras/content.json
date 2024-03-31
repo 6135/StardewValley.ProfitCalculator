@@ -7,8 +7,8 @@
             "Target": "Mods/mistyspring.ItemExtensions/Resources",
             "Entries": {
                 //normal coal
-                "Dojando.VariousCoalOresExtras_0": {
-                    "Name": "Dojando.VariousCoalOresExtras_0",
+                "6135.VariousCoalOresExtras_0": {
+                    "Name": "6135.VariousCoalOresExtras_0",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "This stone is rich in coal.",
                     "Texture": "Mods/{{ModId}}/CoalStone",
@@ -68,8 +68,8 @@
                     ]
                 },
                 //ice coal
-                "Dojando.VariousCoalOresExtras_1": {
-                    "Name": "Dojando.VariousCoalOresExtras_1",
+                "6135.VariousCoalOresExtras_1": {
+                    "Name": "6135.VariousCoalOresExtras_1",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "This frozen stone is rich in coal.",
                     "Texture": "Mods/{{ModId}}/CoalStoneIce",
@@ -130,8 +130,8 @@
                     ]
                 },
                 //lava coal
-                "Dojando.VariousCoalOresExtras_2": {
-                    "Name": "Dojando.VariousCoalOresExtras_2",
+                "6135.VariousCoalOresExtras_2": {
+                    "Name": "6135.VariousCoalOresExtras_2",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "This red hot stone is rich in coal.",
                     "Texture": "Mods/{{ModId}}/CoalStoneLava",
@@ -187,8 +187,8 @@
                     ]
                 },
                 //pure coal
-                "Dojando.VariousCoalOresExtras_3": {
-                    "Name": "Dojando.VariousCoalOresExtras_3",
+                "6135.VariousCoalOresExtras_3": {
+                    "Name": "6135.VariousCoalOresExtras_3",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "This looks like pure Coal.",
                     "Texture": "Mods/{{ModId}}/CoalPure",
@@ -254,8 +254,8 @@
                     ]
                 },
                 //Extras
-                "Dojando.VariousCoalOresExtras_4": {
-                    "Name": "Dojando.VariousCoalOresExtras_4",
+                "6135.VariousCoalOresExtras_4": {
+                    "Name": "6135.VariousCoalOresExtras_4",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "This stone shines like stardust.",
                     "Texture": "Mods/{{ModId}}/PrismaticStone",
@@ -315,8 +315,8 @@
                         }
                     ]
                 },
-                "Dojando.VariousCoalOresExtras_5": {
-                    "Name": "Dojando.VariousCoalOresExtras_5",
+                "6135.VariousCoalOresExtras_5": {
+                    "Name": "6135.VariousCoalOresExtras_5",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "A glassy volcanic rock. It may hold a shiny Surprise inside.",
                     "Texture": "Mods/{{ModId}}/Obsidian",
@@ -380,8 +380,8 @@
                         }
                     ]
                 },
-                "Dojando.VariousCoalOresExtras_6": {
-                    "Name": "Dojando.VariousCoalOresExtras_6",
+                "6135.VariousCoalOresExtras_6": {
+                    "Name": "6135.VariousCoalOresExtras_6",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "Sedimentary rock with a muddy matrix.",
                     "Texture": "Mods/{{ModId}}/Mudstone",
